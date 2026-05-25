@@ -13,6 +13,10 @@ const UserSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    bio: {
+      type: String,
+      default: "Hello World!",
+    },
     password: {
       type: String,
       required: true,
@@ -29,6 +33,9 @@ const UserSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
+      default: function () {
+        return this.name ? this.name.charAt(0).toUpperCase() : "U";
+      },
     },
   },
   { timestamps: true },
