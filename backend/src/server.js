@@ -1,15 +1,20 @@
 import { config } from "dotenv";
 import db from "./config/db.js";
 import app from "./app.js";
+import http from "http";
+import initSocket from "./socket/socket.js";
 
 config();
+
+const server = http.createServer(app);
+initSocket(server);
 
 const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
   try {
     await db();
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
   } catch (err) {
