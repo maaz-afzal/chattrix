@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isLoggedIn: false,
-  user: null,
+  user: localStorage.getItem("user") || null,
   token: localStorage.getItem("token") || null,
 };
 
