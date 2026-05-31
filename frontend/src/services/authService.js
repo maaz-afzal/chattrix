@@ -9,9 +9,9 @@ const register = async (name, email, password) => {
   }
 };
 
-const login = async (email, password) => {
+const login = async (formData) => {
   try {
-    const res = await api.post("/auth/login", { email, password });
+    const res = await api.post("/auth/login", formData);
     return res.data;
   } catch (err) {
     throw new Error(err);

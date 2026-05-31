@@ -80,6 +80,7 @@ const login = [
 
       res.status(200).json({
         msg: "User logged in successfully!",
+        user,
         token,
       });
     } catch (err) {
