@@ -40,9 +40,18 @@ const register = [
       if (user) {
         return res.status(400).json({ msg: "User already exists" });
       }
+
       const hashedPassword = await bcrypt.hash(password, 12);
-      const newUser = new User({ name, email, password: hashedPassword });
+      const newUser = new User({
+        name,
+        email,
+        password: hashedPassword,
+      });
+
       await newUser.save();
+
+      const userData = newUser.toObject();
+      delete userData.password;
 
       const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
         expiresIn: "1h",
@@ -50,6 +59,7 @@ const register = [
 
       res.status(201).json({
         msg: "User created successfully!",
+        user: userData,
         token,
       });
     } catch (err) {
@@ -74,13 +84,16 @@ const login = [
         return res.status(400).json({ msg: "Invalid credentials" });
       }
 
+      const userData = user.toObject();
+      delete userData.password;
+
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
         expiresIn: "1h",
       });
 
       res.status(200).json({
         msg: "User logged in successfully!",
-        user,
+        user: userData,
         token,
       });
     } catch (err) {
@@ -88,5 +101,4 @@ const login = [
     }
   },
 ];
-
 export { register, login };

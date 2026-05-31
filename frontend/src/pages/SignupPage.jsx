@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   User,
   Mail,
@@ -10,11 +10,94 @@ import {
   Send,
   CheckCircle,
 } from "lucide-react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import * as authService from "../services/authService.js";
+import { useDispatch } from "react-redux";
+import { login } from "../redux/Slices/authSlice";
 
 const SignupPage = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.name || !formData.email || !formData.password) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+
+    const nameRegex = /^[a-zA-Z\s]+$/;
+    if (!nameRegex.test(formData.name)) {
+      toast.error("Please enter a valid name.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await authService.register(formData);
+
+      if (response.token && response.user) {
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("user", JSON.stringify(response.user));
+
+        dispatch(
+          login({
+            token: response.token,
+            user: response.user,
+          }),
+        );
+
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+        });
+
+        toast.success("Signup successful!");
+        setTimeout(() => navigate("/"), 1000);
+      } else {
+        throw new Error("Invalid response!");
+      }
+    } catch (err) {
+      console.error(err);
+      if (err.response?.status === 401) {
+        toast.error("Invalid email or password.");
+      } else if (err.response?.status === 404) {
+        toast.error("Account not found.");
+      } else {
+        toast.error("Something went wrong. Please try again later.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 flex">
-      {/* Left Panel */}
+      {/* left panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-gray-800 to-gray-900 relative flex-col justify-between p-12 border-r border-gray-700">
         <div>
           <div className="flex items-center gap-2 mb-12">
@@ -85,7 +168,7 @@ const SignupPage = () => {
         </div>
       </div>
 
-      {/* Right Panel */}
+      {/* right panel */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-10 bg-gray-900">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
@@ -97,8 +180,8 @@ const SignupPage = () => {
             </p>
           </div>
 
-          <form className="space-y-5" action="#" method="POST">
-            {/* Full Name Field */}
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            {/* name input */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1.5">
                 Full Name
@@ -109,13 +192,16 @@ const SignupPage = () => {
                 </div>
                 <input
                   type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
                   className="block w-full pl-10 pr-4 py-2.5 border border-gray-700 rounded-lg bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 sm:text-sm"
                   placeholder="John Doe"
                 />
               </div>
             </div>
 
-            {/* Email */}
+            {/* email input */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1.5">
                 Email Address
@@ -126,13 +212,16 @@ const SignupPage = () => {
                 </div>
                 <input
                   type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   className="block w-full pl-10 pr-4 py-2.5 border border-gray-700 rounded-lg bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 sm:text-sm"
                   placeholder="you@example.com"
                 />
               </div>
             </div>
 
-            {/* Password */}
+            {/* password input */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1.5">
                 Password
@@ -143,6 +232,9 @@ const SignupPage = () => {
                 </div>
                 <input
                   type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
                   className="block w-full pl-10 pr-4 py-2.5 border border-gray-700 rounded-lg bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 sm:text-sm"
                   placeholder="Create a password"
                 />
@@ -150,16 +242,16 @@ const SignupPage = () => {
               <p className="text-xs text-gray-500 mt-1">Min. 6 characters</p>
             </div>
 
-            {/* Create Account Button */}
+            {/* create account button */}
             <button
               type="submit"
               className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500 transition-all duration-200 mt-4"
             >
-              Create Account
+              {loading ? "Creating account..." : "Create Account"}
               <ArrowRight className="ml-2 h-4 w-4" />
             </button>
 
-            {/* Login Link */}
+            {/* login link */}
             <div className="text-center pt-4">
               <p className="text-sm text-gray-400">
                 Already have an account?{" "}

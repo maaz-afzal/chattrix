@@ -1,8 +1,8 @@
 import api from "./api";
 
-const register = async (name, email, password) => {
+const register = async (formData) => {
   try {
-    const res = await api.post("/auth/register", { name, email, password });
+    const res = await api.post("/auth/register", formData);
     return res.data;
   } catch (err) {
     throw new Error(err);
