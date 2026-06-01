@@ -1,6 +1,21 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 
+const getAllUsers = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const users = await User.find({ _id: { $ne: userId } }).select("-password");
+
+    if (!users) {
+      return res.status(404).json({ msg: "Users not found" });
+    }
+
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ msg: "Something went wrong" });
+  }
+};
+
 const getUser = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -90,4 +105,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-export { getUser, getUserById, updateUser, deleteUser };
+export { getAllUsers, getUser, getUserById, updateUser, deleteUser };

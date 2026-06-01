@@ -6,10 +6,11 @@ const ChatItem = ({ chat, isSelected, onClick }) => {
   const {
     name,
     avatar,
+    bio,
     lastMessage,
     time,
     unread,
-    online,
+    status,
     isGroup,
     gradient,
     active,
@@ -35,7 +36,7 @@ const ChatItem = ({ chat, isSelected, onClick }) => {
             <span className="text-white font-semibold text-sm">{avatar}</span>
           )}
         </div>
-        {online && (
+        {status && (
           <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-gray-800" />
         )}
       </div>
