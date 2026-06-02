@@ -1,7 +1,9 @@
 import React from "react";
+import { useSelector } from "react-redux";
 
 const MessageBubble = ({ text, sender, time, seen }) => {
-  const isMe = sender === "me";
+  const userSelector = useSelector((state) => state.auth.user._id);
+  const isMe = sender === userSelector;
 
   return (
     <div className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
