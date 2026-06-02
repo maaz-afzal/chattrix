@@ -8,8 +8,8 @@ import FilterTabs from "../ui/FilterTabs";
 import ChatList from "../ui/ChatList";
 import { useSelector } from "react-redux";
 
-const LeftSidebar = () => {
-    const userSelector = useSelector((state) => state.auth.user);
+const LeftSidebar = ({ onSelected }) => {
+  const userSelector = useSelector((state) => state.auth.user);
 
   return (
     <aside className="w-full max-w-xs shrink-0 bg-gray-800/60 backdrop-blur-xl rounded-3xl shadow-xl border border-gray-700/40 flex flex-col overflow-hidden">
@@ -38,7 +38,7 @@ const LeftSidebar = () => {
 
       {/* chat list */}
       <div className="flex-1 overflow-y-auto min-h-0 px-3 pb-3">
-        <ChatList />
+        <ChatList onSelectedUser={onSelected}/>
       </div>
 
       {/* footer profile */}
@@ -54,7 +54,7 @@ const LeftSidebar = () => {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-gray-200 font-medium text-sm truncate">
-                {userSelector?.name}
+              {userSelector?.name}
             </p>
             <p className="text-gray-500 text-xs">Online</p>
           </div>

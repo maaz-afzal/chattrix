@@ -5,7 +5,7 @@ const getAllUsers = async () => {
     const res = await api.get("/users/profiles");
     return res.data;
   } catch (err) {
-    throw new Error(err);
+    throw err;
   }
 };
 

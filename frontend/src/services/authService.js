@@ -5,7 +5,7 @@ const register = async (formData) => {
     const res = await api.post("/auth/register", formData);
     return res.data;
   } catch (err) {
-    throw new Error(err);
+    throw err;
   }
 };
 
@@ -14,7 +14,7 @@ const login = async (formData) => {
     const res = await api.post("/auth/login", formData);
     return res.data;
   } catch (err) {
-    throw new Error(err);
+    throw err;
   }
 };
 
