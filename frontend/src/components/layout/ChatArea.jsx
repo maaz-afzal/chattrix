@@ -8,7 +8,7 @@ const ChatArea = ({ selected }) => {
     <main className="flex-1 min-w-0 bg-gray-800/60 backdrop-blur-xl rounded-3xl shadow-xl border border-gray-700/40 flex flex-col overflow-hidden">
       <ChatHeader selected={selected} />
       <MessageList selected={selected} />
-      <MessageInput />
+      <MessageInput selected={selected} />
     </main>
   );
 };
