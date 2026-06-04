@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import MessageBubble from "./MessageBubble";
 import DateDivider from "./DateDivider";
 import TypingIndicator from "./TypingIndicator";
@@ -8,6 +8,7 @@ import { getSocket } from "../../lib/socket.js";
 const MessageList = ({ selected }) => {
   const [conversation, setConversation] = useState([]);
   const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef(null);
 
   const getConversation = async (userId) => {
     if (!userId) return;
@@ -59,10 +60,14 @@ const MessageList = ({ selected }) => {
     };
   }, [selected]);
 
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [conversation]);
+
   if (!selected) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <p className="text-gray-400 text-center">
+        <p className="text-neutral-400 text-center">
           Select a chat to start messaging
         </p>
       </div>
@@ -74,15 +79,15 @@ const MessageList = ({ selected }) => {
       <div className="flex-1 flex items-center justify-center">
         <div className="flex gap-1">
           <span
-            className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce"
+            className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce"
             style={{ animationDelay: "0ms" }}
           />
           <span
-            className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce"
+            className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce"
             style={{ animationDelay: "150ms" }}
           />
           <span
-            className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce"
+            className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce"
             style={{ animationDelay: "300ms" }}
           />
         </div>
@@ -92,19 +97,20 @@ const MessageList = ({ selected }) => {
 
   return (
     <div className="flex-1 overflow-y-auto min-h-0 p-6 space-y-4">
-      <DateDivider date="Today" />
-
       {conversation.length === 0 ? (
         <div className="flex justify-center">
-          <p className="text-gray-500 text-sm">
+          <p className="text-neutral-500 text-sm">
             No messages yet. Start a conversation!
           </p>
         </div>
       ) : (
-        conversation.map((msg) => <MessageBubble key={msg._id} {...msg} />)
+        <>
+          {conversation.map((msg) => (
+            <MessageBubble key={msg._id} {...msg} />
+          ))}
+          <div ref={messagesEndRef} />
+        </>
       )}
-
-      <TypingIndicator />
     </div>
   );
 };

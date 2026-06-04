@@ -20,17 +20,16 @@ const IconButton = ({
   };
 
   const variantClasses = {
-    default: "bg-gray-700/70 hover:bg-gray-700 text-gray-300",
-    primary:
-      "bg-gradient-to-br from-indigo-500 to-purple-500 hover:shadow-lg hover:shadow-indigo-500/30 text-white",
-    ghost: "hover:bg-gray-700/60 text-gray-400",
+    default: "bg-neutral-800/70 hover:bg-neutral-800 text-neutral-300",
+    primary: "bg-indigo-600 hover:bg-indigo-700 text-white",
+    ghost: "hover:bg-neutral-800/60 text-neutral-400",
   };
 
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`${sizeClasses[size]} ${variantClasses[variant]} rounded-xl transition focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:opacity-50 disabled:cursor-not-allowed`}
+      className={`${sizeClasses[size]} ${variantClasses[variant]} rounded-xl transition focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed`}
     >
       <Icon className={iconSizes[size]} />
     </button>

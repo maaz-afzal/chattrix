@@ -11,7 +11,7 @@ const Avatar = ({ name, size = "md", online = false }) => {
   return (
     <div className="relative">
       <div
-        className={`${sizeClasses[size]} bg-linear-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center shadow`}
+        className={`${sizeClasses[size]} bg-indigo-600 rounded-2xl flex items-center justify-center shadow`}
       >
         <span
           className={`text-white font-semibold ${size === "xl" ? "text-3xl" : "text-sm"}`}
@@ -20,7 +20,7 @@ const Avatar = ({ name, size = "md", online = false }) => {
         </span>
       </div>
       {online && (
-        <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-800" />
+        <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-black" />
       )}
     </div>
   );

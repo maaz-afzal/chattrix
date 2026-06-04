@@ -48,14 +48,14 @@ const MessageInput = ({ selected }) => {
 
   return (
     <div className="p-4">
-      <div className="flex items-center gap-2 bg-gray-700/70 backdrop-blur rounded-3xl p-2 shadow-lg border border-gray-600/60">
+      <div className="flex items-center gap-2 bg-neutral-800/70 backdrop-blur rounded-3xl p-2 shadow-lg border border-neutral-700">
         <button
           onClick={handleImageSelect}
           disabled={sending || !selected}
           aria-label="Image"
-          className="p-2 hover:bg-gray-600 rounded-2xl transition focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-2 hover:bg-neutral-700 rounded-2xl transition focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <ImageIcon className="w-5 h-5 text-gray-400" />
+          <ImageIcon className="w-5 h-5 text-neutral-400" />
         </button>
 
         <input
@@ -67,22 +67,22 @@ const MessageInput = ({ selected }) => {
           placeholder={
             selected ? "Write a message..." : "Select a chat to start messaging"
           }
-          className="flex-1 bg-transparent px-2 py-2 text-gray-200 placeholder-gray-500 focus:outline-none text-sm min-w-0 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 bg-transparent px-2 py-2 text-neutral-200 placeholder-neutral-500 focus:outline-none text-sm min-w-0 disabled:opacity-50 disabled:cursor-not-allowed"
         />
 
         <button
           onClick={handleSend}
           disabled={(!message.trim() && !image) || sending || !selected}
           aria-label="Send"
-          className="p-2.5 bg-linear-to-br from-indigo-500 to-purple-500 hover:shadow-lg hover:shadow-indigo-500/30 rounded-2xl transition focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-2.5 bg-indigo-600 hover:bg-indigo-700 rounded-2xl transition focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Send className="w-5 h-5 text-white" />
         </button>
       </div>
 
       {image && (
-        <div className="mt-2 p-2 bg-gray-700/50 rounded-xl flex items-center gap-2">
-          <span className="text-xs text-gray-400">Image selected</span>
+        <div className="mt-2 p-2 bg-neutral-800/50 rounded-xl flex items-center gap-2">
+          <span className="text-xs text-neutral-400">Image selected</span>
           <button
             onClick={() => setImage(null)}
             className="text-xs text-red-400 hover:text-red-300"

@@ -2,7 +2,7 @@ import React from "react";
 
 const Badge = ({ count, variant = "default", size = "sm" }) => {
   const variantClasses = {
-    default: "bg-purple-500 text-white",
+    default: "bg-indigo-600 text-white",
     success: "bg-green-500 text-white",
     warning: "bg-yellow-500 text-white",
     error: "bg-red-500 text-white",

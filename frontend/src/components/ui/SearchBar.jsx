@@ -4,11 +4,11 @@ import { Search } from "lucide-react";
 const SearchBar = () => {
   return (
     <div className="relative">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 pointer-events-none" />
       <input
         type="text"
         placeholder="Search..."
-        className="w-full pl-10 pr-4 py-2.5 bg-gray-700/70 rounded-2xl text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm border border-gray-600/60"
+        className="w-full pl-10 pr-4 py-2.5 bg-neutral-800/70 rounded-2xl text-neutral-200 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm border border-neutral-700"
       />
     </div>
   );
