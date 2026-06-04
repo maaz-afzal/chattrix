@@ -4,7 +4,7 @@ import DateDivider from "./DateDivider";
 import TypingIndicator from "./TypingIndicator";
 import * as messageService from "../../services/messageService.js";
 
-const MessageList = ({ selected }) => {
+const MessageList = ({ selected, refreshTrigger }) => {
   const [conversation, setConversation] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -30,7 +30,7 @@ const MessageList = ({ selected }) => {
     if (selected?._id) {
       getConversation(selected._id);
     }
-  }, [selected]);
+  }, [selected, refreshTrigger]);
 
   if (!selected) {
     return (

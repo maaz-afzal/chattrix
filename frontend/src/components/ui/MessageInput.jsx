@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Send, Image as ImageIcon } from "lucide-react";
 import * as messageService from "../../services/messageService.js";
 
-const MessageInput = ({ selected }) => {
+const MessageInput = ({ selected, onMsgSent }) => {
   const [message, setMessage] = useState("");
   const [image, setImage] = useState(null);
   const [sending, setSending] = useState(false);
@@ -30,6 +30,9 @@ const MessageInput = ({ selected }) => {
 
       setMessage("");
       setImage(null);
+      if (onMsgSent) {
+        onMsgSent();
+      }
     } catch (error) {
       console.error("Error sending message:", error);
     } finally {
