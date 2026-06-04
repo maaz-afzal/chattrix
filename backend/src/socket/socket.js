@@ -16,6 +16,8 @@ const initSocket = (server) => {
     if (userId) {
       socket.userId = userId;
       userSocketMap.set(userId, socket.id);
+
+      socket.broadcast.emit("user-online", userId);
     }
 
     socket.on("send-message", async ({ receiverId, message }) => {
@@ -43,6 +45,8 @@ const initSocket = (server) => {
     socket.on("disconnect", () => {
       if (socket.userId) {
         userSocketMap.delete(socket.userId);
+
+        socket.broadcast.emit("user-offline", socket.userId);
       }
     });
   });

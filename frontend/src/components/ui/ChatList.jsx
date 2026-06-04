@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ChatItem from "./ChatItem";
 import { getAllUsers } from "../../services/userService.js";
+import { getSocket } from "../../lib/socket.js";
 
 const ChatList = ({ onSelectedUser }) => {
   const [selectedChatId, setSelectedChatId] = useState(null);
@@ -13,6 +14,35 @@ const ChatList = ({ onSelectedUser }) => {
 
   useEffect(() => {
     getUsers();
+  }, []);
+
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket) return;
+
+    const handleUserOnline = (userId) => {
+      setUsersChat((prev) =>
+        prev.map((user) =>
+          user._id === userId ? { ...user, status: "online" } : user,
+        ),
+      );
+    };
+
+    const handleUserOffline = (userId) => {
+      setUsersChat((prev) =>
+        prev.map((user) =>
+          user._id === userId ? { ...user, status: "offline" } : user,
+        ),
+      );
+    };
+
+    socket.on("user-online", handleUserOnline);
+    socket.on("user-offline", handleUserOffline);
+
+    return () => {
+      socket.off("user-online", handleUserOnline);
+      socket.off("user-offline", handleUserOffline);
+    };
   }, []);
 
   const handleSelectChat = (chat) => {
