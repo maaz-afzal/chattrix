@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { connectSocket } from "../lib/socket.js";
 import {
   Mail,
   Lock,
@@ -59,6 +60,7 @@ const LoginPage = () => {
             user: response.user,
           }),
         );
+        connectSocket(response.user._id);
         setFormData({
           email: "",
           password: "",
@@ -73,7 +75,7 @@ const LoginPage = () => {
       console.error(err);
       if (err.response?.status === 401) {
         toast.error("Invalid email or password.");
-      } else if (err.response.status === 404) {
+      } else if (err.response?.status === 404) {
         toast.error("Account not found.");
       } else {
         toast.error("Something went wrong. Please try again later.");
