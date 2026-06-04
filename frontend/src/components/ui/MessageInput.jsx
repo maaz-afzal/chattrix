@@ -1,38 +1,33 @@
 import React, { useState } from "react";
 import { Send, Image as ImageIcon } from "lucide-react";
-import * as messageService from "../../services/messageService.js";
+import { getSocket } from "../../lib/socket.js";
 
-const MessageInput = ({ selected, onMsgSent }) => {
+const MessageInput = ({ selected }) => {
   const [message, setMessage] = useState("");
   const [image, setImage] = useState(null);
   const [sending, setSending] = useState(false);
 
   const handleSend = async () => {
-    if (!selected?._id) {
-      console.log("select the chat first.");
-      return;
-    }
+    if (!selected?._id) return;
+    if (!message.trim() && !image) return;
 
-    if (!message.trim() && !image) {
+    const socket = getSocket();
+    if (!socket) {
+      console.log("Socket not connected");
       return;
     }
 
     try {
       setSending(true);
+      const messageText = message.trim();
 
-      const payload = {
-        text: message.trim(),
-        image: image || null,
-      };
-
-      const res = await messageService.sendMessage(selected._id, payload);
-      console.log("sent:", res);
+      socket.emit("send-message", {
+        receiverId: selected._id,
+        message: messageText,
+      });
 
       setMessage("");
       setImage(null);
-      if (onMsgSent) {
-        onMsgSent();
-      }
     } catch (error) {
       console.error("Error sending message:", error);
     } finally {
@@ -41,7 +36,7 @@ const MessageInput = ({ selected, onMsgSent }) => {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter" && !e.shiftKey && !sending) {
+    if (e.key === "Enter") {
       e.preventDefault();
       handleSend();
     }

@@ -5,7 +5,7 @@ import TypingIndicator from "./TypingIndicator";
 import * as messageService from "../../services/messageService.js";
 import { getSocket } from "../../lib/socket.js";
 
-const MessageList = ({ selected, refreshTrigger }) => {
+const MessageList = ({ selected }) => {
   const [conversation, setConversation] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -16,7 +16,6 @@ const MessageList = ({ selected, refreshTrigger }) => {
       setLoading(true);
       const res = await messageService.getConversation(userId);
       setConversation(res);
-      console.log(res);
     } catch (error) {
       console.error("Error fetching conversation:", error);
       setConversation([]);
@@ -27,11 +26,10 @@ const MessageList = ({ selected, refreshTrigger }) => {
 
   useEffect(() => {
     setConversation([]);
-
     if (selected?._id) {
       getConversation(selected._id);
     }
-  }, [selected, refreshTrigger]);
+  }, [selected]);
 
   useEffect(() => {
     if (!selected?._id) return;
@@ -39,19 +37,25 @@ const MessageList = ({ selected, refreshTrigger }) => {
     const socket = getSocket();
     if (!socket) return;
 
-    const handleReceiveMessage = (newMessage) => {
+    const handleNewMessage = (newMessage) => {
       if (
         newMessage.sender === selected._id ||
         newMessage.receiver === selected._id
       ) {
-        setConversation((prev) => [...prev, newMessage]);
+        setConversation((prev) => {
+          const exists = prev.some((msg) => msg._id === newMessage._id);
+          if (exists) return prev;
+          return [...prev, newMessage];
+        });
       }
     };
 
-    socket.on("receive-message", handleReceiveMessage);
+    socket.on("receive-message", handleNewMessage);
+    socket.on("message-sent", handleNewMessage);
 
     return () => {
-      socket.off("receive-message", handleReceiveMessage);
+      socket.off("receive-message", handleNewMessage);
+      socket.off("message-sent", handleNewMessage);
     };
   }, [selected]);
 

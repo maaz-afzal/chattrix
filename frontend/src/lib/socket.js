@@ -1,35 +1,26 @@
 import { io } from "socket.io-client";
 
+const socketUrl = import.meta.env.VITE_SOCKET_URL;
+
 let socket = null;
 
 export const connectSocket = (userId) => {
-  if (!userId) {
-    return null;
-  }
+  if (!userId) return null;
+  if (socket) return socket;
 
-  if (socket) {
-    return socket;
-  }
-
-  socket = io("http://localhost:5000", {
+  socket = io(socketUrl, {
     query: { userId: userId },
   });
 
   socket.on("connect", () => {
-    console.log("connected:", socket.id);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("disconnected");
+    socket.emit("setup", { id: userId });
   });
 
   return socket;
 };
 
 export const getSocket = () => {
-  if (!socket) {
-    console.log("Socket not connected. Call connectSocket first");
-  }
+  if (!socket) return null;
   return socket;
 };
 
