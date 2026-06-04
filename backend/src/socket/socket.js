@@ -11,12 +11,16 @@ const initSocket = (server) => {
   });
 
   io.on("connection", (socket) => {
-    socket.on("setup", (userData) => {
-      socket.userId = userData.id;
-      userSocketMap.set(userData.id, socket.id);
-    });
+    const userId = socket.handshake.query.userId;
+
+    if (userId) {
+      socket.userId = userId;
+      userSocketMap.set(userId, socket.id);
+    }
 
     socket.on("send-message", async ({ receiverId, message }) => {
+      if (!socket.userId) return;
+
       try {
         const newMessage = await Message.create({
           sender: socket.userId,

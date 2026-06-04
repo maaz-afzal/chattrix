@@ -12,10 +12,6 @@ export const connectSocket = (userId) => {
     query: { userId: userId },
   });
 
-  socket.on("connect", () => {
-    socket.emit("setup", { id: userId });
-  });
-
   return socket;
 };
 
