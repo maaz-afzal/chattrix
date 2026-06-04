@@ -3,6 +3,7 @@ import MessageBubble from "./MessageBubble";
 import DateDivider from "./DateDivider";
 import TypingIndicator from "./TypingIndicator";
 import * as messageService from "../../services/messageService.js";
+import { getSocket } from "../../lib/socket.js";
 
 const MessageList = ({ selected, refreshTrigger }) => {
   const [conversation, setConversation] = useState([]);
@@ -31,6 +32,28 @@ const MessageList = ({ selected, refreshTrigger }) => {
       getConversation(selected._id);
     }
   }, [selected, refreshTrigger]);
+
+  useEffect(() => {
+    if (!selected?._id) return;
+
+    const socket = getSocket();
+    if (!socket) return;
+
+    const handleReceiveMessage = (newMessage) => {
+      if (
+        newMessage.sender === selected._id ||
+        newMessage.receiver === selected._id
+      ) {
+        setConversation((prev) => [...prev, newMessage]);
+      }
+    };
+
+    socket.on("receive-message", handleReceiveMessage);
+
+    return () => {
+      socket.off("receive-message", handleReceiveMessage);
+    };
+  }, [selected]);
 
   if (!selected) {
     return (
