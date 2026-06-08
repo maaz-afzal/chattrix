@@ -25,17 +25,16 @@ app.use("/users", authMiddleware, userRoutes);
 app.use("/message", authMiddleware, messageRoutes);
 
 // 404 handler
-app.use("*", (req, res) => {
-  res.status(404).json({ MessageEvent: "Route not found" });
+app.use((req, res) => {
+  res.status(404).json({ msg: "Route not found" });
 });
-
 
 // global error handler
 app.use((err, req, res, next) => {
   if (process.env.NODE_ENV === "production") {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ msg: "Server error" });
   } else {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ msg: err.message });
   }
 });
 

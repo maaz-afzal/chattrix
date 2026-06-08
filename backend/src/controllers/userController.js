@@ -50,7 +50,6 @@ const updateUser = async (req, res) => {
     const userId = req.user.id;
     const {
       name,
-      email,
       avatar,
       bio,
       currPassword,
@@ -63,9 +62,8 @@ const updateUser = async (req, res) => {
       return res.status(404).json({ msg: "User not found" });
     }
 
-    if (name || email || avatar || bio) {
+    if (name || avatar || bio) {
       user.name = name || user.name;
-      user.email = email || user.email;
       user.avatar = avatar || user.avatar;
       user.bio = bio || user.bio;
     }

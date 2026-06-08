@@ -6,11 +6,11 @@ import Badge from "../common/Badge";
 import SearchBar from "../ui/SearchBar";
 import FilterTabs from "../ui/FilterTabs";
 import ChatList from "../ui/ChatList";
-import UserProfileModal from "../ui/UserProfileModal";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const LeftSidebar = ({ onSelected }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
   const userSelector = useSelector((state) => state.auth.user);
 
   return (
@@ -59,17 +59,11 @@ const LeftSidebar = ({ onSelected }) => {
               icon={Settings}
               ariaLabel="Settings"
               size="sm"
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => navigate("/profile")}
             />
           </div>
         </div>
       </aside>
-
-      <UserProfileModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        user={userSelector}
-      />
     </>
   );
 };
