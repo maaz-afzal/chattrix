@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { login, logout, updateUser } from "../redux/Slices/authSlice";
 import * as userService from "../services/userService.js";
 import toast from "react-hot-toast";
+import { disconnectSocket } from "../lib/socket.js";
 import {
   ArrowLeft,
   Camera,
@@ -114,6 +115,7 @@ const ProfilePage = () => {
 
   const handleLogout = () => {
     dispatch(logout());
+    disconnectSocket();
     navigate("/login");
   };
 
