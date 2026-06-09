@@ -15,12 +15,18 @@ const authSlice = createSlice({
   reducers: {
     login(state, action) {
       state.isLoggedIn = true;
-      state.user = action.payload.user;
       state.token = action.payload.token;
+      const updatedUser = {
+        ...action.payload.user,
+        status: "online",
+      };
+
+      state.user = updatedUser;
 
       localStorage.setItem("token", action.payload.token);
-      localStorage.setItem("user", JSON.stringify(action.payload.user));
+      localStorage.setItem("user", JSON.stringify(updatedUser));
     },
+
     logout(state) {
       state.isLoggedIn = false;
       state.user = null;

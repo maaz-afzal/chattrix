@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { connectSocket } from "../lib/socket.js";
+import { Link } from "react-router-dom";
 import {
   Mail,
   Lock,
@@ -225,12 +226,12 @@ const LoginPage = () => {
             <div className="text-center pt-4">
               <p className="text-sm text-gray-400">
                 Don't have an account?{" "}
-                <a
-                  href="/signup"
+                <Link
+                  to={"/signup"}
                   className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
                 >
                   Create an account
-                </a>
+                </Link>
               </p>
             </div>
 

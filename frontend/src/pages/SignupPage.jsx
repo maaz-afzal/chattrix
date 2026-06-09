@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import * as authService from "../services/authService.js";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/Slices/authSlice";
+import { Link } from "react-router-dom";
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
@@ -255,12 +256,12 @@ const SignupPage = () => {
             <div className="text-center pt-4">
               <p className="text-sm text-gray-400">
                 Already have an account?{" "}
-                <a
-                  href="/login"
+                <Link
+                  to={"/login"}
                   className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
                 >
                   Sign in
-                </a>
+                </Link>
               </p>
             </div>
 
