@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { MessageCircle, Users, Search, Plus, Settings } from "lucide-react";
 import Avatar from "../common/Avatar";
 import IconButton from "../common/IconButton";
-import Badge from "../common/Badge";
 import SearchBar from "../ui/SearchBar";
 import FilterTabs from "../ui/FilterTabs";
 import ChatList from "../ui/ChatList";
@@ -12,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 const LeftSidebar = ({ onSelected }) => {
   const navigate = useNavigate();
   const userSelector = useSelector((state) => state.auth.user);
+
+  const isOnline = userSelector?.status === "online";
 
   return (
     <>
@@ -46,14 +47,18 @@ const LeftSidebar = ({ onSelected }) => {
         <div className="p-3 border-t border-neutral-800">
           <div className="flex items-center gap-3 p-2 bg-neutral-800/60 rounded-2xl">
             <div className="relative shrink-0">
-              <Avatar name="JD" size="md" />
-              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-black" />
+              <Avatar name={userSelector?.avatar} size="md" />
+              {isOnline ? (
+                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-black" />
+              ) : (
+                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-neutral-500 rounded-full border-2 border-black" />
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-neutral-200 font-medium text-sm truncate">
                 {userSelector?.name}
               </p>
-              <p className="text-neutral-500 text-xs">Online</p>
+              <p className="text-neutral-500 text-xs">{userSelector?.status}</p>
             </div>
             <IconButton
               icon={Settings}
