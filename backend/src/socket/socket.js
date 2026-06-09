@@ -1,5 +1,6 @@
 import { Server } from "socket.io";
 import Message from "../models/Message.js";
+import User from "../models/User.js";
 
 const userSocketMap = new Map();
 
@@ -10,13 +11,13 @@ const initSocket = (server) => {
     },
   });
 
-  io.on("connection", (socket) => {
+  io.on("connection", async (socket) => {
     const userId = socket.handshake.query.userId;
 
     if (userId) {
       socket.userId = userId;
       userSocketMap.set(userId, socket.id);
-
+      await User.findByIdAndUpdate(userId, { status: "online" });
       socket.broadcast.emit("user-online", userId);
     }
 
@@ -42,9 +43,10 @@ const initSocket = (server) => {
       }
     });
 
-    socket.on("disconnect", () => {
+    socket.on("disconnect", async () => {
       if (socket.userId) {
         userSocketMap.delete(socket.userId);
+        await User.findByIdAndUpdate(socket.userId, { status: "offline" });
 
         socket.broadcast.emit("user-offline", socket.userId);
       }
