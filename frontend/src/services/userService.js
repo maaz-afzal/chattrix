@@ -9,9 +9,9 @@ const getAllUsers = async () => {
   }
 };
 
-const updateProfile = async (data) => {
+const updateProfile = async (formData) => {
   try {
-    const res = await api.put("/users/profile", data);
+    const res = await api.put("/users/profile", formData);
     return res.data;
   } catch (err) {
     throw err;
