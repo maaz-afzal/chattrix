@@ -9,8 +9,6 @@ import authMiddleware from "./middlewares/authMiddleware.js";
 
 const app = express();
 
-app.use(express.json());
-
 // cors
 app.use(
   cors({
@@ -18,6 +16,8 @@ app.use(
     credentials: true,
   }),
 );
+
+app.use(express.json({ limit: "10mb" }));
 
 // app routes
 app.use("/auth", authRoutes);

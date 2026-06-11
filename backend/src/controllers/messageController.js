@@ -1,5 +1,14 @@
 import Message from "../models/Message.js";
 import User from "../models/User.js";
+import { Server } from "socket.io";
+import { userSocketMap } from "../socket/socket.js";
+import cloudinary from "../config/cloudinary.js";
+
+let io;
+
+export const setIo = (socketIo) => {
+  io = socketIo;
+};
 
 const sendMessage = async (req, res) => {
   try {
@@ -15,17 +24,48 @@ const sendMessage = async (req, res) => {
     if (!receiver) {
       return res.status(404).json({ msg: "Receiver not found" });
     }
+
+    let imageUrl = null;
+
+    if (image) {
+      try {
+        const result = await cloudinary.uploader.upload(image, {
+          folder: "chattrix/messages",
+          resource_type: "auto",
+        });
+        imageUrl = result.secure_url;
+      } catch (cloudinaryError) {
+        console.error("Cloudinary error:", cloudinaryError.message);
+        return res
+          .status(500)
+          .json({ msg: "Image upload failed: " + cloudinaryError.message });
+      }
+    }
+
     const message = new Message({
       sender: senderId,
       receiver: receiverId,
       text,
-      image,
+      image: imageUrl,
     });
     await message.save();
+
+    if (io) {
+      const receiverSocketId = userSocketMap.get(receiverId);
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("receive-message", message);
+      }
+
+      const senderSocketId = userSocketMap.get(senderId);
+      if (senderSocketId) {
+        io.to(senderSocketId).emit("message-sent", message);
+      }
+    }
 
     res.status(201).json({ msg: "Message sent successfully!", message });
   } catch (err) {
     res.status(500).json({ msg: "Something went wrong" });
+    console.log(err.message);
   }
 };
 

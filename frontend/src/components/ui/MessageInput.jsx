@@ -1,57 +1,101 @@
 import React, { useState } from "react";
 import { Send, Image as ImageIcon } from "lucide-react";
 import { getSocket } from "../../lib/socket.js";
+import * as messageService from "../../services/messageService.js";
 
 const MessageInput = ({ selected }) => {
   const [message, setMessage] = useState("");
   const [image, setImage] = useState(null);
-  const [sending, setSending] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const sendTextMessage = (text) => {
+    const socket = getSocket();
+    if (!socket) return;
+
+    socket.emit("send-message", {
+      receiverId: selected._id,
+      message: text,
+      imageUrl: null,
+    });
+  };
 
   const handleSend = async () => {
     if (!selected?._id) return;
     if (!message.trim() && !image) return;
 
-    const socket = getSocket();
-    if (!socket) {
-      console.log("Socket not connected");
-      return;
-    }
-
     try {
-      setSending(true);
-      const messageText = message.trim();
+      setLoading(true);
 
-      socket.emit("send-message", {
-        receiverId: selected._id,
-        message: messageText,
-      });
-
-      setMessage("");
-      setImage(null);
+      if (message.trim() && !image) {
+        sendTextMessage(message.trim());
+        setMessage("");
+      } else if (image) {
+        const response = await messageService.sendMessage(selected._id, {
+          text: message.trim() || "",
+          image: image,
+        });
+        setMessage("");
+        setImage(null);
+        setImagePreview(null);
+      }
     } catch (error) {
       console.error("Error sending message:", error);
     } finally {
-      setSending(false);
+      setLoading(false);
     }
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && !loading) {
       e.preventDefault();
       handleSend();
     }
   };
 
   const handleImageSelect = () => {
-    console.log("select img");
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImage(reader.result);
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
   };
 
   return (
     <div className="p-4">
-      <div className="flex items-center gap-2 bg-neutral-800/70 backdrop-blur rounded-3xl p-2 shadow-lg border border-neutral-700">
+      {imagePreview && (
+        <div className="mb-2 p-2 bg-neutral-800 rounded-xl flex items-center justify-between">
+          <img
+            src={imagePreview}
+            alt="Preview"
+            className="w-12 h-12 rounded-lg object-cover"
+          />
+          <button
+            onClick={() => {
+              setImage(null);
+              setImagePreview(null);
+            }}
+            className="text-xs text-red-400 hover:text-red-300"
+          >
+            Remove
+          </button>
+        </div>
+      )}
+
+      <div className="flex items-center gap-2 bg-neutral-800/70 rounded-3xl p-2 shadow-lg border border-neutral-700">
         <button
           onClick={handleImageSelect}
-          disabled={sending || !selected}
+          disabled={loading || !selected}
           aria-label="Image"
           className="p-2 hover:bg-neutral-700 rounded-2xl transition focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -63,7 +107,7 @@ const MessageInput = ({ selected }) => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={handleKeyPress}
-          disabled={sending || !selected}
+          disabled={loading || !selected}
           placeholder={
             selected ? "Write a message..." : "Select a chat to start messaging"
           }
@@ -72,25 +116,13 @@ const MessageInput = ({ selected }) => {
 
         <button
           onClick={handleSend}
-          disabled={(!message.trim() && !image) || sending || !selected}
+          disabled={(!message.trim() && !image) || loading || !selected}
           aria-label="Send"
           className="p-2.5 bg-indigo-600 hover:bg-indigo-700 rounded-2xl transition focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Send className="w-5 h-5 text-white" />
+          {loading ? "..." : <Send className="w-5 h-5 text-white" />}
         </button>
       </div>
-
-      {image && (
-        <div className="mt-2 p-2 bg-neutral-800/50 rounded-xl flex items-center gap-2">
-          <span className="text-xs text-neutral-400">Image selected</span>
-          <button
-            onClick={() => setImage(null)}
-            className="text-xs text-red-400 hover:text-red-300"
-          >
-            Remove
-          </button>
-        </div>
-      )}
     </div>
   );
 };

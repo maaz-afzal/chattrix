@@ -3,11 +3,13 @@ import db from "./config/db.js";
 import app from "./app.js";
 import http from "http";
 import initSocket from "./socket/socket.js";
+import { setIo } from "./controllers/messageController.js";
 
 config();
 
 const server = http.createServer(app);
-initSocket(server);
+const io = initSocket(server);
+setIo(io);
 
 const PORT = process.env.PORT || 3000;
 
