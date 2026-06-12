@@ -18,6 +18,15 @@ const sendMessage = async (id, data) => {
   }
 };
 
+const clearChat = async (id) => {
+  try {
+    const res = await api.delete(`/message/clear/${id}`);
+    return res.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 const deleteMessage = async (id) => {
   try {
     const res = await api.delete(`/message/${id}`);
@@ -27,4 +36,4 @@ const deleteMessage = async (id) => {
   }
 };
 
-export { getConversation, sendMessage, deleteMessage };
+export { getConversation, sendMessage, deleteMessage, clearChat };

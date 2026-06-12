@@ -85,6 +85,28 @@ const getConversation = async (req, res) => {
   }
 };
 
+const clearChat = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const receiverId = req.params.id;
+
+    const result = await Message.deleteMany({
+      $or: [
+        { sender: userId, receiver: receiverId },
+        { sender: receiverId, receiver: userId },
+      ],
+    });
+
+    res.status(200).json({
+      msg: "Chat cleared successfully!",
+      deletedCount: result.deletedCount,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Something went wrong" });
+  }
+};
+
 const deleteMessage = async (req, res) => {
   try {
     const messageId = req.params.id;
@@ -111,4 +133,4 @@ const deleteMessage = async (req, res) => {
   }
 };
 
-export { sendMessage, getConversation, deleteMessage };
+export { sendMessage, getConversation, deleteMessage, clearChat };

@@ -9,38 +9,24 @@ const ChatItem = ({ chat, isSelected, onClick }) => {
   return (
     <button
       onClick={onClick}
-      className={`w-full p-3 flex items-center gap-3 rounded-2xl transition text-left ${
-        isSelected
-          ? "bg-indigo-600/80 shadow-lg shadow-indigo-500/30"
-          : "hover:bg-neutral-800/50"
+      className={`w-full px-4 py-3 flex items-center gap-4 text-left rounded-xl ${
+        isSelected ? "bg-neutral-800" : "hover:bg-neutral-800/50"
       }`}
     >
-      {/* avatar */}
       <div className="relative shrink-0">
-        <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow">
-          <span className="text-white font-semibold text-sm">
-            {avatarLetter}
-          </span>
+        <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+          <span className="text-white text-sm font-medium">{avatarLetter}</span>
         </div>
         {isOnline && (
-          <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-black" />
+          <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full ring-2 ring-black" />
         )}
       </div>
 
-      {/* chat info */}
-      <div className="flex-1 min-w-0">
-        <div className="flex justify-between items-center gap-2">
-          <p
-            className={`text-sm truncate ${
-              isSelected
-                ? "text-white font-semibold"
-                : "text-neutral-200 font-semibold"
-            }`}
-          >
-            {name}
-          </p>
-        </div>
-      </div>
+      <p
+        className={`text-base ${isSelected ? "text-white" : "text-neutral-300"}`}
+      >
+        {name}
+      </p>
     </button>
   );
 };
