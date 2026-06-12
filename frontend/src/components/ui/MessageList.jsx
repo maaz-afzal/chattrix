@@ -5,7 +5,7 @@ import TypingIndicator from "./TypingIndicator";
 import * as messageService from "../../services/messageService.js";
 import { getSocket } from "../../lib/socket.js";
 
-const MessageList = ({ selected }) => {
+const MessageList = ({ selected, clearTrigger }) => {
   const [conversation, setConversation] = useState([]);
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -30,7 +30,7 @@ const MessageList = ({ selected }) => {
     if (selected?._id) {
       getConversation(selected._id);
     }
-  }, [selected]);
+  }, [selected, clearTrigger]);
 
   useEffect(() => {
     if (!selected?._id) return;

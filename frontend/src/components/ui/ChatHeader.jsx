@@ -11,7 +11,7 @@ import IconButton from "../common/IconButton";
 import * as messageService from "../../services/messageService.js";
 import { toast } from "react-hot-toast";
 
-const ChatHeader = ({ selected }) => {
+const ChatHeader = ({ selected, onClearChat }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (!selected) {
@@ -30,7 +30,9 @@ const ChatHeader = ({ selected }) => {
     try {
       await messageService.clearChat(selected._id);
       toast.success("Chat cleared successfully!");
-      window.location.reload();
+      if (onClearChat) {
+        onClearChat();
+      }
     } catch (err) {
       console.error("Error clearing chat:", err);
       toast.error("Failed to clear chat");
