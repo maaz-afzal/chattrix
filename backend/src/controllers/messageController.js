@@ -78,6 +78,7 @@ const getConversation = async (req, res) => {
         { sender: userId, receiver: receiverId },
         { sender: receiverId, receiver: userId },
       ],
+      deletedFor: { $ne: userId },
     }).sort({ createdAt: 1 });
     res.status(200).json(messages);
   } catch (err) {
@@ -90,13 +91,18 @@ const clearChat = async (req, res) => {
     const userId = req.user.id;
     const receiverId = req.params.id;
 
-    const result = await Message.deleteMany({
-      $or: [
-        { sender: userId, receiver: receiverId },
-        { sender: receiverId, receiver: userId },
-      ],
-    });
-
+    const result = await Message.updateMany(
+      {
+        $or: [
+          { sender: userId, receiver: receiverId },
+          { sender: receiverId, receiver: userId },
+        ],
+        deletedFor: { $ne: userId },
+      },
+      {
+        $push: { deletedFor: userId },
+      },
+    );  
     res.status(200).json({
       msg: "Chat cleared successfully!",
       deletedCount: result.deletedCount,
