@@ -3,11 +3,27 @@ import User from "../models/User.js";
 import { Server } from "socket.io";
 import { userSocketMap } from "../socket/socket.js";
 import cloudinary from "../config/cloudinary.js";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 let io;
 
 export const setIo = (socketIo) => {
   io = socketIo;
+};
+
+const aiChat = async (req, res) => {
+  try {
+    const { text } = req.body;
+    const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite" });
+    const result = await model.generateContent(text);
+    const resText = result.response.text();
+    res.json({ reply: resText });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Something went wrong" });
+  }
 };
 
 const sendMessage = async (req, res) => {
@@ -102,7 +118,7 @@ const clearChat = async (req, res) => {
       {
         $push: { deletedFor: userId },
       },
-    );  
+    );
     res.status(200).json({
       msg: "Chat cleared successfully!",
       deletedCount: result.deletedCount,
@@ -139,4 +155,4 @@ const deleteMessage = async (req, res) => {
   }
 };
 
-export { sendMessage, getConversation, deleteMessage, clearChat };
+export { aiChat, sendMessage, getConversation, deleteMessage, clearChat };

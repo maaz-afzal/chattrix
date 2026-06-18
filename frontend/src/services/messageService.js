@@ -9,6 +9,15 @@ const getConversation = async (id) => {
   }
 };
 
+const aiChat = async (data) => {
+  try {
+    const res = await api.post("/message/ai", data);
+    return res.data;
+  } catch (err) {
+    throw err;
+  }
+}
+
 const sendMessage = async (id, data) => {
   try {
     const res = await api.post(`/message/${id}`, data);
@@ -36,4 +45,4 @@ const deleteMessage = async (id) => {
   }
 };
 
-export { getConversation, sendMessage, deleteMessage, clearChat };
+export { aiChat, getConversation, sendMessage, deleteMessage, clearChat };

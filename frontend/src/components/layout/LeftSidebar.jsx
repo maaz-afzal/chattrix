@@ -8,7 +8,7 @@ import ChatList from "../ui/ChatList";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-const LeftSidebar = ({ onSelected }) => {
+const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
   const navigate = useNavigate();
   const userSelector = useSelector((state) => state.auth.user);
 
@@ -40,14 +40,18 @@ const LeftSidebar = ({ onSelected }) => {
 
         {/* chat list */}
         <div className="flex-1 overflow-y-auto min-h-0 px-3 pb-3">
-          <ChatList onSelectedUser={onSelected} />
+          <ChatList
+            onSelectedUser={onSelected}
+            onSelectAI={onSelectAI}
+            isAISelected={isAISelected}
+          />
         </div>
 
         {/* footer profile */}
         <div className="p-3 border-t border-neutral-800">
           <div className="flex items-center gap-3 p-2 bg-neutral-800/60 rounded-2xl">
             <div className="relative shrink-0">
-              <Avatar name={userSelector?.avatar} size="md" />
+              <Avatar name={userSelector?.avatar || "U"} size="md" />
               {isOnline ? (
                 <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-black" />
               ) : (
@@ -56,9 +60,11 @@ const LeftSidebar = ({ onSelected }) => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-neutral-200 font-medium text-sm truncate">
-                {userSelector?.name}
+                {userSelector?.name || "User"}
               </p>
-              <p className="text-neutral-500 text-xs">{userSelector?.status}</p>
+              <p className="text-neutral-500 text-xs">
+                {userSelector?.status || "offline"}
+              </p>
             </div>
             <IconButton
               icon={Settings}

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import ChatItem from "./ChatItem";
+import AIChatItem from "./AIChatItem";
 import { getAllUsers } from "../../services/userService.js";
 import { getSocket } from "../../lib/socket.js";
 
-const ChatList = ({ onSelectedUser }) => {
+const ChatList = ({ onSelectedUser, onSelectAI, isAISelected }) => {
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [usersChat, setUsersChat] = useState([]);
 
@@ -52,8 +53,22 @@ const ChatList = ({ onSelectedUser }) => {
     }
   };
 
+  const handleAIClick = () => {
+    setSelectedChatId(null);
+    if (onSelectAI && typeof onSelectAI === "function") {
+      onSelectAI();
+    } else {
+      console.log("onSelectAI is not a function:", onSelectAI);
+    }
+  };
+
   return (
     <div className="space-y-1.5">
+      <AIChatItem
+        isSelected={isAISelected}
+        onClick={handleAIClick}
+      />
+
       {usersChat.map((chat) => (
         <ChatItem
           key={chat._id}

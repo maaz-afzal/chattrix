@@ -72,19 +72,13 @@ const MessageBubble = ({
         {/* Text Message */}
         {text && (
           <div
-            className={`rounded-3xl px-4 py-2.5 ${
+            className={`rounded-2xl px-4 py-2.5 ${
               isMe
-                ? "bg-indigo-600 rounded-br-lg shadow-md"
-                : "bg-neutral-800 rounded-bl-lg shadow-sm"
+                ? "bg-indigo-600 rounded-br-sm text-white"
+                : "bg-neutral-800 rounded-bl-sm text-neutral-200"
             }`}
           >
-            <p
-              className={
-                isMe ? "text-white text-sm" : "text-neutral-200 text-sm"
-              }
-            >
-              {text}
-            </p>
+            <p className="text-sm">{text}</p>
           </div>
         )}
 

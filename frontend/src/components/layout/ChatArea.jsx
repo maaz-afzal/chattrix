@@ -15,10 +15,20 @@ const useSelect = () => {
   return context;
 };
 
-const ChatArea = ({ selected }) => {
+const ChatArea = ({ selected, isAISelected }) => {
   const [selectMode, setSelectMode] = useState(false);
   const [selectedMessages, setSelectedMessages] = useState([]);
   const [clearTrigger, setClearTrigger] = useState(0);
+  
+  const [aiMessages, setAiMessages] = useState([
+    {
+      _id: "ai-welcome",
+      text: "Hello! I'm your AI Assistant. How can I help you today? 🤖",
+      sender: "ai",
+      createdAt: new Date().toISOString(),
+      status: "sent"
+    }
+  ]);
 
   const enableSelectMode = () => {
     setSelectMode(true);
@@ -39,6 +49,7 @@ const ChatArea = ({ selected }) => {
   };
 
   const handleClearChat = async () => {
+    if (!selected?._id) return;
     await messageService.clearChat(selected._id);
     toast.success("Chat cleared!");
     setClearTrigger((prev) => prev + 1);
@@ -75,9 +86,21 @@ const ChatArea = ({ selected }) => {
   return (
     <main className="flex-1 min-w-0 bg-neutral-900/80 backdrop-blur-xl rounded-3xl shadow-xl border border-neutral-800 flex flex-col overflow-hidden">
       <SelectContext.Provider value={value}>
-        <ChatHeader selected={selected} />
-        <MessageList selected={selected} />
-        <MessageInput selected={selected} />
+        <ChatHeader 
+          selected={selected} 
+          isAISelected={isAISelected}
+        />
+        <MessageList 
+          selected={selected} 
+          isAISelected={isAISelected}
+          aiMessages={aiMessages}
+        />
+        <MessageInput 
+          selected={selected} 
+          isAISelected={isAISelected}
+          setAiMessages={setAiMessages}
+          aiMessages={aiMessages}
+        />
       </SelectContext.Provider>
     </main>
   );

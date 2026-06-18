@@ -5,22 +5,51 @@ import {
   Trash2,
   X,
   CheckSquare,
+  Bot,
 } from "lucide-react";
 import Avatar from "../common/Avatar";
 import IconButton from "../common/IconButton";
 import { useSelect } from "../layout/ChatArea.jsx";
 import { toast } from "react-hot-toast";
 
-const ChatHeader = ({ selected }) => {
+const ChatHeader = ({ selected, isAISelected }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { 
-    selectMode, 
-    selectedMessages, 
-    enableSelectMode, 
+  const {
+    selectMode,
+    selectedMessages,
+    enableSelectMode,
     disableSelectMode,
     handleClearChat,
-    handleDeleteSelected 
+    handleDeleteSelected,
   } = useSelect();
+
+  if (isAISelected) {
+    return (
+      <div className="px-6 py-4 border-b border-neutral-800 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+            <Bot className="w-5 h-5 text-white" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-neutral-200 font-semibold truncate">
+              AI Assistant
+            </p>
+            <p className="text-neutral-500 text-xs flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+              Online
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-1 shrink-0">
+          <IconButton
+            icon={MoreHorizontal}
+            ariaLabel="More"
+            onClick={() => setIsModalOpen(true)}
+          />
+        </div>
+      </div>
+    );
+  }
 
   if (!selected) {
     return (
@@ -34,7 +63,6 @@ const ChatHeader = ({ selected }) => {
   const isOnline = status === "online";
   const avatarLetter = avatar || name?.charAt(0).toUpperCase() || "U";
 
-  // Select Mode UI
   if (selectMode) {
     return (
       <div className="px-6 py-4 border-b border-neutral-800 flex items-center justify-between gap-3 bg-neutral-900">
@@ -89,15 +117,12 @@ const ChatHeader = ({ selected }) => {
       {/* Modal */}
       {isModalOpen && (
         <>
-          {/* Backdrop */}
           <div
             className="fixed inset-0 z-40 bg-black/50"
             onClick={() => setIsModalOpen(false)}
           />
 
-          {/* Modal Content */}
           <div className="absolute top-20 right-6 z-50 w-56 bg-neutral-800 rounded-xl shadow-xl border border-neutral-700 overflow-hidden">
-            {/* Select Messages Option */}
             <button
               onClick={() => {
                 enableSelectMode();
@@ -109,7 +134,6 @@ const ChatHeader = ({ selected }) => {
               <span className="text-sm text-neutral-200">Select Messages</span>
             </button>
 
-            {/* Clear Chat Option */}
             <button
               onClick={() => {
                 handleClearChat();
@@ -121,7 +145,6 @@ const ChatHeader = ({ selected }) => {
               <span className="text-sm text-neutral-200">Clear Chat</span>
             </button>
 
-            {/* Cancel Option */}
             <button
               onClick={() => setIsModalOpen(false)}
               className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-neutral-700 transition-colors border-t border-neutral-700"
