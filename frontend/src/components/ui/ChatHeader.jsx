@@ -8,11 +8,19 @@ import {
 } from "lucide-react";
 import Avatar from "../common/Avatar";
 import IconButton from "../common/IconButton";
-import * as messageService from "../../services/messageService.js";
+import { useSelect } from "../layout/ChatArea.jsx";
 import { toast } from "react-hot-toast";
 
-const ChatHeader = ({ selected, onClearChat }) => {
+const ChatHeader = ({ selected }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { 
+    selectMode, 
+    selectedMessages, 
+    enableSelectMode, 
+    disableSelectMode,
+    handleClearChat,
+    handleDeleteSelected 
+  } = useSelect();
 
   if (!selected) {
     return (
@@ -26,24 +34,30 @@ const ChatHeader = ({ selected, onClearChat }) => {
   const isOnline = status === "online";
   const avatarLetter = avatar || name?.charAt(0).toUpperCase() || "U";
 
-  const handleClearChat = async () => {
-    try {
-      await messageService.clearChat(selected._id);
-      toast.success("Chat cleared successfully!");
-      if (onClearChat) {
-        onClearChat();
-      }
-    } catch (err) {
-      console.error("Error clearing chat:", err);
-      toast.error("Failed to clear chat");
-    }
-    setIsModalOpen(false);
-  };
-
-  const handleSelectMessages = () => {
-    console.log("Select messages for:", name);
-    setIsModalOpen(false);
-  };
+  // Select Mode UI
+  if (selectMode) {
+    return (
+      <div className="px-6 py-4 border-b border-neutral-800 flex items-center justify-between gap-3 bg-neutral-900">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={disableSelectMode}
+            className="p-1.5 hover:bg-neutral-800 rounded-xl transition"
+          >
+            <X className="w-5 h-5 text-neutral-400" />
+          </button>
+          <span className="text-white font-medium">
+            {selectedMessages.length} selected
+          </span>
+        </div>
+        <button
+          onClick={handleDeleteSelected}
+          className="p-2 hover:bg-neutral-800 rounded-xl transition text-red-400"
+        >
+          <Trash2 className="w-5 h-5" />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -85,7 +99,10 @@ const ChatHeader = ({ selected, onClearChat }) => {
           <div className="absolute top-20 right-6 z-50 w-56 bg-neutral-800 rounded-xl shadow-xl border border-neutral-700 overflow-hidden">
             {/* Select Messages Option */}
             <button
-              onClick={handleSelectMessages}
+              onClick={() => {
+                enableSelectMode();
+                setIsModalOpen(false);
+              }}
               className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-neutral-700 transition-colors"
             >
               <CheckSquare className="w-4 h-4 text-blue-400" />
@@ -94,7 +111,10 @@ const ChatHeader = ({ selected, onClearChat }) => {
 
             {/* Clear Chat Option */}
             <button
-              onClick={handleClearChat}
+              onClick={() => {
+                handleClearChat();
+                setIsModalOpen(false);
+              }}
               className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-neutral-700 transition-colors border-t border-neutral-700"
             >
               <Trash2 className="w-4 h-4 text-red-400" />

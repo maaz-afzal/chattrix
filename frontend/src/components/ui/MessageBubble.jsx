@@ -1,10 +1,22 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { CheckCheck } from "lucide-react";
+import { CheckCheck, Check } from "lucide-react";
+import { useSelect } from "../layout/ChatArea";
 
-const MessageBubble = ({ text, image, sender, createdAt, status }) => {
+const MessageBubble = ({
+  _id,
+  text,
+  image,
+  sender,
+  createdAt,
+  status,
+  isSelectMode,
+  onSelect,
+}) => {
   const currentUserId = useSelector((state) => state.auth.user?._id);
+  const { selectedMessages } = useSelect();
   const isMe = sender === currentUserId;
+  const isSelected = selectedMessages.includes(_id);
 
   const formatTime = (dateString) => {
     if (!dateString) return "";
@@ -24,7 +36,23 @@ const MessageBubble = ({ text, image, sender, createdAt, status }) => {
   };
 
   return (
-    <div className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
+    <div
+      className={`flex ${isMe ? "justify-end" : "justify-start"} items-start gap-2`}
+    >
+      {/* Checkbox in select mode */}
+      {isSelectMode && (
+        <button
+          onClick={onSelect}
+          className={`mt-2 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${
+            isSelected
+              ? "bg-blue-500 border-blue-500"
+              : "border-neutral-500 hover:border-blue-400"
+          }`}
+        >
+          {isSelected && <Check className="w-3 h-3 text-white" />}
+        </button>
+      )}
+
       <div className="max-w-[75%] space-y-1">
         {/* Image Preview */}
         {image && (

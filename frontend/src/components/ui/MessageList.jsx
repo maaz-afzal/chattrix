@@ -4,11 +4,14 @@ import DateDivider from "./DateDivider";
 import TypingIndicator from "./TypingIndicator";
 import * as messageService from "../../services/messageService.js";
 import { getSocket } from "../../lib/socket.js";
+import { useSelect } from "../layout/ChatArea";
 
-const MessageList = ({ selected, clearTrigger }) => {
+const MessageList = ({ selected }) => {
   const [conversation, setConversation] = useState([]);
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
+
+  const { selectMode, toggleMessage, clearTrigger } = useSelect();
 
   const getConversation = async (userId) => {
     if (!userId) return;
@@ -106,7 +109,12 @@ const MessageList = ({ selected, clearTrigger }) => {
       ) : (
         <>
           {conversation.map((msg) => (
-            <MessageBubble key={msg._id} {...msg} />
+            <MessageBubble
+              key={msg._id}
+              {...msg}
+              isSelectMode={selectMode}
+              onSelect={() => toggleMessage(msg._id)}
+            />
           ))}
           <div ref={messagesEndRef} />
         </>
