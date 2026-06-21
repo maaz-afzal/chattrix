@@ -12,7 +12,12 @@ const validateMiddleware = (req, res, next) => {
 };
 
 const validateRegister = [
-  body("name").trim().notEmpty().withMessage("Name is required"),
+  body("name")
+    .trim()
+    .notEmpty()
+    .withMessage("Name is required")
+    .isLength({ max: 50 })
+    .withMessage("Name cannot exceed 50 characters"),
   body("email").trim().notEmpty().isEmail().withMessage("Invalid email"),
   body("password")
     .trim()
@@ -23,11 +28,7 @@ const validateRegister = [
 
 const validateLogin = [
   body("email").trim().notEmpty().isEmail().withMessage("Invalid email"),
-  body("password")
-    .trim()
-    .notEmpty()
-    .isLength({ min: 6 })
-    .withMessage("Password must be at least 6 characters"),
+  body("password").trim().notEmpty().withMessage("Password is required"),
 ];
 
 const register = [
@@ -36,15 +37,15 @@ const register = [
   async (req, res) => {
     try {
       const { name, email, password } = req.body;
-      const user = await User.findOne({ email });
-      if (user) {
+      const existingUser = await User.findOne({ email: email.toLowerCase() });
+      if (existingUser) {
         return res.status(400).json({ msg: "User already exists" });
       }
 
       const hashedPassword = await bcrypt.hash(password, 12);
       const newUser = new User({
         name,
-        email,
+        email: email.toLowerCase(),
         password: hashedPassword,
       });
 
@@ -54,7 +55,7 @@ const register = [
       delete userData.password;
 
       const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
+        expiresIn: "7d",
       });
 
       res.status(201).json({
@@ -63,6 +64,7 @@ const register = [
         token,
       });
     } catch (err) {
+      console.error("register error:", err.message);
       res.status(500).json({ msg: "Something went wrong" });
     }
   },
@@ -74,9 +76,9 @@ const login = [
   async (req, res) => {
     try {
       const { email, password } = req.body;
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ email: email.toLowerCase() });
       if (!user) {
-        return res.status(400).json({ msg: "User does not exist" });
+        return res.status(400).json({ msg: "Invalid credentials" });
       }
 
       const isMatch = await bcrypt.compare(password, user.password);
@@ -88,7 +90,7 @@ const login = [
       delete userData.password;
 
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
+        expiresIn: "7d",
       });
 
       res.status(200).json({
@@ -97,8 +99,10 @@ const login = [
         token,
       });
     } catch (err) {
+      console.error("login error:", err.message);
       res.status(500).json({ msg: "Something went wrong" });
     }
   },
 ];
+
 export { register, login };
