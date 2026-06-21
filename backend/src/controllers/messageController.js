@@ -1,6 +1,6 @@
+import mongoose from "mongoose";
 import Message from "../models/Message.js";
 import User from "../models/User.js";
-import { Server } from "socket.io";
 import { userSocketMap } from "../socket/socket.js";
 import cloudinary from "../config/cloudinary.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -16,13 +16,19 @@ export const setIo = (socketIo) => {
 const aiChat = async (req, res) => {
   try {
     const { text } = req.body;
-    const model = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL });
-    const result = await model.generateContent(text);
+
+    if (!text || typeof text !== "string" || text.trim().length === 0) {
+      return res.status(400).json({ msg: "Message text is required" });
+    }
+
+    const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+    const model = genAI.getGenerativeModel({ model: modelName });
+    const result = await model.generateContent(text.trim());
     const resText = result.response.text();
     res.json({ reply: resText });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: "Something went wrong" });
+    console.error("AI chat error:", err.message);
+    res.status(500).json({ msg: "AI service unavailable. Try again later." });
   }
 };
 
@@ -32,8 +38,18 @@ const sendMessage = async (req, res) => {
     const { text, image } = req.body;
     const senderId = req.user.id;
 
-    if (!senderId || !receiverId || (!text && !image)) {
-      return res.status(400).json({ msg: "Invalid request" });
+    if (!mongoose.Types.ObjectId.isValid(receiverId)) {
+      return res.status(400).json({ msg: "Invalid receiver ID" });
+    }
+
+    if (!text && !image) {
+      return res.status(400).json({ msg: "Message must have text or image" });
+    }
+
+    if (text && text.length > 2000) {
+      return res
+        .status(400)
+        .json({ msg: "Message cannot exceed 2000 characters" });
     }
 
     const receiver = await User.findById(receiverId);
@@ -47,25 +63,23 @@ const sendMessage = async (req, res) => {
       try {
         const result = await cloudinary.uploader.upload(image, {
           folder: "chattrix/messages",
-          resource_type: "auto",
+          resource_type: "image",
+          allowed_formats: ["jpg", "jpeg", "png", "gif", "webp"],
         });
         imageUrl = result.secure_url;
       } catch (cloudinaryError) {
         console.error("Cloudinary error:", cloudinaryError.message);
-        return res
-          .status(500)
-          .json({ msg: "Image upload failed: " + cloudinaryError.message });
+        return res.status(500).json({ msg: "Image upload failed" });
       }
     }
 
     const message = new Message({
       sender: senderId,
       receiver: receiverId,
-      text,
+      text: text?.trim() || undefined,
       image: imageUrl,
     });
     await message.save();
-    
 
     if (io) {
       const receiverSocketId = userSocketMap.get(receiverId);
@@ -81,8 +95,8 @@ const sendMessage = async (req, res) => {
 
     res.status(201).json({ msg: "Message sent successfully!", message });
   } catch (err) {
+    console.error("sendMessage error:", err.message);
     res.status(500).json({ msg: "Something went wrong" });
-    console.log(err.message);
   }
 };
 
@@ -90,6 +104,12 @@ const getConversation = async (req, res) => {
   try {
     const userId = req.user.id;
     const receiverId = req.params.id;
+
+    // Validate receiverId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(receiverId)) {
+      return res.status(400).json({ msg: "Invalid user ID" });
+    }
+
     const messages = await Message.find({
       $or: [
         { sender: userId, receiver: receiverId },
@@ -97,8 +117,10 @@ const getConversation = async (req, res) => {
       ],
       deletedFor: { $ne: userId },
     }).sort({ createdAt: 1 });
+
     res.status(200).json(messages);
   } catch (err) {
+    console.error("getConversation error:", err.message);
     res.status(500).json({ msg: "Something went wrong" });
   }
 };
@@ -107,6 +129,10 @@ const clearChat = async (req, res) => {
   try {
     const userId = req.user.id;
     const receiverId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(receiverId)) {
+      return res.status(400).json({ msg: "Invalid user ID" });
+    }
 
     const result = await Message.updateMany(
       {
@@ -118,14 +144,15 @@ const clearChat = async (req, res) => {
       },
       {
         $push: { deletedFor: userId },
-      },
+      }
     );
+
     res.status(200).json({
       msg: "Chat cleared successfully!",
-      deletedCount: result.deletedCount,
+      clearedCount: result.modifiedCount,
     });
   } catch (err) {
-    console.error(err);
+    console.error("clearChat error:", err.message);
     res.status(500).json({ msg: "Something went wrong" });
   }
 };
@@ -134,6 +161,10 @@ const deleteMessage = async (req, res) => {
   try {
     const messageId = req.params.id;
     const userId = req.user.id;
+
+    if (!mongoose.Types.ObjectId.isValid(messageId)) {
+      return res.status(400).json({ msg: "Invalid message ID" });
+    }
 
     const message = await Message.findById(messageId);
 
@@ -151,7 +182,7 @@ const deleteMessage = async (req, res) => {
 
     res.status(200).json({ msg: "Message deleted successfully!" });
   } catch (err) {
-    console.error(err);
+    console.error("deleteMessage error:", err.message);
     res.status(500).json({ msg: "Something went wrong" });
   }
 };
