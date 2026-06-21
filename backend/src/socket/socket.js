@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import Message from "../models/Message.js";
+import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
 export const userSocketMap = new Map();
@@ -11,44 +11,42 @@ const initSocket = (server) => {
     },
   });
 
-  io.on("connection", async (socket) => {
-    const userId = socket.handshake.query.userId;
+  io.use((socket, next) => {
+    const token = socket.handshake.auth.token;
 
-    if (userId) {
-      socket.userId = userId;
-      userSocketMap.set(userId, socket.id);
-      await User.findByIdAndUpdate(userId, { status: "online" });
-      socket.broadcast.emit("user-online", userId);
+    if (!token) {
+      return next(new Error("Authentication error: no token provided"));
     }
 
-    socket.on("send-message", async ({ receiverId, message }) => {
-      if (!socket.userId) return;
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      socket.userId = decoded.id;
+      next();
+    } catch {
+      next(new Error("Authentication error: invalid token"));
+    }
+  });
 
-      try {
-        const newMessage = await Message.create({
-          sender: socket.userId,
-          receiver: receiverId,
-          text: message,
-        });
+  io.on("connection", async (socket) => {
+    const userId = socket.userId;
 
-        const receiverSocketId = userSocketMap.get(receiverId);
+    userSocketMap.set(userId, socket.id);
 
-        if (receiverSocketId) {
-          io.to(receiverSocketId).emit("receive-message", newMessage);
-        }
-
-        io.to(socket.id).emit("message-sent", newMessage);
-      } catch (error) {
-        console.log(error);
-      }
-    });
+    try {
+      await User.findByIdAndUpdate(userId, { status: "online" });
+      socket.broadcast.emit("user-online", userId);
+    } catch (err) {
+      console.error("Socket connect DB error:", err.message);
+    }
 
     socket.on("disconnect", async () => {
-      if (socket.userId) {
-        userSocketMap.delete(socket.userId);
-        await User.findByIdAndUpdate(socket.userId, { status: "offline" });
+      userSocketMap.delete(userId);
 
-        socket.broadcast.emit("user-offline", socket.userId);
+      try {
+        await User.findByIdAndUpdate(userId, { status: "offline" });
+        socket.broadcast.emit("user-offline", userId);
+      } catch (err) {
+        console.error("Socket disconnect DB error:", err.message);
       }
     });
   });

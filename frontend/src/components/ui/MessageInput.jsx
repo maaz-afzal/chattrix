@@ -10,7 +10,6 @@ const MessageInput = ({ selected, isAISelected, setAiMessages, aiMessages }) => 
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Send text message via socket
   const sendTextMessage = (text) => {
     const socket = getSocket();
     if (!socket) return;
@@ -22,7 +21,6 @@ const MessageInput = ({ selected, isAISelected, setAiMessages, aiMessages }) => 
     });
   };
 
-  // ✅ Handle AI message send
   const handleAISend = async () => {
     if (!message.trim()) return;
 
@@ -61,7 +59,6 @@ const MessageInput = ({ selected, isAISelected, setAiMessages, aiMessages }) => 
     }
   };
 
-  // ✅ Handle normal message send
   const handleNormalSend = async () => {
     if (!selected?._id) return;
     if (!message.trim() && !image) return;
@@ -88,7 +85,6 @@ const MessageInput = ({ selected, isAISelected, setAiMessages, aiMessages }) => 
     }
   };
 
-  // ✅ Main handle send - decides between AI and normal
   const handleSend = async () => {
     if (isAISelected) {
       await handleAISend();
@@ -177,7 +173,7 @@ const MessageInput = ({ selected, isAISelected, setAiMessages, aiMessages }) => 
           aria-label="Send"
           className={`p-2.5 rounded-2xl transition focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${
             isAISelected 
-              ? "bg-gradient-to-br from-blue-600 to-purple-600 hover:shadow-lg hover:shadow-blue-500/30" 
+              ? "bg-linear-to-br from-blue-600 to-purple-600 hover:shadow-lg hover:shadow-blue-500/30" 
               : "bg-indigo-600 hover:bg-indigo-700"
           }`}
         >

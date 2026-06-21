@@ -67,13 +67,12 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [conversation]);
 
-  // ✅ AI Mode - Different UI with Markdown support
   if (isAISelected) {
     return (
       <div className="flex-1 overflow-y-auto min-h-0 p-6">
         {/* AI Chat Header */}
         <div className="flex flex-col items-center justify-center mb-6">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg mb-3">
+          <div className="w-16 h-16 bg-linear-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg mb-3">
             <Bot className="w-8 h-8 text-white" />
           </div>
           <h3 className="text-white text-xl font-semibold">AI Assistant</h3>
@@ -91,13 +90,12 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
                 className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
                   msg.sender === "user"
                     ? "bg-indigo-600 text-white rounded-br-sm"
-                    : "bg-gradient-to-br from-blue-600 to-purple-600 text-white rounded-bl-sm shadow-md"
+                    : "bg-linear-to-br from-blue-600 to-purple-600 text-white rounded-bl-sm shadow-md"
                 }`}
               >
                 {msg.sender === "user" ? (
                   <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
                 ) : (
-                  // ✅ className on wrapper div, NOT on ReactMarkdown
                   <div className="text-sm prose prose-invert max-w-none">
                     <ReactMarkdown
                       components={{

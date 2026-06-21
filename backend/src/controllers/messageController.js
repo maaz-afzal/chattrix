@@ -16,7 +16,7 @@ export const setIo = (socketIo) => {
 const aiChat = async (req, res) => {
   try {
     const { text } = req.body;
-    const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite" });
+    const model = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL });
     const result = await model.generateContent(text);
     const resText = result.response.text();
     res.json({ reply: resText });
@@ -65,6 +65,7 @@ const sendMessage = async (req, res) => {
       image: imageUrl,
     });
     await message.save();
+    
 
     if (io) {
       const receiverSocketId = userSocketMap.get(receiverId);

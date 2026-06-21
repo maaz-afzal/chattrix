@@ -13,7 +13,7 @@ setIo(io);
 
 const PORT = process.env.PORT || 3000;
 
-const startServer = async () => {
+const start = async () => {
   try {
     await db();
     server.listen(PORT, () => {
@@ -24,4 +24,4 @@ const startServer = async () => {
   }
 };
 
-startServer();
+start();

@@ -25,7 +25,6 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
             </div>
             <span className="font-bold text-lg text-white">Chattrix</span>
           </div>
-          <IconButton icon={Plus} ariaLabel="New chat" />
         </div>
 
         {/* search */}
