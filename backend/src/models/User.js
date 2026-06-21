@@ -26,11 +26,6 @@ const UserSchema = new mongoose.Schema(
       enum: ["online", "offline"],
       default: "offline",
     },
-    role: {
-      type: String,
-      enum: ["user", "admin"],
-      default: "user",
-    },
     avatar: {
       type: String,
       default: function () {
