@@ -14,10 +14,12 @@ const MessageSchema = new mongoose.Schema(
     },
     text: {
       type: String,
+      maxlength: [2000, "Message cannot exceed 2000 characters"],
       validate: {
         validator: function () {
           return this.text || this.image;
         },
+        message: "Message must have text or image",
       },
     },
     image: {
@@ -26,6 +28,7 @@ const MessageSchema = new mongoose.Schema(
         validator: function () {
           return this.text || this.image;
         },
+        message: "Message must have text or image",
       },
     },
     deletedFor: [
@@ -40,6 +43,9 @@ const MessageSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+
+MessageSchema.index({ sender: 1, receiver: 1 });
+MessageSchema.index({ createdAt: -1 });
 
 const Message = mongoose.model("Message", MessageSchema);
 
