@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { connectSocket } from "../lib/socket.js";
 import { Link } from "react-router-dom";
 import {
   Mail,
@@ -53,20 +52,8 @@ const LoginPage = () => {
       const response = await authService.login(formData);
 
       if (response.token && response.user) {
-        localStorage.setItem("token", response.token);
-        localStorage.setItem("user", JSON.stringify(response.user));
-        dispatch(
-          login({
-            token: response.token,
-            user: response.user,
-          }),
-        );
-        connectSocket(response.user._id);
-        setFormData({
-          email: "",
-          password: "",
-        });
-
+        dispatch(login({ token: response.token, user: response.user }));
+        setFormData({ email: "", password: "" });
         toast.success("Login successful!");
         setTimeout(() => navigate("/"), 1000);
       } else {
@@ -74,13 +61,9 @@ const LoginPage = () => {
       }
     } catch (err) {
       console.error(err);
-      if (err.response?.status === 401) {
-        toast.error("Invalid email or password.");
-      } else if (err.response?.status === 404) {
-        toast.error("Account not found.");
-      } else {
-        toast.error("Something went wrong. Please try again later.");
-      }
+      toast.error(
+        err.response?.data?.msg || "Something went wrong. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -227,22 +210,12 @@ const LoginPage = () => {
               <p className="text-sm text-gray-400">
                 Don't have an account?{" "}
                 <Link
-                  to={"/signup"}
+                  to="/signup"
                   className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
                 >
                   Create an account
                 </Link>
               </p>
-            </div>
-
-            <div className="text-center">
-              <a
-                href="/"
-                className="text-sm text-gray-500 hover:text-gray-400 transition-colors"
-                onClick={(e) => e.preventDefault()}
-              >
-                ← Back to home
-              </a>
             </div>
           </form>
         </div>
