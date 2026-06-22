@@ -7,16 +7,19 @@ import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Toaster } from "react-hot-toast";
 import { useSelector } from "react-redux";
-import { connectSocket } from "./lib/socket.js";
+import { connectSocket, disconnectSocket } from "./lib/socket.js";
 
 const App = () => {
-  const { isLoggedIn, user } = useSelector((state) => state.auth);
+  const { isLoggedIn, token } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (isLoggedIn && user?._id) {
-      connectSocket(user._id);
+    if (isLoggedIn && token) {
+      connectSocket(token);
+    } else {
+      disconnectSocket();
     }
-  }, [isLoggedIn, user]);
+  }, [isLoggedIn, token]);
+
   return (
     <div>
       <Toaster position="top-right" toastOptions={{ duration: 1500 }} />
