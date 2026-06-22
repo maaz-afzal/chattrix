@@ -29,11 +29,7 @@ const SignupPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -56,27 +52,18 @@ const SignupPage = () => {
       return;
     }
 
+    if (formData.password.length < 6) {
+      toast.error("Password must be at least 6 characters.");
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await authService.register(formData);
 
       if (response.token && response.user) {
-        localStorage.setItem("token", response.token);
-        localStorage.setItem("user", JSON.stringify(response.user));
-
-        dispatch(
-          login({
-            token: response.token,
-            user: response.user,
-          }),
-        );
-
-        setFormData({
-          name: "",
-          email: "",
-          password: "",
-        });
-
+        dispatch(login({ token: response.token, user: response.user }));
+        setFormData({ name: "", email: "", password: "" });
         toast.success("Signup successful!");
         setTimeout(() => navigate("/"), 1000);
       } else {
@@ -84,13 +71,9 @@ const SignupPage = () => {
       }
     } catch (err) {
       console.error(err);
-      if (err.response?.status === 401) {
-        toast.error("Invalid email or password.");
-      } else if (err.response?.status === 404) {
-        toast.error("Account not found.");
-      } else {
-        toast.error("Something went wrong. Please try again later.");
-      }
+      toast.error(
+        err.response?.data?.msg || "Something went wrong. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -246,7 +229,8 @@ const SignupPage = () => {
             {/* create account button */}
             <button
               type="submit"
-              className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500 transition-all duration-200 mt-4"
+              disabled={loading}
+              className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500 transition-all duration-200 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Creating account..." : "Create Account"}
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -257,22 +241,12 @@ const SignupPage = () => {
               <p className="text-sm text-gray-400">
                 Already have an account?{" "}
                 <Link
-                  to={"/login"}
+                  to="/login"
                   className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
                 >
                   Sign in
                 </Link>
               </p>
-            </div>
-
-            <div className="text-center">
-              <a
-                href="/"
-                className="text-sm text-gray-500 hover:text-gray-400 transition-colors"
-                onClick={(e) => e.preventDefault()}
-              >
-                ← Back to home
-              </a>
             </div>
           </form>
         </div>
