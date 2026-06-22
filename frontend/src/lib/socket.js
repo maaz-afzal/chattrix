@@ -1,15 +1,16 @@
 import { io } from "socket.io-client";
 
-const socketUrl = import.meta.env.VITE_SOCKET_URL;
+const socketUrl =
+  import.meta.env.VITE_SOCKET_URL || "http://localhost:3000";
 
 let socket = null;
 
-export const connectSocket = (userId) => {
-  if (!userId) return null;
-  if (socket) return socket;
+export const connectSocket = (token) => {
+  if (!token) return null;
+  if (socket?.connected) return socket;
 
   socket = io(socketUrl, {
-    query: { userId: userId },
+    auth: { token },
   });
 
   return socket;
