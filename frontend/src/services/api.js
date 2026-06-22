@@ -1,4 +1,7 @@
 import axios from "axios";
+import { store } from "../redux/store.js";
+import { logout } from "../redux/Slices/authSlice.js";
+import { disconnectSocket } from "../lib/socket.js";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000",
@@ -20,8 +23,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      store.dispatch(logout());
+      disconnectSocket();
       window.location.href = "/login";
     }
     return Promise.reject(error);
