@@ -9,20 +9,26 @@ import { useSelect } from "../layout/ChatArea";
 const MessageList = ({ selected, isAISelected, aiMessages }) => {
   const [conversation, setConversation] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
+
+  const selectedRef = useRef(selected);
+  useEffect(() => {
+    selectedRef.current = selected;
+  }, [selected]);
 
   const { selectMode, toggleMessage, clearTrigger } = useSelect();
 
   const getConversation = async (userId) => {
     if (!userId) return;
-
     try {
       setLoading(true);
+      setError(null);
       const res = await messageService.getConversation(userId);
       setConversation(res);
-    } catch (error) {
-      console.error("Error fetching conversation:", error);
-      setConversation([]);
+    } catch (err) {
+      console.error("Error fetching conversation:", err);
+      setError("Failed to load messages. Tap to retry.");
     } finally {
       setLoading(false);
     }
@@ -30,6 +36,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
 
   useEffect(() => {
     setConversation([]);
+    setError(null);
     if (selected?._id) {
       getConversation(selected._id);
     }
@@ -42,35 +49,46 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
     if (!socket) return;
 
     const handleNewMessage = (newMessage) => {
-      if (
-        newMessage.sender === selected._id ||
-        newMessage.receiver === selected._id
-      ) {
-        setConversation((prev) => {
-          const exists = prev.some((msg) => msg._id === newMessage._id);
-          if (exists) return prev;
-          return [...prev, newMessage];
-        });
+      const currentSelected = selectedRef.current;
+      if (!currentSelected?._id) return;
+
+      const isRelevant =
+        newMessage.sender?.toString() === currentSelected._id.toString() ||
+        newMessage.receiver?.toString() === currentSelected._id.toString();
+
+      if (!isRelevant) return;
+
+      setConversation((prev) => {
+        const exists = prev.some((msg) => msg._id === newMessage._id);
+        if (exists) return prev;
+        return [...prev, newMessage];
+      });
+    };
+
+    const handleReconnect = () => {
+      if (selectedRef.current?._id) {
+        getConversation(selectedRef.current._id);
       }
     };
 
     socket.on("receive-message", handleNewMessage);
     socket.on("message-sent", handleNewMessage);
+    socket.on("connect", handleReconnect);
 
     return () => {
       socket.off("receive-message", handleNewMessage);
       socket.off("message-sent", handleNewMessage);
+      socket.off("connect", handleReconnect);
     };
   }, [selected]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [conversation]);
+  }, [conversation, aiMessages]);
 
   if (isAISelected) {
     return (
       <div className="flex-1 overflow-y-auto min-h-0 p-6">
-        {/* AI Chat Header */}
         <div className="flex flex-col items-center justify-center mb-6">
           <div className="w-16 h-16 bg-linear-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg mb-3">
             <Bot className="w-8 h-8 text-white" />
@@ -79,7 +97,6 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
           <p className="text-neutral-400 text-sm">Powered by Gemini</p>
         </div>
 
-        {/* AI Messages with Markdown */}
         <div className="space-y-4">
           {aiMessages.map((msg) => (
             <div
@@ -176,7 +193,6 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
     );
   }
 
-  // ✅ No chat selected
   if (!selected) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -187,7 +203,6 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
     );
   }
 
-  // ✅ Loading state
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -209,7 +224,20 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
     );
   }
 
-  // ✅ Normal chat messages
+  if (error) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center gap-3">
+        <p className="text-red-400 text-sm">{error}</p>
+        <button
+          onClick={() => getConversation(selected._id)}
+          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-xl transition"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 overflow-y-auto min-h-0 p-6 space-y-4">
       {conversation.length === 0 ? (
