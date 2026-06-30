@@ -1,40 +1,22 @@
 import React, { useEffect, useState } from "react";
 import ChatItem from "./ChatItem";
 import AIChatItem from "./AIChatItem";
-import { getAllUsers } from "../../services/userService.js";
 import { getSocket } from "../../lib/socket.js";
 
-const ChatList = ({ onSelectedUser, onSelectAI, isAISelected }) => {
+const ChatList = ({ users, onSelectedUser, onSelectAI, isAISelected }) => {
   const [selectedChatId, setSelectedChatId] = useState(null);
-  const [usersChat, setUsersChat] = useState([]);
-
-  const getUsers = async () => {
-    const res = await getAllUsers();
-    setUsersChat(res);
-  };
-
-  useEffect(() => {
-    getUsers();
-  }, []);
+  const [onlineUsers, setOnlineUsers] = useState({});
 
   useEffect(() => {
     const socket = getSocket();
     if (!socket) return;
 
     const handleUserOnline = (userId) => {
-      setUsersChat((prev) =>
-        prev.map((user) =>
-          user._id === userId ? { ...user, status: "online" } : user,
-        ),
-      );
+      setOnlineUsers((prev) => ({ ...prev, [userId]: true }));
     };
 
     const handleUserOffline = (userId) => {
-      setUsersChat((prev) =>
-        prev.map((user) =>
-          user._id === userId ? { ...user, status: "offline" } : user,
-        ),
-      );
+      setOnlineUsers((prev) => ({ ...prev, [userId]: false }));
     };
 
     socket.on("user-online", handleUserOnline);
@@ -46,30 +28,31 @@ const ChatList = ({ onSelectedUser, onSelectAI, isAISelected }) => {
     };
   }, []);
 
+  const enrichedUsers = users.map((user) => ({
+    ...user,
+    status:
+      onlineUsers[user._id] === true
+        ? "online"
+        : onlineUsers[user._id] === false
+          ? "offline"
+          : user.status,
+  }));
+
   const handleSelectChat = (chat) => {
     setSelectedChatId(chat._id);
-    if (onSelectedUser) {
-      onSelectedUser(chat);
-    }
+    if (onSelectedUser) onSelectedUser(chat);
   };
 
   const handleAIClick = () => {
     setSelectedChatId(null);
-    if (onSelectAI && typeof onSelectAI === "function") {
-      onSelectAI();
-    } else {
-      console.log("onSelectAI is not a function:", onSelectAI);
-    }
+    if (onSelectAI) onSelectAI();
   };
 
   return (
     <div className="space-y-1.5">
-      <AIChatItem
-        isSelected={isAISelected}
-        onClick={handleAIClick}
-      />
+      <AIChatItem isSelected={isAISelected} onClick={handleAIClick} />
 
-      {usersChat.map((chat) => (
+      {enrichedUsers.map((chat) => (
         <ChatItem
           key={chat._id}
           chat={chat}
@@ -77,6 +60,12 @@ const ChatList = ({ onSelectedUser, onSelectAI, isAISelected }) => {
           onClick={() => handleSelectChat(chat)}
         />
       ))}
+
+      {enrichedUsers.length === 0 && (
+        <p className="text-neutral-500 text-xs text-center py-4">
+          No users found
+        </p>
+      )}
     </div>
   );
 };
