@@ -15,7 +15,8 @@ const MessageBubble = ({
 }) => {
   const currentUserId = useSelector((state) => state.auth.user?._id);
   const { selectedMessages } = useSelect();
-  const isMe = sender === currentUserId;
+
+  const isMe = sender?.toString() === currentUserId?.toString();
   const isSelected = selectedMessages.includes(_id);
 
   const formatTime = (dateString) => {
@@ -43,6 +44,7 @@ const MessageBubble = ({
       {isSelectMode && (
         <button
           onClick={onSelect}
+          aria-label={isSelected ? "Deselect message" : "Select message"}
           className={`mt-2 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${
             isSelected
               ? "bg-blue-500 border-blue-500"
@@ -54,7 +56,7 @@ const MessageBubble = ({
       )}
 
       <div className="max-w-[75%] space-y-1">
-        {/* Image Preview */}
+        {/* Image */}
         {image && (
           <div className="overflow-hidden rounded-2xl">
             <img
@@ -69,7 +71,7 @@ const MessageBubble = ({
           </div>
         )}
 
-        {/* Text Message */}
+        {/* Text */}
         {text && (
           <div
             className={`rounded-2xl px-4 py-2.5 ${
@@ -78,13 +80,15 @@ const MessageBubble = ({
                 : "bg-neutral-800 rounded-bl-sm text-neutral-200"
             }`}
           >
-            <p className="text-sm">{text}</p>
+            <p className="text-sm whitespace-pre-wrap wrap-break-words">{text}</p>
           </div>
         )}
 
-        {/* Time & Status */}
+        {/* Time & status */}
         <div
-          className={`flex items-center gap-1 text-xs text-neutral-500 ${isMe ? "justify-end" : "justify-start"}`}
+          className={`flex items-center gap-1 text-xs text-neutral-500 ${
+            isMe ? "justify-end" : "justify-start"
+          }`}
         >
           <span>{formatTime(createdAt)}</span>
           {renderStatus()}
