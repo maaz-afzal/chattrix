@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { login, logout, updateUser } from "../redux/Slices/authSlice";
+import { logout, updateUser } from "../redux/Slices/authSlice";
 import * as userService from "../services/userService.js";
 import toast from "react-hot-toast";
 import { disconnectSocket } from "../lib/socket.js";
 import {
   ArrowLeft,
-  Camera,
   Lock,
   LogOut,
   Trash2,
@@ -45,55 +44,56 @@ const ProfilePage = () => {
   });
 
   const handleSave = async () => {
+    if (!formData.name.trim()) {
+      toast.error("Name cannot be empty.");
+      return;
+    }
     try {
       setLoading(true);
-      const payload = {
-        name: formData.name,
-        bio: formData.bio,
-      };
-      const res = await userService.updateProfile(payload);
+      const res = await userService.updateProfile({
+        name: formData.name.trim(),
+        bio: formData.bio.trim(),
+      });
 
       if (res.msg === "User updated successfully!") {
-        const updatedUser = {
-          ...user,
-          name: formData.name,
-          bio: formData.bio,
-        };
-
-        dispatch(updateUser(updatedUser));
-
+        dispatch(
+          updateUser({
+            ...user,
+            name: formData.name.trim(),
+            bio: formData.bio.trim(),
+          }),
+        );
         toast.success("Profile updated successfully!");
         setIsEdit(false);
       }
     } catch (error) {
-      toast.error(error.response?.data?.msg || "Failed to update profile");
+      toast.error(error.response?.data?.msg || "Failed to update profile.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleChangePassword = async () => {
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error("Passwords do not match");
+    if (!passwordData.currPassword) {
+      toast.error("Current password is required.");
       return;
     }
     if (passwordData.newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters long");
+      toast.error("Password must be at least 6 characters.");
       return;
     }
-    if (!passwordData.currPassword) {
-      toast.error("Current password is required");
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error("Passwords do not match.");
       return;
     }
 
     try {
       setLoading(true);
-      const payload = {
+      const res = await userService.updateProfile({
         currPassword: passwordData.currPassword,
         newPassword: passwordData.newPassword,
         confirmPassword: passwordData.confirmPassword,
-      };
-      const res = await userService.updateProfile(payload);
+      });
 
       if (res.msg === "Password updated successfully!") {
         toast.success("Password updated successfully!");
@@ -111,8 +111,6 @@ const ProfilePage = () => {
     }
   };
 
-  const handleBack = () => navigate("/");
-
   const handleLogout = () => {
     dispatch(logout());
     disconnectSocket();
@@ -124,6 +122,7 @@ const ProfilePage = () => {
       setLoading(true);
       const res = await userService.deleteAccount();
       if (res.msg === "User deleted successfully!") {
+        disconnectSocket();
         dispatch(logout());
         navigate("/login");
       }
@@ -141,10 +140,12 @@ const ProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-black">
+      {/* Sticky top nav */}
       <div className="sticky top-0 z-10 bg-black border-b border-neutral-800">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center">
           <button
-            onClick={handleBack}
+            onClick={() => navigate("/")}
+            aria-label="Back to chats"
             className="p-2 hover:bg-neutral-800 rounded-xl transition"
           >
             <ArrowLeft className="w-5 h-5 text-neutral-400" />
@@ -159,16 +160,10 @@ const ProfilePage = () => {
       <div className="max-w-2xl mx-auto px-4 py-6">
         {/* avatar  */}
         <div className="flex flex-col items-center mb-8">
-          <div className="relative">
-            <div className="w-24 h-24 bg-indigo-600 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-3xl">
-                {avatarLetter}
-              </span>
-            </div>
-            <label className="absolute bottom-0 right-0 p-1.5 bg-neutral-700 rounded-full hover:bg-neutral-600 transition cursor-pointer">
-              <Camera className="w-3.5 h-3.5 text-white" />
-              <input type="file" className="hidden" accept="image/*" />
-            </label>
+          <div className="w-24 h-24 bg-indigo-600 rounded-full flex items-center justify-center">
+            <span className="text-white font-bold text-3xl">
+              {avatarLetter}
+            </span>
           </div>
           <div className="flex items-center gap-1 mt-2">
             <Circle
@@ -265,7 +260,7 @@ const ProfilePage = () => {
                 className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-white font-medium transition disabled:opacity-50"
               >
                 <Save className="w-4 h-4" />
-                Save Changes
+                {loading ? "Saving..." : "Save Changes"}
               </button>
             </>
           )}
@@ -281,13 +276,11 @@ const ProfilePage = () => {
               <Lock className="w-4 h-4 text-neutral-500" />
               <span className="text-white">Change Password</span>
             </div>
-            <span className="text-neutral-500">
-              {showPassword ? (
-                <ChevronUp className="w-4 h-4" />
-              ) : (
-                <ChevronDown className="w-4 h-4" />
-              )}
-            </span>
+            {showPassword ? (
+              <ChevronUp className="w-4 h-4 text-neutral-500" />
+            ) : (
+              <ChevronDown className="w-4 h-4 text-neutral-500" />
+            )}
           </button>
 
           {showPassword && (
