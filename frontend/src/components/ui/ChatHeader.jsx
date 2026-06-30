@@ -10,7 +10,6 @@ import {
 import Avatar from "../common/Avatar";
 import IconButton from "../common/IconButton";
 import { useSelect } from "../layout/ChatArea.jsx";
-import { toast } from "react-hot-toast";
 
 const ChatHeader = ({ selected, isAISelected }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,13 +39,6 @@ const ChatHeader = ({ selected, isAISelected }) => {
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-1 shrink-0">
-          <IconButton
-            icon={MoreHorizontal}
-            ariaLabel="More"
-            onClick={() => setIsModalOpen(true)}
-          />
-        </div>
       </div>
     );
   }
@@ -69,6 +61,7 @@ const ChatHeader = ({ selected, isAISelected }) => {
         <div className="flex items-center gap-3">
           <button
             onClick={disableSelectMode}
+            aria-label="Cancel selection"
             className="p-1.5 hover:bg-neutral-800 rounded-xl transition"
           >
             <X className="w-5 h-5 text-neutral-400" />
@@ -79,7 +72,9 @@ const ChatHeader = ({ selected, isAISelected }) => {
         </div>
         <button
           onClick={handleDeleteSelected}
-          className="p-2 hover:bg-neutral-800 rounded-xl transition text-red-400"
+          disabled={selectedMessages.length === 0}
+          aria-label="Delete selected messages"
+          className="p-2 hover:bg-neutral-800 rounded-xl transition text-red-400 disabled:opacity-50"
         >
           <Trash2 className="w-5 h-5" />
         </button>
@@ -91,7 +86,10 @@ const ChatHeader = ({ selected, isAISelected }) => {
     <>
       <div className="px-6 py-4 border-b border-neutral-800 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <button className="lg:hidden p-1.5 hover:bg-neutral-800 rounded-xl transition">
+          <button
+            className="lg:hidden p-1.5 hover:bg-neutral-800 rounded-xl transition"
+            aria-label="Go back"
+          >
             <ChevronLeft className="w-5 h-5 text-neutral-400" />
           </button>
           <Avatar name={avatarLetter} size="md" online={isOnline} />
@@ -99,7 +97,9 @@ const ChatHeader = ({ selected, isAISelected }) => {
             <p className="text-neutral-200 font-semibold truncate">{name}</p>
             <p className="text-neutral-500 text-xs flex items-center gap-1">
               <span
-                className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-green-500" : "bg-neutral-500"}`}
+                className={`w-1.5 h-1.5 rounded-full ${
+                  isOnline ? "bg-green-500" : "bg-neutral-500"
+                }`}
               />
               {isOnline ? "Online" : "Offline"}
             </p>
@@ -108,7 +108,7 @@ const ChatHeader = ({ selected, isAISelected }) => {
         <div className="flex items-center gap-1 shrink-0">
           <IconButton
             icon={MoreHorizontal}
-            ariaLabel="More"
+            ariaLabel="More options"
             onClick={() => setIsModalOpen(true)}
           />
         </div>
@@ -121,7 +121,6 @@ const ChatHeader = ({ selected, isAISelected }) => {
             className="fixed inset-0 z-40 bg-black/50"
             onClick={() => setIsModalOpen(false)}
           />
-
           <div className="absolute top-20 right-6 z-50 w-56 bg-neutral-800 rounded-xl shadow-xl border border-neutral-700 overflow-hidden">
             <button
               onClick={() => {
