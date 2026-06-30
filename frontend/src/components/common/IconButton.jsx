@@ -6,6 +6,7 @@ const IconButton = ({
   size = "md",
   variant = "default",
   disabled = false,
+  ariaLabel,
 }) => {
   const sizeClasses = {
     sm: "p-1.5",
@@ -29,6 +30,7 @@ const IconButton = ({
     <button
       onClick={onClick}
       disabled={disabled}
+      aria-label={ariaLabel}
       className={`${sizeClasses[size]} ${variantClasses[variant]} rounded-xl transition focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed`}
     >
       <Icon className={iconSizes[size]} />
