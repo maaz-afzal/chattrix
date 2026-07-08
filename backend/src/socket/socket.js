@@ -43,8 +43,15 @@ const initSocket = (server) => {
       userSocketMap.delete(userId);
 
       try {
-        await User.findByIdAndUpdate(userId, { status: "offline" });
-        socket.broadcast.emit("user-offline", userId);
+        const lastSeen = new Date();
+        await User.findByIdAndUpdate(userId, {
+          status: "offline",
+          lastSeen: lastSeen,
+        });
+        socket.broadcast.emit("user-offline", {
+          userId,
+          lastSeen: lastSeen,
+        });
       } catch (err) {
         console.error("Socket disconnect DB error:", err.message);
       }
