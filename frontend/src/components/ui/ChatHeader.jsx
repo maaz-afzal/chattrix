@@ -10,6 +10,7 @@ import {
 import Avatar from "../common/Avatar";
 import IconButton from "../common/IconButton";
 import { useSelect } from "../layout/ChatArea.jsx";
+import { formatLastSeen } from "../../utils/formatLastSeen.js";
 
 const ChatHeader = ({ selected, isAISelected }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -51,9 +52,15 @@ const ChatHeader = ({ selected, isAISelected }) => {
     );
   }
 
-  const { name, avatar, status } = selected;
+  const { name, avatar, status, lastSeen } = selected;
   const isOnline = status === "online";
   const avatarLetter = avatar || name?.charAt(0).toUpperCase() || "U";
+
+  const statusText = isOnline
+    ? "Online"
+    : lastSeen
+    ? `Last seen ${formatLastSeen(lastSeen)}`
+    : "Offline";
 
   if (selectMode) {
     return (
@@ -103,7 +110,7 @@ const ChatHeader = ({ selected, isAISelected }) => {
                     : "bg-gray-500"
                 }`}
               />
-              {isOnline ? "Online" : "Offline"}
+              {statusText}
             </p>
           </div>
         </div>
@@ -116,7 +123,6 @@ const ChatHeader = ({ selected, isAISelected }) => {
         </div>
       </div>
 
-      {/* Modal */}
       {isModalOpen && (
         <>
           <div
