@@ -21,9 +21,9 @@ const IconButton = ({
   };
 
   const variantClasses = {
-    default: "bg-neutral-800/70 hover:bg-neutral-800 text-neutral-300",
-    primary: "bg-indigo-600 hover:bg-indigo-700 text-white",
-    ghost: "hover:bg-neutral-800/60 text-neutral-400",
+    default: "bg-white/[0.02] hover:bg-cyan-500/10 text-gray-400 hover:text-cyan-400 border border-white/[0.04] hover:border-cyan-400/30",
+    primary: "bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-400/30 hover:border-cyan-400/50",
+    ghost: "hover:bg-cyan-500/10 text-gray-400 hover:text-cyan-400",
   };
 
   return (
@@ -31,7 +31,7 @@ const IconButton = ({
       onClick={onClick}
       disabled={disabled}
       aria-label={ariaLabel}
-      className={`${sizeClasses[size]} ${variantClasses[variant]} rounded-xl transition focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed`}
+      className={`${sizeClasses[size]} ${variantClasses[variant]} rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500/50 disabled:opacity-50 disabled:cursor-not-allowed`}
     >
       <Icon className={iconSizes[size]} />
     </button>

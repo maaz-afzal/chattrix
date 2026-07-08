@@ -2,10 +2,10 @@ import React from "react";
 
 const Badge = ({ count, variant = "default", size = "sm" }) => {
   const variantClasses = {
-    default: "bg-indigo-600 text-white",
-    success: "bg-green-500 text-white",
-    warning: "bg-yellow-500 text-white",
-    error: "bg-red-500 text-white",
+    default: "bg-cyan-500/10 text-cyan-400 border border-cyan-400/40",
+    success: "bg-green-500/10 text-green-400 border border-green-400/40",
+    warning: "bg-yellow-500/10 text-yellow-400 border border-yellow-400/40",
+    error: "bg-red-500/10 text-red-400 border border-red-400/40",
   };
 
   const sizeClasses = {
@@ -17,7 +17,7 @@ const Badge = ({ count, variant = "default", size = "sm" }) => {
   if (count > 99) {
     return (
       <span
-        className={`${sizeClasses[size]} ${variantClasses[variant]} font-bold rounded-full flex items-center justify-center`}
+        className={`${sizeClasses[size]} ${variantClasses[variant]} font-bold rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(34,211,238,0.15)]`}
       >
         99+
       </span>
@@ -26,7 +26,7 @@ const Badge = ({ count, variant = "default", size = "sm" }) => {
 
   return (
     <span
-      className={`${sizeClasses[size]} ${variantClasses[variant]} font-bold rounded-full flex items-center justify-center`}
+      className={`${sizeClasses[size]} ${variantClasses[variant]} font-bold rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(34,211,238,0.15)]`}
     >
       {count}
     </span>

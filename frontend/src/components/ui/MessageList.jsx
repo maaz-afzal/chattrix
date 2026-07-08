@@ -90,11 +90,11 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
     return (
       <div className="flex-1 overflow-y-auto min-h-0 p-6">
         <div className="flex flex-col items-center justify-center mb-6">
-          <div className="w-16 h-16 bg-linear-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg mb-3">
-            <Bot className="w-8 h-8 text-white" />
+          <div className="w-16 h-16 bg-cyan-500/10 rounded-full border border-cyan-400/40 flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.2)] mb-3">
+            <Bot className="w-8 h-8 text-cyan-400" />
           </div>
           <h3 className="text-white text-xl font-semibold">AI Assistant</h3>
-          <p className="text-neutral-400 text-sm">Powered by Gemini</p>
+          <p className="text-gray-400 text-sm">Powered by Gemini</p>
         </div>
 
         <div className="space-y-4">
@@ -104,10 +104,10 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
               className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
+                className={`max-w-[85%] rounded-2xl px-4 py-2.5 border ${
                   msg.sender === "user"
-                    ? "bg-indigo-600 text-white rounded-br-sm"
-                    : "bg-linear-to-br from-blue-600 to-purple-600 text-white rounded-bl-sm shadow-md"
+                    ? "bg-cyan-500/10 text-cyan-100 rounded-br-sm border-cyan-500/20 shadow-[0_0_10px_rgba(34,211,238,0.1)]"
+                    : "bg-cyan-500/10 text-cyan-100 rounded-bl-sm border-cyan-400/30 shadow-[0_0_15px_rgba(34,211,238,0.15)]"
                 }`}
               >
                 {msg.sender === "user" ? (
@@ -156,7 +156,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
                             href={href}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="underline text-blue-300 hover:text-blue-200"
+                            className="underline text-cyan-300 hover:text-cyan-200"
                           >
                             {children}
                           </a>
@@ -168,7 +168,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
                           <em className="italic">{children}</em>
                         ),
                         blockquote: ({ children }) => (
-                          <blockquote className="border-l-4 border-blue-400 pl-3 my-2 text-neutral-300">
+                          <blockquote className="border-l-4 border-cyan-400 pl-3 my-2 text-gray-300">
                             {children}
                           </blockquote>
                         ),
@@ -196,7 +196,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
   if (!selected) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <p className="text-neutral-400 text-center">
+        <p className="text-gray-400 text-center">
           Select a chat to start messaging
         </p>
       </div>
@@ -208,15 +208,15 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
       <div className="flex-1 flex items-center justify-center">
         <div className="flex gap-1">
           <span
-            className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce"
+            className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce shadow-[0_0_6px_rgba(34,211,238,0.5)]"
             style={{ animationDelay: "0ms" }}
           />
           <span
-            className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce"
+            className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce shadow-[0_0_6px_rgba(34,211,238,0.5)]"
             style={{ animationDelay: "150ms" }}
           />
           <span
-            className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce"
+            className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce shadow-[0_0_6px_rgba(34,211,238,0.5)]"
             style={{ animationDelay: "300ms" }}
           />
         </div>
@@ -230,7 +230,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
         <p className="text-red-400 text-sm">{error}</p>
         <button
           onClick={() => getConversation(selected._id)}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-xl transition"
+          className="px-4 py-2 bg-cyan-500/10 border border-cyan-400/30 hover:bg-cyan-500/20 text-cyan-400 text-sm rounded-xl"
         >
           Retry
         </button>
@@ -242,7 +242,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
     <div className="flex-1 overflow-y-auto min-h-0 p-6 space-y-4">
       {conversation.length === 0 ? (
         <div className="flex justify-center">
-          <p className="text-neutral-500 text-sm">
+          <p className="text-gray-500 text-sm">
             No messages yet. Start a conversation!
           </p>
         </div>

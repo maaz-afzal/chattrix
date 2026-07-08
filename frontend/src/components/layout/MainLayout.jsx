@@ -17,7 +17,7 @@ const MainLayout = () => {
   };
 
   return (
-    <div className="h-screen bg-black flex overflow-hidden p-3 gap-3">
+    <div className="h-screen bg-black flex overflow-hidden ">
       <LeftSidebar 
         onSelected={handleSelectUser}
         onSelectAI={handleSelectAI}

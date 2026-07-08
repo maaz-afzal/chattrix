@@ -49,7 +49,7 @@ const ChatList = ({ users, onSelectedUser, onSelectAI, isAISelected }) => {
   };
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1">
       <AIChatItem isSelected={isAISelected} onClick={handleAIClick} />
 
       {enrichedUsers.map((chat) => (
@@ -62,9 +62,7 @@ const ChatList = ({ users, onSelectedUser, onSelectAI, isAISelected }) => {
       ))}
 
       {enrichedUsers.length === 0 && (
-        <p className="text-neutral-500 text-xs text-center py-4">
-          No users found
-        </p>
+        <p className="text-gray-500 text-xs text-center py-4">No users found</p>
       )}
     </div>
   );

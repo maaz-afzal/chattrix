@@ -24,17 +24,17 @@ const ChatHeader = ({ selected, isAISelected }) => {
 
   if (isAISelected) {
     return (
-      <div className="px-6 py-4 border-b border-neutral-800 flex items-center justify-between gap-3">
+      <div className="px-6 py-4 border-b border-cyan-500/20 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-            <Bot className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 bg-cyan-500/10 rounded-full border border-cyan-400/40 flex items-center justify-center shadow-[0_0_15px_rgba(34,211,238,0.2)]">
+            <Bot className="w-5 h-5 text-cyan-400" />
           </div>
           <div className="min-w-0">
-            <p className="text-neutral-200 font-semibold truncate">
+            <p className="text-gray-200 font-semibold truncate">
               AI Assistant
             </p>
-            <p className="text-neutral-500 text-xs flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            <p className="text-gray-500 text-xs flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.5)]" />
               Online
             </p>
           </div>
@@ -45,8 +45,8 @@ const ChatHeader = ({ selected, isAISelected }) => {
 
   if (!selected) {
     return (
-      <div className="px-6 py-4 border-b border-neutral-800">
-        <p className="text-neutral-400 text-center">Select a chat</p>
+      <div className="px-6 py-4 border-b border-cyan-500/20">
+        <p className="text-gray-400 text-center">Select a chat</p>
       </div>
     );
   }
@@ -57,14 +57,14 @@ const ChatHeader = ({ selected, isAISelected }) => {
 
   if (selectMode) {
     return (
-      <div className="px-6 py-4 border-b border-neutral-800 flex items-center justify-between gap-3 bg-neutral-900">
+      <div className="px-6 py-4 border-b border-cyan-500/20 flex items-center justify-between gap-3 bg-black/40">
         <div className="flex items-center gap-3">
           <button
             onClick={disableSelectMode}
             aria-label="Cancel selection"
-            className="p-1.5 hover:bg-neutral-800 rounded-xl transition"
+            className="p-1.5 hover:bg-cyan-500/10 rounded-xl"
           >
-            <X className="w-5 h-5 text-neutral-400" />
+            <X className="w-5 h-5 text-gray-400" />
           </button>
           <span className="text-white font-medium">
             {selectedMessages.length} selected
@@ -74,7 +74,7 @@ const ChatHeader = ({ selected, isAISelected }) => {
           onClick={handleDeleteSelected}
           disabled={selectedMessages.length === 0}
           aria-label="Delete selected messages"
-          className="p-2 hover:bg-neutral-800 rounded-xl transition text-red-400 disabled:opacity-50"
+          className="p-2 hover:bg-red-500/10 rounded-xl text-red-400 disabled:opacity-50"
         >
           <Trash2 className="w-5 h-5" />
         </button>
@@ -84,21 +84,23 @@ const ChatHeader = ({ selected, isAISelected }) => {
 
   return (
     <>
-      <div className="px-6 py-4 border-b border-neutral-800 flex items-center justify-between gap-3">
+      <div className="px-6 py-4 border-b border-cyan-500/20 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <button
-            className="lg:hidden p-1.5 hover:bg-neutral-800 rounded-xl transition"
+            className="lg:hidden p-1.5 hover:bg-cyan-500/10 rounded-xl"
             aria-label="Go back"
           >
-            <ChevronLeft className="w-5 h-5 text-neutral-400" />
+            <ChevronLeft className="w-5 h-5 text-gray-400" />
           </button>
           <Avatar name={avatarLetter} size="md" online={isOnline} />
           <div className="min-w-0">
-            <p className="text-neutral-200 font-semibold truncate">{name}</p>
-            <p className="text-neutral-500 text-xs flex items-center gap-1">
+            <p className="text-gray-200 font-semibold truncate">{name}</p>
+            <p className="text-gray-500 text-xs flex items-center gap-1">
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
-                  isOnline ? "bg-green-500" : "bg-neutral-500"
+                  isOnline
+                    ? "bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.5)]"
+                    : "bg-gray-500"
                 }`}
               />
               {isOnline ? "Online" : "Offline"}
@@ -121,16 +123,16 @@ const ChatHeader = ({ selected, isAISelected }) => {
             className="fixed inset-0 z-40 bg-black/50"
             onClick={() => setIsModalOpen(false)}
           />
-          <div className="absolute top-20 right-6 z-50 w-56 bg-neutral-800 rounded-xl shadow-xl border border-neutral-700 overflow-hidden">
+          <div className="absolute top-20 right-6 z-50 w-56 bg-black/90 rounded-xl border border-cyan-500/20 shadow-[0_0_20px_rgba(34,211,238,0.1)] overflow-hidden backdrop-blur-xl">
             <button
               onClick={() => {
                 enableSelectMode();
                 setIsModalOpen(false);
               }}
-              className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-neutral-700 transition-colors"
+              className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-cyan-500/10"
             >
-              <CheckSquare className="w-4 h-4 text-blue-400" />
-              <span className="text-sm text-neutral-200">Select Messages</span>
+              <CheckSquare className="w-4 h-4 text-cyan-400" />
+              <span className="text-sm text-gray-200">Select Messages</span>
             </button>
 
             <button
@@ -138,18 +140,18 @@ const ChatHeader = ({ selected, isAISelected }) => {
                 handleClearChat();
                 setIsModalOpen(false);
               }}
-              className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-neutral-700 transition-colors border-t border-neutral-700"
+              className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-red-500/10 border-t border-cyan-500/20"
             >
               <Trash2 className="w-4 h-4 text-red-400" />
-              <span className="text-sm text-neutral-200">Clear Chat</span>
+              <span className="text-sm text-gray-200">Clear Chat</span>
             </button>
 
             <button
               onClick={() => setIsModalOpen(false)}
-              className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-neutral-700 transition-colors border-t border-neutral-700"
+              className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-cyan-500/10 border-t border-cyan-500/20"
             >
-              <X className="w-4 h-4 text-neutral-400" />
-              <span className="text-sm text-neutral-200">Cancel</span>
+              <X className="w-4 h-4 text-gray-400" />
+              <span className="text-sm text-gray-200">Cancel</span>
             </button>
           </div>
         </>

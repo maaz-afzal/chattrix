@@ -123,7 +123,7 @@ const MessageInput = ({
   return (
     <div className="p-4">
       {imagePreview && !isAISelected && (
-        <div className="mb-2 p-2 bg-neutral-800 rounded-xl flex items-center justify-between">
+        <div className="mb-2 p-2 bg-white/2 rounded-xl border border-cyan-500/20 flex items-center justify-between">
           <img
             src={imagePreview}
             alt="Preview"
@@ -131,23 +131,22 @@ const MessageInput = ({
           />
           <button
             onClick={removeImage}
-            className="p-1 text-red-400 hover:text-red-300 hover:bg-neutral-700 rounded-lg transition"
+            className="p-1 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
-      <div className="flex items-center gap-2 bg-neutral-800/70 rounded-3xl p-2 shadow-lg border border-neutral-700">
-
+      <div className="flex items-center gap-2 bg-white/2 rounded-3xl p-2 border border-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.06)]">
         {!isAISelected && (
           <button
             onClick={handleImageSelect}
             disabled={isDisabled}
             aria-label="Attach image"
-            className="p-2 hover:bg-neutral-700 rounded-2xl transition focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 hover:bg-cyan-500/10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <ImageIcon className="w-5 h-5 text-neutral-400" />
+            <ImageIcon className="w-5 h-5 text-gray-400 hover:text-cyan-400" />
           </button>
         )}
 
@@ -158,23 +157,23 @@ const MessageInput = ({
           onKeyDown={handleKeyDown}
           disabled={isDisabled}
           placeholder={placeholder}
-          className="flex-1 bg-transparent px-2 py-2 text-neutral-200 placeholder-neutral-500 focus:outline-none text-sm min-w-0 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 bg-transparent px-2 py-2 text-gray-200 placeholder-gray-500 focus:outline-none text-sm min-w-0 disabled:opacity-50 disabled:cursor-not-allowed"
         />
 
         <button
           onClick={handleSend}
           disabled={!canSend}
           aria-label="Send message"
-          className={`p-2.5 rounded-2xl transition focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed ${
+          className={`p-2.5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500/50 disabled:opacity-50 disabled:cursor-not-allowed ${
             isAISelected
-              ? "bg-linear-to-br from-blue-600 to-purple-600 hover:shadow-lg hover:shadow-blue-500/30"
-              : "bg-indigo-600 hover:bg-indigo-700"
+              ? "bg-cyan-500/10 border border-cyan-400/30 text-cyan-400 hover:bg-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.2)]"
+              : "bg-cyan-500/10 border border-cyan-400/30 text-cyan-400 hover:bg-cyan-500/20 shadow-[0_0_10px_rgba(34,211,238,0.15)]"
           }`}
         >
           {loading ? (
-            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin" />
           ) : (
-            <Send className="w-5 h-5 text-white" />
+            <Send className="w-5 h-5" />
           )}
         </button>
       </div>

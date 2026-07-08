@@ -87,7 +87,7 @@ const ChatArea = ({ selected, isAISelected }) => {
   };
 
   return (
-    <main className="flex-1 min-w-0 bg-neutral-900/80 backdrop-blur-xl rounded-3xl shadow-xl border border-neutral-800 flex flex-col overflow-hidden">
+    <main className="flex-1 min-w-0 bg-black/80 backdrop-blur-xl border border-cyan-500/20 shadow-[0_0_30px_rgba(34,211,238,0.08)] flex flex-col overflow-hidden">
       <SelectContext.Provider value={value}>
         <ChatHeader selected={selected} isAISelected={isAISelected} />
         <MessageList
