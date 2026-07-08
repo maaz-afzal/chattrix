@@ -6,6 +6,7 @@ import { getSocket } from "../../lib/socket.js";
 const ChatList = ({ users, onSelectedUser, onSelectAI, isAISelected }) => {
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState({});
+  const [lastSeenMap, setLastSeenMap] = useState({});
 
   useEffect(() => {
     const socket = getSocket();
@@ -15,8 +16,9 @@ const ChatList = ({ users, onSelectedUser, onSelectAI, isAISelected }) => {
       setOnlineUsers((prev) => ({ ...prev, [userId]: true }));
     };
 
-    const handleUserOffline = (userId) => {
+    const handleUserOffline = ({ userId, lastSeen }) => {
       setOnlineUsers((prev) => ({ ...prev, [userId]: false }));
+      setLastSeenMap((prev) => ({ ...prev, [userId]: lastSeen }));
     };
 
     socket.on("user-online", handleUserOnline);
@@ -36,6 +38,7 @@ const ChatList = ({ users, onSelectedUser, onSelectAI, isAISelected }) => {
         : onlineUsers[user._id] === false
           ? "offline"
           : user.status,
+    lastSeen: lastSeenMap[user._id] || user.lastSeen,
   }));
 
   const handleSelectChat = (chat) => {
