@@ -33,7 +33,11 @@ const UserSchema = new mongoose.Schema(
     },
     profileImage: {
       type: String,
-      default: `https://ui-avatars.com/api/?name=${this.name.charAt(0).toUpperCase()}&background=random&bold=true`,
+      default: function () {
+        return `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          this.name,
+        )}&background=random`;
+      },
     },
   },
   { timestamps: true },
