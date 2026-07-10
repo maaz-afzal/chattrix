@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 
 const MessageSchema = new mongoose.Schema(
   {
+    conversationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Conversation",
+      required: true,
+    },
     sender: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -31,6 +36,11 @@ const MessageSchema = new mongoose.Schema(
         message: "Message must have text or image",
       },
     },
+    status: {
+      type: String,
+      enum: ["sent", "delivered", "read"],
+      default: "sent",
+    },
     deletedFor: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -38,6 +48,10 @@ const MessageSchema = new mongoose.Schema(
         default: [],
       },
     ],
+    deletedForEveryone: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
