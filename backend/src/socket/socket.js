@@ -33,11 +33,31 @@ const initSocket = (server) => {
     userSocketMap.set(userId, socket.id);
 
     try {
-      await User.findByIdAndUpdate(userId, { status: "online" });
+      await User.findByIdAndUpdate(userId, { status: true });
       socket.broadcast.emit("user-online", userId);
     } catch (err) {
       console.error("Socket connect DB error:", err.message);
     }
+
+    socket.on("typing", ({ receiverId }) => {
+      const receiverSocketId = userSocketMap.get(receiverId);
+
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("userTyping", {
+          userId,
+        });
+      }
+    });
+
+    socket.on("stop-typing", ({ receiverId }) => {
+      const receiverSocketId = userSocketMap.get(receiverId);
+
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("userStopTyping", {
+          userId,
+        });
+      }
+    });
 
     socket.on("disconnect", async () => {
       userSocketMap.delete(userId);
@@ -45,7 +65,7 @@ const initSocket = (server) => {
       try {
         const lastSeen = new Date();
         await User.findByIdAndUpdate(userId, {
-          status: "offline",
+          status: false,
           lastSeen: lastSeen,
         });
         socket.broadcast.emit("user-offline", {
