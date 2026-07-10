@@ -13,30 +13,27 @@ const UserSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    bio: {
-      type: String,
-      default: "Hello World!",
-    },
     password: {
       type: String,
       required: true,
+      minlength: 6,
+    },
+    bio: {
+      type: String,
+      default: "Hello World!",
+      maxlength: 100,
     },
     status: {
-      type: String,
-      enum: ["online", "offline"],
-      default: "offline",
+      type: Boolean,
+      default: false,
     },
     lastSeen: {
       type: Date,
       default: Date.now,
     },
-    avatar: {
+    profileImage: {
       type: String,
-      default: function () {
-        return this.name
-          ? this.name.charAt(0).toUpperCase()
-          : "https://ui-avatars.com/api/?name=Chattrix&background=random&bold=true";
-      },
+      default: `https://ui-avatars.com/api/?name=${this.name.charAt(0).toUpperCase()}&background=random&bold=true`,
     },
   },
   { timestamps: true },
