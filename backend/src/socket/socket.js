@@ -2,12 +2,11 @@ import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-export const userSocketMap = new Map();
-
 const initSocket = (server) => {
   const io = new Server(server, {
     cors: {
       origin: process.env.FRONTEND_URL,
+      credentials: true,
     },
   });
 
@@ -15,7 +14,7 @@ const initSocket = (server) => {
     const token = socket.handshake.auth.token;
 
     if (!token) {
-      return next(new Error("Authentication error: no token provided"));
+      return next(new Error("Authentication error: No token provided."));
     }
 
     try {
@@ -23,57 +22,58 @@ const initSocket = (server) => {
       socket.userId = decoded.id;
       next();
     } catch {
-      next(new Error("Authentication error: invalid token"));
+      next(new Error("Authentication error: Invalid token."));
     }
   });
 
   io.on("connection", async (socket) => {
-    const userId = socket.userId;
+    const { userId } = socket;
 
-    userSocketMap.set(userId, socket.id);
+    socket.join(userId);
 
     try {
-      await User.findByIdAndUpdate(userId, { status: true });
+      await User.findByIdAndUpdate(userId, {
+        isOnline: true,
+      });
+
       socket.broadcast.emit("user-online", userId);
     } catch (err) {
-      console.error("Socket connect DB error:", err.message);
+      console.error("Socket connect DB error:", err);
     }
 
+    // Typing
     socket.on("typing", ({ receiverId }) => {
-      const receiverSocketId = userSocketMap.get(receiverId);
-
-      if (receiverSocketId) {
-        io.to(receiverSocketId).emit("userTyping", {
-          userId,
-        });
-      }
+      io.to(receiverId).emit("user-typing", {
+        userId,
+      });
     });
 
+    // Stop typing
     socket.on("stop-typing", ({ receiverId }) => {
-      const receiverSocketId = userSocketMap.get(receiverId);
-
-      if (receiverSocketId) {
-        io.to(receiverSocketId).emit("userStopTyping", {
-          userId,
-        });
-      }
+      io.to(receiverId).emit("user-stop-typing", {
+        userId,
+      });
     });
 
     socket.on("disconnect", async () => {
-      userSocketMap.delete(userId);
+      const sockets = await io.in(userId).fetchSockets();
 
-      try {
-        const lastSeen = new Date();
-        await User.findByIdAndUpdate(userId, {
-          status: false,
-          lastSeen: lastSeen,
-        });
-        socket.broadcast.emit("user-offline", {
-          userId,
-          lastSeen: lastSeen,
-        });
-      } catch (err) {
-        console.error("Socket disconnect DB error:", err.message);
+      if (sockets.length === 0) {
+        try {
+          const lastSeen = new Date();
+
+          await User.findByIdAndUpdate(userId, {
+            isOnline: false,
+            lastSeen,
+          });
+
+          socket.broadcast.emit("user-offline", {
+            userId,
+            lastSeen,
+          });
+        } catch (err) {
+          console.error("Socket disconnect DB error:", err);
+        }
       }
     });
   });
