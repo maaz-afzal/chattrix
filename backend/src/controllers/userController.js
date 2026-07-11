@@ -1,33 +1,77 @@
-import mongoose from "mongoose";
 import User from "../models/User.js";
-import Message from "../models/Message.js";
 import bcrypt from "bcrypt";
+import { body, validationResult } from "express-validator";
 
+const validateMiddleware = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      errors: errors.array(),
+    });
+  }
+
+  next();
+};
+
+const validateUpdateProfile = [
+  body("name")
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 50 })
+    .withMessage("Name must be between 1 and 50 characters."),
+
+  body("bio")
+    .optional()
+    .trim()
+    .isLength({ max: 100 })
+    .withMessage("Bio cannot exceed 100 characters."),
+
+  body("profileImage")
+    .optional()
+    .isURL()
+    .withMessage("Invalid profile image URL."),
+];
+
+// Get all users except current user
 const getAllUsers = async (req, res) => {
   try {
     const userId = req.user.id;
-    const users = await User.find({ _id: { $ne: userId } }).select("-password");
+
+    const users = await User.find({
+      _id: { $ne: userId },
+      isDeleted: false,
+    })
+      .select("-password")
+      .limit(50);
 
     res.status(200).json(users);
   } catch (err) {
     console.error("getAllUsers error:", err.message);
-    res.status(500).json({ msg: "Something went wrong" });
+
+    res.status(500).json({
+      msg: "Something went wrong.",
+    });
   }
 };
 
-const getUser = async (req, res) => {
+const getCurrentUser = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const user = await User.findById(userId).select("-password");
+    const user = await User.findById(req.user.id).select("-password");
 
     if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+      return res.status(404).json({
+        msg: "User not found.",
+      });
     }
 
     res.status(200).json(user);
   } catch (err) {
-    console.error("getUser error:", err.message);
-    res.status(500).json({ msg: "Something went wrong" });
+    console.error("getCurrentUser error:", err.message);
+
+    res.status(500).json({
+      msg: "Something went wrong.",
+    });
   }
 };
 
@@ -35,85 +79,164 @@ const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ msg: "Invalid user ID" });
-    }
-
-    const user = await User.findById(id).select("-password");
+    const user = await User.findOne({
+      _id: id,
+      isDeleted: false,
+    }).select("-password");
 
     if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+      return res.status(404).json({
+        msg: "User not found.",
+      });
     }
 
     res.status(200).json(user);
   } catch (err) {
     console.error("getUserById error:", err.message);
-    res.status(500).json({ msg: "Something went wrong" });
+
+    res.status(500).json({
+      msg: "Something went wrong.",
+    });
   }
 };
 
-const updateUser = async (req, res) => {
+const searchUsers = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const { name, avatar, bio, currPassword, newPassword, confirmPassword } =
-      req.body;
+    const { query } = req.query;
 
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+    if (!query) {
+      return res.status(400).json({
+        msg: "Search query is required.",
+      });
     }
 
-    if (name !== undefined) user.name = name.trim() || user.name;
-    if (avatar !== undefined) user.avatar = avatar || user.avatar;
-    if (bio !== undefined) user.bio = bio || user.bio;
+    const users = await User.find({
+      _id: {
+        $ne: req.user.id,
+      },
 
-    if (currPassword && newPassword && confirmPassword) {
-      const isMatch = await bcrypt.compare(currPassword, user.password);
-      if (!isMatch) {
-        return res.status(400).json({ msg: "Current password is incorrect" });
-      }
-      if (newPassword !== confirmPassword) {
-        return res.status(400).json({ msg: "New passwords do not match" });
-      }
-      if (newPassword.length < 6) {
-        return res
-          .status(400)
-          .json({ msg: "Password must be at least 6 characters" });
-      }
-      user.password = await bcrypt.hash(newPassword, 12);
-    }
+      isDeleted: false,
 
-    const updatedUser = await user.save();
-    const userData = updatedUser.toObject();
-    delete userData.password;
+      $or: [
+        {
+          name: {
+            $regex: query,
+            $options: "i",
+          },
+        },
 
-    res.status(200).json({ msg: "User updated successfully!", user: userData });
+        {
+          email: {
+            $regex: query,
+            $options: "i",
+          },
+        },
+      ],
+    })
+      .select("-password")
+      .limit(20);
+
+    res.status(200).json(users);
   } catch (err) {
-    console.error("updateUser error:", err.message);
-    res.status(500).json({ msg: "Something went wrong" });
+    console.error("searchUsers error:", err.message);
+
+    res.status(500).json({
+      msg: "Something went wrong.",
+    });
   }
 };
 
-const deleteUser = async (req, res) => {
-  try {
-    const userId = req.user.id;
+const updateProfile = [
+  validateUpdateProfile,
+  validateMiddleware,
 
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+  async (req, res) => {
+    try {
+      const { name, bio, profileImage, currentPassword, newPassword } =
+        req.body;
+
+      const user = await User.findById(req.user.id).select("+password");
+
+      if (!user) {
+        return res.status(404).json({
+          msg: "User not found.",
+        });
+      }
+
+      if (name !== undefined) {
+        user.name = name;
+      }
+
+      if (bio !== undefined) {
+        user.bio = bio;
+      }
+
+      if (profileImage !== undefined) {
+        user.profileImage = profileImage;
+      }
+
+      if (currentPassword && newPassword) {
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+        if (!isMatch) {
+          return res.status(400).json({
+            msg: "Current password is incorrect.",
+          });
+        }
+
+        if (newPassword.length < 6) {
+          return res.status(400).json({
+            msg: "Password must be at least 6 characters.",
+          });
+        }
+
+        user.password = await bcrypt.hash(newPassword, 12);
+      }
+
+      const updatedUser = await user.save();
+
+      const userData = updatedUser.toObject();
+
+      delete userData.password;
+
+      res.status(200).json({
+        msg: "Profile updated successfully.",
+        user: userData,
+      });
+    } catch (err) {
+      console.error("updateProfile error:", err.message);
+
+      res.status(500).json({
+        msg: "Something went wrong.",
+      });
     }
-    await Message.deleteMany({
-      $or: [{ sender: userId }, { receiver: userId }],
+  },
+];
+
+const deleteAccount = async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(req.user.id, {
+      isDeleted: true,
+      isOnline: false,
     });
 
-    await User.findByIdAndDelete(userId);
-
-    res.status(200).json({ msg: "User deleted successfully!" });
+    res.status(200).json({
+      msg: "Account deleted successfully.",
+    });
   } catch (err) {
-    console.error("deleteUser error:", err.message);
-    res.status(500).json({ msg: "Something went wrong" });
+    console.error("deleteAccount error:", err.message);
+
+    res.status(500).json({
+      msg: "Something went wrong.",
+    });
   }
 };
 
-export { getAllUsers, getUser, getUserById, updateUser, deleteUser };
+export {
+  getAllUsers,
+  getCurrentUser,
+  getUserById,
+  searchUsers,
+  updateProfile,
+  deleteAccount,
+};

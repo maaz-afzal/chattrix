@@ -41,6 +41,10 @@ const UserSchema = new mongoose.Schema(
         )}&background=random`;
       },
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
