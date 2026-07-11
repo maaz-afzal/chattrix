@@ -4,6 +4,8 @@ import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
+import conversationRoutes from "./routes/conversationRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
 
 import authMiddleware from "./middlewares/authMiddleware.js";
 
@@ -20,9 +22,11 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 
 // app routes
-app.use("/auth", authRoutes);
-app.use("/users", authMiddleware, userRoutes);
-app.use("/message", authMiddleware, messageRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/conversations", conversationRoutes);
+app.use("/api/messages", messageRoutes);
+app.use("/api/ai", aiRoutes);
 
 // 404 handler
 app.use((req, res) => {
