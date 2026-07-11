@@ -9,21 +9,23 @@ const UserSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      trim: true,
       required: true,
       unique: true,
+      trim: true,
+      lowercase: true,
     },
     password: {
       type: String,
       required: true,
       minlength: 6,
+      select: false,
     },
     bio: {
       type: String,
       default: "Hello World!",
       maxlength: 100,
     },
-    status: {
+    isOnline: {
       type: Boolean,
       default: false,
     },
@@ -40,7 +42,9 @@ const UserSchema = new mongoose.Schema(
       },
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+  },
 );
 
 const User = mongoose.model("User", UserSchema);
