@@ -1,26 +1,23 @@
+import express from "express";
+
 import {
   sendMessage,
-  getConversation,
+  getMessages,
+  updateMessage,
   deleteMessage,
+  markAsRead,
   clearChat,
-  aiChat,
 } from "../controllers/messageController.js";
 
-import express from "express";
-import { rateLimit } from "express-rate-limit";
+import authMiddleware from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-const aiLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 10,
-  message: { msg: "Too many AI requests. Please wait a moment." },
-});
-
-router.post("/ai", aiLimiter, aiChat);
-router.delete("/clear/:id", clearChat);
-router.post("/:id", sendMessage);
-router.get("/:id", getConversation);
-router.delete("/:id", deleteMessage);
+router.post("/:conversationId/:receiverId", authMiddleware, sendMessage);
+router.get("/:conversationId", authMiddleware, getMessages);
+router.put("/:id", authMiddleware, updateMessage);
+router.delete("/:id", authMiddleware, deleteMessage);
+router.patch("/:id/read", authMiddleware, markAsRead);
+router.delete("/clear/:conversationId", authMiddleware, clearChat);
 
 export default router;
