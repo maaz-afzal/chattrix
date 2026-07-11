@@ -8,10 +8,11 @@ import {
 } from "../controllers/conversationController.js";
 
 import authMiddleware from "../middlewares/authMiddleware.js";
+import { apiLimiter } from "../middlewares/rateLimiter.js";
 
 const router = express.Router();
 
-router.post("/", authMiddleware, findOrCreateConversation);
+router.post("/", apiLimiter, authMiddleware, findOrCreateConversation);
 router.get("/", authMiddleware, getConversations);
 router.get("/:id", authMiddleware, getConversationById);
 router.delete("/:id", authMiddleware, deleteConversation);

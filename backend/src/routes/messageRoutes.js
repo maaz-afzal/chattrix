@@ -10,10 +10,11 @@ import {
 } from "../controllers/messageController.js";
 
 import authMiddleware from "../middlewares/authMiddleware.js";
+import { apiLimiter } from "../middlewares/rateLimiter.js";
 
 const router = express.Router();
 
-router.post("/:conversationId/:receiverId", authMiddleware, sendMessage);
+router.post("/:conversationId/:receiverId", apiLimiter, authMiddleware, sendMessage);
 router.get("/:conversationId", authMiddleware, getMessages);
 router.put("/:id", authMiddleware, updateMessage);
 router.delete("/:id", authMiddleware, deleteMessage);
