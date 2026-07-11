@@ -1,18 +1,23 @@
 import express from "express";
-const router = express.Router();
 
 import {
   getAllUsers,
-  getUser,
+  getCurrentUser,
   getUserById,
-  updateUser,
-  deleteUser,
+  searchUsers,
+  updateProfile,
+  deleteAccount,
 } from "../controllers/userController.js";
 
-router.get("/profiles", getAllUsers);
-router.get("/profile", getUser);
-router.get("/profile/:id", getUserById);
-router.put("/profile", updateUser);
-router.delete("/profile", deleteUser);
+import authMiddleware from "../middlewares/authMiddleware.js";
+
+const router = express.Router();
+
+router.get("/", authMiddleware, getAllUsers);
+router.get("/me", authMiddleware, getCurrentUser);
+router.get("/search", authMiddleware, searchUsers);
+router.get("/:id", authMiddleware, getUserById);
+router.put("/profile", authMiddleware, updateProfile);
+router.delete("/account", authMiddleware, deleteAccount);
 
 export default router;
