@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Message from "../models/Message.js";
 import cloudinary from "../config/cloudinary.js";
+import Conversation from "../models/Conversation.js";
 
 let io;
 
@@ -57,6 +58,11 @@ const sendMessage = async (req, res) => {
       receiver: receiverId,
       text: text?.trim(),
       image: imageUrl,
+    });
+
+    await Conversation.findByIdAndUpdate(conversationId, {
+      lastMessage: message._id,
+      updatedAt: new Date(),
     });
 
     if (io) {
