@@ -6,6 +6,8 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      minlength: [2, "Name must be at least 2 characters"],
+      maxlength: [50, "Name cannot exceed 50 characters"],
     },
     email: {
       type: String,
@@ -13,17 +15,19 @@ const UserSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       lowercase: true,
+      match: [/^\S+@\S+\.\S+$/, "Please provide a valid email"],
     },
     password: {
       type: String,
       required: true,
-      minlength: 6,
+      minlength: [6, "Password must be at least 6 characters"],
       select: false,
     },
     bio: {
       type: String,
       default: "Hello World!",
-      maxlength: 100,
+      maxlength: [100, "Bio cannot exceed 100 characters"],
+      trim: true,
     },
     isOnline: {
       type: Boolean,
@@ -44,12 +48,16 @@ const UserSchema = new mongoose.Schema(
     isDeleted: {
       type: Boolean,
       default: false,
+      index: true,
     },
   },
   {
     timestamps: true,
   },
 );
+
+UserSchema.index({ email: 1 });
+UserSchema.index({ name: 1 });
 
 const User = mongoose.model("User", UserSchema);
 
