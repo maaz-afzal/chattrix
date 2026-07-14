@@ -1,37 +1,10 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
-import { body, validationResult } from "express-validator";
-
-const validateMiddleware = (req, res, next) => {
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    return res.status(400).json({
-      errors: errors.array(),
-    });
-  }
-
-  next();
-};
-
-const validateUpdateProfile = [
-  body("name")
-    .optional()
-    .trim()
-    .isLength({ min: 1, max: 50 })
-    .withMessage("Name must be between 1 and 50 characters."),
-
-  body("bio")
-    .optional()
-    .trim()
-    .isLength({ max: 100 })
-    .withMessage("Bio cannot exceed 100 characters."),
-
-  body("profileImage")
-    .optional()
-    .isURL()
-    .withMessage("Invalid profile image URL."),
-];
+import {
+  validateMiddleware,
+  validateProfile,
+} from "../middlewares/userValidation.js";
+import mongoose from "mongoose";
 
 // Get all users except current user
 const getAllUsers = async (req, res) => {
@@ -78,6 +51,12 @@ const getCurrentUser = async (req, res) => {
 const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        msg: "Invalid user id",
+      });
+    }
 
     const user = await User.findOne({
       _id: id,
@@ -147,15 +126,14 @@ const searchUsers = async (req, res) => {
 };
 
 const updateProfile = [
-  validateUpdateProfile,
+  validateProfile,
   validateMiddleware,
 
   async (req, res) => {
     try {
-      const { name, bio, profileImage, currentPassword, newPassword } =
-        req.body;
+      const { name, bio, profileImage } = req.body;
 
-      const user = await User.findById(req.user.id).select("+password");
+      const user = await User.findById(req.user.id);
 
       if (!user) {
         return res.status(404).json({
@@ -175,29 +153,9 @@ const updateProfile = [
         user.profileImage = profileImage;
       }
 
-      if (currentPassword && newPassword) {
-        const isMatch = await bcrypt.compare(currentPassword, user.password);
-
-        if (!isMatch) {
-          return res.status(400).json({
-            msg: "Current password is incorrect.",
-          });
-        }
-
-        if (newPassword.length < 6) {
-          return res.status(400).json({
-            msg: "Password must be at least 6 characters.",
-          });
-        }
-
-        user.password = await bcrypt.hash(newPassword, 12);
-      }
-
       const updatedUser = await user.save();
 
       const userData = updatedUser.toObject();
-
-      delete userData.password;
 
       res.status(200).json({
         msg: "Profile updated successfully.",
@@ -213,30 +171,4 @@ const updateProfile = [
   },
 ];
 
-const deleteAccount = async (req, res) => {
-  try {
-    await User.findByIdAndUpdate(req.user.id, {
-      isDeleted: true,
-      isOnline: false,
-    });
-
-    res.status(200).json({
-      msg: "Account deleted successfully.",
-    });
-  } catch (err) {
-    console.error("deleteAccount error:", err.message);
-
-    res.status(500).json({
-      msg: "Something went wrong.",
-    });
-  }
-};
-
-export {
-  getAllUsers,
-  getCurrentUser,
-  getUserById,
-  searchUsers,
-  updateProfile,
-  deleteAccount,
-};
+export { getAllUsers, getCurrentUser, getUserById, searchUsers, updateProfile };

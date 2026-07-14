@@ -1,21 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const safeParseUser = () => {
-  try {
-    const saved = localStorage.getItem("user");
-    return saved ? JSON.parse(saved) : null;
-  } catch {
-    localStorage.removeItem("user");
-    return null;
-  }
-};
+const token = localStorage.getItem("token");
+let user = null;
 
-const savedToken = localStorage.getItem("token");
+try {
+  const saved = localStorage.getItem("user");
+  if (saved) user = JSON.parse(saved);
+} catch {
+  localStorage.removeItem("user");
+}
 
 const initialState = {
-  isLoggedIn: Boolean(savedToken),
-  user: safeParseUser(),
-  token: savedToken || null,
+  isLoggedIn: Boolean(token),
+  user: user,
+  token: token || null,
 };
 
 const authSlice = createSlice({
@@ -23,17 +21,13 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     login(state, action) {
+      const { token, user } = action.payload;
       state.isLoggedIn = true;
-      state.token = action.payload.token;
-      const updatedUser = {
-        ...action.payload.user,
-        status: "online",
-      };
-      state.user = updatedUser;
-      localStorage.setItem("token", action.payload.token);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
+      state.token = token;
+      state.user = { ...user, status: "online" };
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(state.user));
     },
-
     logout(state) {
       state.isLoggedIn = false;
       state.user = null;

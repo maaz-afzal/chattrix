@@ -1,8 +1,11 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
-import { body, validationResult } from "express-validator";
 import generateToken from "../utils/generateToken.js";
-import { validateRegister, validateLogin, validateMiddleware } from "../middlewares/authValidation.js";
+import {
+  validateRegister,
+  validateLogin,
+  validateMiddleware,
+} from "../middlewares/authValidation.js";
 
 const register = [
   validateRegister,
@@ -40,6 +43,7 @@ const register = [
       });
     } catch (err) {
       console.error("register error:", err);
+
       res.status(500).json({
         msg: "Something went wrong.",
       });
@@ -55,34 +59,34 @@ const login = [
     try {
       const { email, password } = req.body;
 
-      const user = await User.findOne({ email }).select("+password");
+      const user = await User.findOne({ email, isDeleted: false }).select("+password");
 
       if (!user) {
         return res.status(401).json({
           msg: "Invalid credentials.",
         });
-      }
+        const isMatch = await bcrypt.compare(password, user.password);
 
-      const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+          return res.status(401).json({
+            msg: "Invalid credentials.",
+          });
+        }
 
-      if (!isMatch) {
-        return res.status(401).json({
-          msg: "Invalid credentials.",
+        const token = generateToken(user._id);
+
+        const userData = user.toObject();
+        delete userData.password;
+
+        res.status(200).json({
+          msg: "Login successful.",
+          user: userData,
+          token,
         });
       }
-
-      const token = generateToken(user._id);
-
-      const userData = user.toObject();
-      delete userData.password;
-
-      res.status(200).json({
-        msg: "Login successful.",
-        user: userData,
-        token,
-      });
     } catch (err) {
       console.error("login error:", err);
+
       res.status(500).json({
         msg: "Something went wrong.",
       });
@@ -98,7 +102,7 @@ const logout = (req, res) => {
 
 const checkAuth = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id).select("-password");
 
     if (!user) {
       return res.status(404).json({
@@ -118,4 +122,72 @@ const checkAuth = async (req, res) => {
   }
 };
 
-export { register, login, logout, checkAuth };
+const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.user.id).select("+password");
+
+    if (!user) {
+      return res.status(404).json({
+        msg: "User not found.",
+      });
+    }
+
+    if (!currentPassword || !newPassword) {
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+      if (!isMatch) {
+        return res.status(400).json({
+          msg: "Current password is incorrect.",
+        });
+      }
+
+      if (newPassword.length < 6) {
+        return res.status(400).json({
+          msg: "Password must be at least 6 characters.",
+        });
+      }
+
+      user.password = await bcrypt.hash(newPassword, 12);
+      await user.save();
+
+      return res.status(200).json({
+        msg: "Password changed successfully.",
+      });
+    }
+  } catch (err) {
+    return res.status(500).json({
+      msg: "Something went wrong",
+    });
+  }
+};
+
+const deleteAccount = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        isDeleted: true,
+        isOnline: false,
+      },
+      { new: true },
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        msg: "User not found.",
+      });
+    }
+
+    return res.status(200).json({
+      msg: "Account deleted successfully.",
+    });
+  } catch (err) {
+    console.error("deleteAccount error:", err.message);
+    return res.status(500).json({
+      msg: "Something went wrong.",
+    });
+  }
+};
+
+export { register, login, logout, checkAuth, deleteAccount, changePassword };

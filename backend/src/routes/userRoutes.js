@@ -6,7 +6,6 @@ import {
   getUserById,
   searchUsers,
   updateProfile,
-  deleteAccount,
 } from "../controllers/userController.js";
 
 import authMiddleware from "../middlewares/authMiddleware.js";
@@ -19,6 +18,5 @@ router.get("/me", authMiddleware, getCurrentUser);
 router.get("/search", apiLimiter, authMiddleware, searchUsers);
 router.get("/:id", authMiddleware, getUserById);
 router.put("/update", authMiddleware, updateProfile);
-router.delete("/delete", authMiddleware, deleteAccount);
 
 export default router;
