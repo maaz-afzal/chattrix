@@ -16,17 +16,29 @@ const conversationSchema = new mongoose.Schema(
     },
     lastMessageAt: {
       type: Date,
-      default: Date.now(),
+      default: Date.now,
     },
     unreadCount: {
       type: Map,
       of: Number,
-      default: {},
+      default: new Map(),
     },
     isAIChat: {
       type: Boolean,
       default: false,
     },
+    deletedFor: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    archivedFor: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     timestamps: true,
@@ -35,6 +47,7 @@ const conversationSchema = new mongoose.Schema(
 
 conversationSchema.index({ participants: 1 });
 conversationSchema.index({ updatedAt: -1 });
+conversationSchema.index({ isAIChat: 1 });
 
 const Conversation = mongoose.model("Conversation", conversationSchema);
 
