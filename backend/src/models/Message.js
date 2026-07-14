@@ -6,35 +6,21 @@ const MessageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Conversation",
       required: true,
+      index: true,
     },
     sender: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-    },
-    receiver: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      index: true,
     },
     text: {
       type: String,
+      trim: true,
       maxlength: [2000, "Message cannot exceed 2000 characters"],
-      validate: {
-        validator: function () {
-          return this.text || this.image;
-        },
-        message: "Message must have text or image",
-      },
     },
     image: {
       type: String,
-      validate: {
-        validator: function () {
-          return this.text || this.image;
-        },
-        message: "Message must have text or image",
-      },
     },
     status: {
       type: String,
@@ -45,7 +31,6 @@ const MessageSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        default: [],
       },
     ],
     deletedForEveryone: {
@@ -58,8 +43,15 @@ const MessageSchema = new mongoose.Schema(
   },
 );
 
-MessageSchema.index({ sender: 1, receiver: 1 });
-MessageSchema.index({ createdAt: -1 });
+MessageSchema.pre("validate", function (next) {
+  if (!this.text && !this.image) {
+    this.invalidate("text", "Message must have text or image");
+    this.invalidate("image", "Message must have text or image");
+  }
+  next();
+});
+
+MessageSchema.index({ conversationId: 1, createdAt: -1 });
 
 const Message = mongoose.model("Message", MessageSchema);
 
