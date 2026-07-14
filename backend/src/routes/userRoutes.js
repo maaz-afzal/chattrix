@@ -18,7 +18,7 @@ router.get("/", authMiddleware, getAllUsers);
 router.get("/me", authMiddleware, getCurrentUser);
 router.get("/search", apiLimiter, authMiddleware, searchUsers);
 router.get("/:id", authMiddleware, getUserById);
-router.put("/profile", authMiddleware, updateProfile);
-router.delete("/account", authMiddleware, deleteAccount);
+router.put("/update", authMiddleware, updateProfile);
+router.delete("/delete", authMiddleware, deleteAccount);
 
 export default router;
