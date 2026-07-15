@@ -13,6 +13,7 @@ import {
 import { login } from "../redux/Slices/authSlice.js";
 import * as authService from "../services/authService.js";
 import toast from "react-hot-toast";
+import { connectSocket } from "../lib/socket.js";
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -51,6 +52,7 @@ const LoginPage = () => {
 
       if (response.token && response.user) {
         dispatch(login({ token: response.token, user: response.user }));
+        connectSocket(response.token)
         setFormData({ email: "", password: "" });
         toast.success("Login successful!");
         setTimeout(() => navigate("/"), 1000);
