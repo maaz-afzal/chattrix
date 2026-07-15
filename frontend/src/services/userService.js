@@ -18,13 +18,4 @@ const updateProfile = async (formData) => {
   }
 };
 
-const deleteAccount = async () => {
-  try {
-    const res = await api.delete("/users/profile");
-    return res.data;
-  } catch (err) {
-    throw err;
-  }
-};
-
-export { getAllUsers, updateProfile, deleteAccount };
+export { getAllUsers, updateProfile };
