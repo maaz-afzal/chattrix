@@ -1,21 +1,28 @@
 import api from "./api";
 
 const getAllUsers = async () => {
-  try {
-    const res = await api.get("/users/profiles");
-    return res.data;
-  } catch (err) {
-    throw err;
-  }
+  const res = await api.get("/users");
+  return res.data;
+};
+
+const getCurrentUser = async () => {
+  const res = await api.get("/users/me");
+  return res.data;
+};
+
+const getUserById = async (id) => {
+  const res = await api.get(`/users/${id}`);
+  return res.data;
+};
+
+const searchUsers = async (query) => {
+  const res = await api.get("/users/search", { params: { query } });
+  return res.data;
 };
 
 const updateProfile = async (formData) => {
-  try {
-    const res = await api.put("/users/profile", formData);
-    return res.data;
-  } catch (err) {
-    throw err;
-  }
+  const res = await api.put("/users/update", formData);
+  return res.data;
 };
 
-export { getAllUsers, updateProfile };
+export { getAllUsers, getCurrentUser, getUserById, searchUsers, updateProfile };

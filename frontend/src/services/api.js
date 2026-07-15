@@ -4,7 +4,7 @@ import { logout } from "../redux/Slices/authSlice.js";
 import { disconnectSocket } from "../lib/socket.js";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000/api",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
@@ -28,7 +28,7 @@ api.interceptors.response.use(
       window.location.href = "/login";
     }
     return Promise.reject(error);
-  },
+  }
 );
 
 export default api;
