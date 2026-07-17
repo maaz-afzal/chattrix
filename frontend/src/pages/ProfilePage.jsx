@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout, updateUser } from "../redux/Slices/authSlice";
+import { logout, updateUser } from "../redux/Slices/authSlice.js";
 import * as userService from "../services/userService.js";
+import * as authService from "../services/authService.js";
 import toast from "react-hot-toast";
 import { disconnectSocket } from "../lib/socket.js";
 import {
@@ -38,7 +39,7 @@ const ProfilePage = () => {
   });
 
   const [passwordData, setPasswordData] = useState({
-    currPassword: "",
+    currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
@@ -74,7 +75,7 @@ const ProfilePage = () => {
   };
 
   const handleChangePassword = async () => {
-    if (!passwordData.currPassword) {
+    if (!passwordData.currentPassword) {
       toast.error("Current password is required.");
       return;
     }
@@ -89,17 +90,17 @@ const ProfilePage = () => {
 
     try {
       setLoading(true);
-      const res = await userService.updateProfile({
-        currPassword: passwordData.currPassword,
+      const res = await authService.changePassword({
+        currentPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword,
         confirmPassword: passwordData.confirmPassword,
       });
 
-      if (res.msg === "Password updated successfully!") {
+      if (res.success === true) {
         toast.success("Password updated successfully!");
         setShowPassword(false);
         setPasswordData({
-          currPassword: "",
+          currentPassword: "",
           newPassword: "",
           confirmPassword: "",
         });
@@ -111,7 +112,7 @@ const ProfilePage = () => {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     dispatch(logout());
     disconnectSocket();
     navigate("/login");
@@ -120,8 +121,8 @@ const ProfilePage = () => {
   const handleDelete = async () => {
     try {
       setLoading(true);
-      const res = await userService.deleteAccount();
-      if (res.msg === "User deleted successfully!") {
+      const res = await authService.deleteAccount();
+      if (res.success === true) {
         disconnectSocket();
         dispatch(logout());
         navigate("/login");
@@ -295,11 +296,11 @@ const ProfilePage = () => {
                 <input
                   type="password"
                   placeholder="Current Password"
-                  value={passwordData.currPassword}
+                  value={passwordData.currentPassword}
                   onChange={(e) =>
                     setPasswordData({
                       ...passwordData,
-                      currPassword: e.target.value,
+                      currentPassword: e.target.value,
                     })
                   }
                   className="w-full bg-black rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 text-sm border border-cyan-500/20"

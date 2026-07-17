@@ -23,10 +23,10 @@ app.use(express.json({ limit: "10mb" }));
 
 // app routes
 app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/conversations", conversationRoutes);
-app.use("/api/messages", messageRoutes);
-app.use("/api/ai", aiRoutes);
+app.use("api/users", userRoutes);
+app.use("api/conversations", conversationRoutes);
+app.use("api/messages", messageRoutes);
+app.use("api/ai", aiRoutes);
 
 // 404 handler
 app.use((req, res) => {

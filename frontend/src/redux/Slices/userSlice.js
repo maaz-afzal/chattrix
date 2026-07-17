@@ -1,23 +1,49 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  name: "",
-  bio: "",
-  profileImage: "",
+  allUsers: [],
+  onlineUsers: [],
+  selectedUser: null,
 };
 
 const userSlice = createSlice({
-  name: "user",
+  name: "users",
   initialState,
-
   reducers: {
-    updateProfile(state, action) {
-      state.name = action.payload.name;
-      state.bio = action.payload.bio;
-      state.profileImage = action.payload.profileImage;
+    setAllUsers(state, action) {
+      state.allUsers = action.payload;
+    },
+    setOnlineUsers(state, action) {
+      state.onlineUsers = action.payload;
+    },
+    addOnlineUser(state, action) {
+      if (!state.onlineUsers.includes(action.payload)) {
+        state.onlineUsers.push(action.payload);
+      }
+    },
+    removeOnlineUser(state, action) {
+      state.onlineUsers = state.onlineUsers.filter(
+        (id) => id !== action.payload,
+      );
+    },
+    setSelectedUser(state, action) {
+      state.selectedUser = action.payload;
+    },
+    updateUserStatus(state, action) {
+      const { userId, isOnline } = action.payload;
+      const user = state.allUsers.find((u) => u._id === userId);
+      if (user) user.isOnline = isOnline;
     },
   },
 });
 
-export const { updateProfile } = userSlice.actions;
+export const {
+  setAllUsers,
+  setOnlineUsers,
+  addOnlineUser,
+  removeOnlineUser,
+  setSelectedUser,
+  updateUserStatus,
+} = userSlice.actions;
+
 export default userSlice.reducer;

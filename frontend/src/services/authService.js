@@ -30,4 +30,4 @@ const changePassword = async (data) => {
   return res.data;
 };
 
-export { register, login, logout, checkAuth, deleteAccount, changePassword };
+export default { register, login, logout, checkAuth, deleteAccount, changePassword };

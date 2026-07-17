@@ -10,11 +10,10 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import * as authService from "../services/authService.js";
+import authService from "../services/authService.js";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/Slices/authSlice";
 import { Link } from "react-router-dom";
-import { connectSocket } from "../lib/socket.js";
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
@@ -62,7 +61,6 @@ const SignupPage = () => {
 
       if (response.token && response.user) {
         dispatch(login({ token: response.token, user: response.user }));
-        connectSocket(response.token);
         setFormData({ name: "", email: "", password: "" });
         toast.success("Signup successful!");
         navigate("/");
