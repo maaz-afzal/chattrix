@@ -43,12 +43,11 @@ const MessageSchema = new mongoose.Schema(
   },
 );
 
-MessageSchema.pre("validate", function (next) {
+MessageSchema.pre("validate", function () {
   if (!this.text && !this.image) {
     this.invalidate("text", "Message must have text or image");
     this.invalidate("image", "Message must have text or image");
   }
-  next();
 });
 
 MessageSchema.index({ conversationId: 1, createdAt: -1 });
