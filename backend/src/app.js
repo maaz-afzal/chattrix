@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -11,6 +12,8 @@ import authMiddleware from "./middlewares/authMiddleware.js";
 
 const app = express();
 
+app.use(helmet());
+
 // cors
 app.use(
   cors({
@@ -19,14 +22,14 @@ app.use(
   }),
 );
 
-app.use(express.json({ limit: "10mb" }));
+app.use(express.json({ limit: "5mb" }));
 
 // app routes
 app.use("/api/auth", authRoutes);
-app.use("api/users", userRoutes);
-app.use("api/conversations", conversationRoutes);
-app.use("api/messages", messageRoutes);
-app.use("api/ai", aiRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/conversations", conversationRoutes);
+app.use("/api/messages", messageRoutes);
+app.use("/api/ai", aiRoutes);
 
 // 404 handler
 app.use((req, res) => {

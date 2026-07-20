@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Send, Image as ImageIcon, X } from "lucide-react";
+import { useSelector } from "react-redux";
 import * as messageService from "../../services/messageService.js";
 import toast from "react-hot-toast";
 
@@ -9,6 +10,9 @@ const MessageInput = ({
   setAiMessages,
   aiMessages,
 }) => {
+  const selectedConversationId = useSelector(
+    (state) => state.users.selectedConversationId,
+  );
   const [message, setMessage] = useState("");
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -48,11 +52,15 @@ const MessageInput = ({
 
   const handleNormalSend = async () => {
     if (!selected?._id) return;
+    if (!selectedConversationId) {
+      toast.error("Conversation not ready. Try selecting the user again.");
+      return;
+    }
     if (!message.trim() && !image) return;
 
     try {
       setLoading(true);
-      await messageService.sendMessage(selected._id, {
+      await messageService.sendMessage(selectedConversationId, selected._id, {
         text: message.trim() || undefined,
         image: image || undefined,
       });

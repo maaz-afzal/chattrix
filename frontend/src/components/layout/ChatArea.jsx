@@ -22,7 +22,7 @@ const ChatArea = ({ selected, isAISelected }) => {
   const [aiMessages, setAiMessages] = useState([
     {
       _id: "ai-welcome",
-      text: "Hello! I'm your AI Assistant. How can I help you today? 🤖",
+      text: "Hello! I'm your AI Assistant. How can I help you today?",
       sender: "ai",
       createdAt: new Date().toISOString(),
       status: "sent",

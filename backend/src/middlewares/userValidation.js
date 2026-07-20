@@ -27,6 +27,6 @@ export const validateProfile = [
 
   body("profileImage")
     .optional()
-    .isURL()
+    .isString()
     .withMessage("Invalid profile image URL."),
 ];

@@ -4,6 +4,7 @@ const initialState = {
   allUsers: [],
   onlineUsers: [],
   selectedUser: null,
+  selectedConversationId: null,
 };
 
 const userSlice = createSlice({
@@ -29,6 +30,9 @@ const userSlice = createSlice({
     setSelectedUser(state, action) {
       state.selectedUser = action.payload;
     },
+    setSelectedConversationId(state, action) {
+      state.selectedConversationId = action.payload;
+    },
     updateUserStatus(state, action) {
       const { userId, isOnline } = action.payload;
       const user = state.allUsers.find((u) => u._id === userId);
@@ -43,6 +47,7 @@ export const {
   addOnlineUser,
   removeOnlineUser,
   setSelectedUser,
+  setSelectedConversationId,
   updateUserStatus,
 } = userSlice.actions;
 

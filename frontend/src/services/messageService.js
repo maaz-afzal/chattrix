@@ -1,48 +1,33 @@
 import api from "./api";
 
-const getConversation = async (id) => {
-  try {
-    const res = await api.get(`/message/${id}`);
-    return res.data;
-  } catch (err) {
-    throw err;
-  }
+const findOrCreateConversation = async (receiverId) => {
+  const res = await api.post("/conversations", { receiverId });
+  return res.data;
+};
+
+const getMessages = async (conversationId) => {
+  const res = await api.get(`/messages/${conversationId}`);
+  return res.data;
 };
 
 const aiChat = async (data) => {
-  try {
-    const res = await api.post("/message/ai", data);
-    return res.data;
-  } catch (err) {
-    throw err;
-  }
-}
-
-const sendMessage = async (id, data) => {
-  try {
-    const res = await api.post(`/message/${id}`, data);
-    return res.data;
-  } catch (err) {
-    throw err;
-  }
+  const res = await api.post("/message/ai", data);
+  return res.data;
 };
 
-const clearChat = async (id) => {
-  try {
-    const res = await api.delete(`/message/clear/${id}`);
-    return res.data;
-  } catch (err) {
-    throw err;
-  }
+const sendMessage = async (conversationId, receiverId, data) => {
+  const res = await api.post(`/messages/${conversationId}/${receiverId}`, data);
+  return res.data;
+};
+
+const clearChat = async (conversationId) => {
+  const res = await api.delete(`/messages/clear/${conversationId}`);
+  return res.data;
 };
 
 const deleteMessage = async (id) => {
-  try {
-    const res = await api.delete(`/message/${id}`);
-    return res.data;
-  } catch (err) {
-    throw err;
-  }
+  const res = await api.delete(`/message/${id}`);
+  return res.data;
 };
 
-export { aiChat, getConversation, sendMessage, deleteMessage, clearChat };
+export { findOrCreateConversation, getMessages, aiChat, sendMessage, deleteMessage, clearChat };

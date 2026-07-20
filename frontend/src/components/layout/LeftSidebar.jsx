@@ -7,8 +7,9 @@ import FilterTabs from "../ui/FilterTabs";
 import ChatList from "../ui/ChatList";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getAllUsers } from "../../services/userService.js";
+import userService from "../../services/userService.js";
 import { setAllUsers } from "../../redux/Slices/userSlice.js";
+import conversationService from "../../services/conversationService.js";
 import toast from "react-hot-toast";
 
 const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
@@ -25,10 +26,12 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
 
   const isOnline = onlineUsers.includes(user?._id);
 
+
+  // fetch all users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await getAllUsers();
+        const res = await userService.getAllUsers();
         dispatch(setAllUsers(res));
       } catch {
         toast.error("Failed to load users.");
@@ -45,7 +48,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
     u.name.toLowerCase().includes(modalSearch.toLowerCase()),
   );
 
-  const handleUserSelect = (user) => {
+  const handleConversation = (id) => {
     setIsModalOpen(false);
     setModalSearch("");
     onSelected(user);
@@ -173,10 +176,10 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
                 modalFilteredUsers.map((u) => (
                   <button
                     key={u._id}
-                    onClick={() => handleUserSelect(u)}
+                    onClick={() => handleConversation(u._id)}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 transition text-left"
                   >
-                    <Avatar name={u.name} size="sm" />
+                    <Avatar profileImage={user.profileImage} size="sm" online={user.isOnline} />
                     <div className="flex-1 min-w-0">
                       <p className="text-white text-sm font-medium truncate">
                         {u.name}

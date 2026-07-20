@@ -25,4 +25,4 @@ const updateProfile = async (formData) => {
   return res.data;
 };
 
-export { getAllUsers, getCurrentUser, getUserById, searchUsers, updateProfile };
+export default { getAllUsers, getCurrentUser, getUserById, searchUsers, updateProfile };

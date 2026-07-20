@@ -40,9 +40,7 @@ const UserSchema = new mongoose.Schema(
     profileImage: {
       type: String,
       default: function () {
-        return `https://ui-avatars.com/api/?name=${encodeURIComponent(
-          this.name,
-        )}&background=random`;
+        return `https://ui-avatars.com/api/?length=1&name=${encodeURIComponent(this.name)}&background=random`;
       },
     },
     isDeleted: {

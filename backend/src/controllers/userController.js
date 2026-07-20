@@ -10,19 +10,24 @@ import mongoose from "mongoose";
 const getAllUsers = async (req, res) => {
   try {
     const userId = req.user.id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
 
-    const users = await User.find({
-      _id: { $ne: userId },
-      isDeleted: false,
-    })
-      .select("-password")
-      .limit(50);
+    // count user documents (passing filter(user docs))
+    const totalUsers = await User.countDocuments(filter);
 
-    res.status(200).json(users);
+    // exclude current user and deleted users +  fetch users with filter, pagination, and sorting
+    const users = await User.find({ _id: { $ne: userId, isDeleted: false } })
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json(users);
   } catch (err) {
     console.error("getAllUsers error:", err.message);
 
-    res.status(500).json({
+    return res.status(500).json({
       msg: "Something went wrong.",
     });
   }
@@ -38,7 +43,7 @@ const getCurrentUser = async (req, res) => {
       });
     }
 
-    res.status(200).json(user);
+    return res.status(200).json(user);
   } catch (err) {
     console.error("getCurrentUser error:", err.message);
 
@@ -158,6 +163,7 @@ const updateProfile = [
       const userData = updatedUser.toObject();
 
       res.status(200).json({
+        success: true,
         msg: "Profile updated successfully.",
         user: userData,
       });
