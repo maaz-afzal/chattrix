@@ -59,10 +59,12 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
     const handleNewMessage = () => fetchConversations();
     socket.on("receive-message", handleNewMessage);
     socket.on("message-sent", handleNewMessage);
+    socket.on("unread-update", handleNewMessage);
 
     return () => {
       socket.off("receive-message", handleNewMessage);
       socket.off("message-sent", handleNewMessage);
+      socket.off("unread-update", handleNewMessage);
     };
   }, [fetchConversations]);
 
@@ -74,6 +76,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
       (p) => p._id !== currentUser?._id,
     );
     if (!otherUser) return null;
+    const unreadCount = conv.unreadCount?.get?.(currentUser?._id) || 0;
     return {
       ...otherUser,
       conversationId: conv._id,
@@ -83,6 +86,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
           ? "Image"
           : null,
       lastMessageAt: conv.updatedAt,
+      unreadCount,
     };
   }).filter(Boolean);
 

@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 
 const ChatItem = ({ chat, isSelected, onClick, onDelete }) => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { name, status, lastSeen, lastMessage } = chat;
+  const { name, status, lastSeen, lastMessage, unreadCount } = chat;
   const isOnline = status === "online";
 
   const subtitle = isOnline
@@ -47,6 +47,11 @@ const ChatItem = ({ chat, isSelected, onClick, onDelete }) => {
           <p className="text-gray-200 font-medium text-sm truncate">{name}</p>
           <p className="text-gray-500 text-xs truncate">{subtitle}</p>
         </div>
+        {unreadCount > 0 && (
+          <span className="shrink-0 w-5 h-5 bg-cyan-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-[0_0_6px_rgba(34,211,238,0.4)]">
+            {unreadCount > 99 ? "99+" : unreadCount}
+          </span>
+        )}
       </button>
 
       <button

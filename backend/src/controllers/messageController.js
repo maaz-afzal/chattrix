@@ -60,13 +60,21 @@ const sendMessage = async (req, res) => {
       image: imageUrl,
     });
 
-    await Conversation.findByIdAndUpdate(conversationId, {
+    const conversation = await Conversation.findByIdAndUpdate(conversationId, {
       lastMessage: message._id,
       updatedAt: new Date(),
-    });
+      $inc: { [`unreadCount.${receiverId}`]: 1 },
+    }, { new: true });
 
     if (io) {
       io.to(receiverId).emit("receive-message", message);
+
+      if (conversation) {
+        io.to(receiverId).emit("unread-update", {
+          conversationId,
+          unreadCount: conversation.unreadCount?.get?.(receiverId?.toString()) || 0,
+        });
+      }
 
       io.to(senderId).emit("message-sent", message);
     }
@@ -97,12 +105,11 @@ const getMessages = async (req, res) => {
 
     const messages = await Message.find({
       conversationId,
+      deletedFor: { $ne: userId },
+    }).sort({ createdAt: 1 });
 
-      deletedFor: {
-        $ne: userId,
-      },
-    }).sort({
-      createdAt: 1,
+    await Conversation.findByIdAndUpdate(conversationId, {
+      $set: { [`unreadCount.${userId}`]: 0 },
     });
 
     res.status(200).json(messages);
