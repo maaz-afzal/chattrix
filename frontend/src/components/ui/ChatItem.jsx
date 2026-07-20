@@ -3,9 +3,8 @@ import Avatar from "../common/Avatar";
 import { formatLastSeen } from "../../utils/formatLastSeen.js";
 
 const ChatItem = ({ chat, isSelected, onClick }) => {
-  const { name, avatar, status, lastSeen, lastMessage } = chat;
+  const { name, status, lastSeen, lastMessage } = chat;
   const isOnline = status === "online";
-  const avatarLetter = avatar || name?.charAt(0).toUpperCase() || "U";
 
   const subtitle = isOnline
     ? "Online"
@@ -24,7 +23,7 @@ const ChatItem = ({ chat, isSelected, onClick }) => {
           : "hover:bg-cyan-500/5 border border-transparent"
       }`}
     >
-      <Avatar name={avatarLetter} size="md" online={isOnline} />
+      <Avatar name={name} profileImage={chat.profileImage} size="md" online={isOnline} />
       <div className="flex-1 min-w-0">
         <p className="text-gray-200 font-medium text-sm truncate">{name}</p>
         <p className="text-gray-500 text-xs truncate">{subtitle}</p>

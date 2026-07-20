@@ -24,7 +24,7 @@ const ChatHeader = ({ selected, isAISelected }) => {
   } = useSelect();
   const onlineUsers = useSelector((state) => state.users.onlineUsers);
   const typingUsers = useSelector((state) => state.users.typingUsers);
-  const { name, _id } = selected || {};
+  const { name, _id, profileImage } = selected || {};
   const avatarLetter = name?.charAt(0).toUpperCase() || "U";
   const isOnline = onlineUsers.includes(_id) || selected?.isOnline || selected?.status === "online";
   const isTyping = _id && typingUsers[_id];
@@ -95,7 +95,7 @@ const ChatHeader = ({ selected, isAISelected }) => {
           >
             <ChevronLeft className="w-5 h-5 text-gray-400" />
           </button>
-          <Avatar name={avatarLetter} size="md" online={isOnline} />
+          <Avatar name={name} profileImage={profileImage} size="md" online={isOnline} />
           <div className="min-w-0">
             <p className="text-gray-200 font-semibold truncate">{name}</p>
             <p className="text-gray-500 text-xs flex items-center gap-1">

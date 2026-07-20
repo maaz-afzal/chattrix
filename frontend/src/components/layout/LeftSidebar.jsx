@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import userService from "../../services/userService.js";
 import conversationService from "../../services/conversationService.js";
+import { getSocket } from "../../lib/socket.js";
 import * as messageService from "../../services/messageService.js";
 import { setAllUsers, setSelectedConversationId } from "../../redux/Slices/userSlice.js";
 import toast from "react-hot-toast";
@@ -51,6 +52,20 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
     fetchAllUsers();
   }, [fetchConversations, fetchAllUsers]);
 
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket) return;
+
+    const handleNewMessage = () => fetchConversations();
+    socket.on("receive-message", handleNewMessage);
+    socket.on("message-sent", handleNewMessage);
+
+    return () => {
+      socket.off("receive-message", handleNewMessage);
+      socket.off("message-sent", handleNewMessage);
+    };
+  }, [fetchConversations]);
+
   // Transform conversations into user + lastMessage format
   const chatList = conversations
     .filter((conv) => !conv.isAIChat)
@@ -87,9 +102,10 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
       onSelected(selectedUser);
     } else {
       try {
-        const conv = await messageService.findOrCreateConversation(selectedUser._id);
-        dispatch(setSelectedConversationId(conv._id));
-        onSelected({ ...selectedUser, conversationId: conv._id });
+        const res = await messageService.findOrCreateConversation(selectedUser._id);
+        const conversationId = res.conversation?._id || res._id;
+        dispatch(setSelectedConversationId(conversationId));
+        onSelected({ ...selectedUser, conversationId });
         fetchConversations();
       } catch {
         toast.error("Failed to start conversation.");
@@ -149,7 +165,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
         <div className="p-3 border-t border-cyan-500/20">
           <div className="flex items-center gap-3 p-2.5 bg-white/2 rounded-2xl border border-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.06)]">
             <div className="relative shrink-0">
-              <Avatar name={currentUser?.name || "U"} />
+              <Avatar name={currentUser?.name} profileImage={currentUser?.profileImage} />
               {isOnline ? (
                 <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-black shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
               ) : (
@@ -222,7 +238,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
                     onClick={() => handleConversation(u)}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 transition text-left"
                   >
-                    <Avatar name={u.name} size="sm" />
+                    <Avatar name={u.name} profileImage={u.profileImage} size="sm" />
                     <div className="flex-1 min-w-0">
                       <p className="text-white text-sm font-medium truncate">
                         {u.name}
