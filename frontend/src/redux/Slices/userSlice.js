@@ -6,6 +6,7 @@ const initialState = {
   selectedUser: null,
   selectedConversationId: null,
   typingUsers: {},
+  lastSeenByUser: {},
 };
 
 const userSlice = createSlice({
@@ -45,6 +46,10 @@ const userSlice = createSlice({
     clearTyping(state, action) {
       delete state.typingUsers[action.payload];
     },
+    setLastSeen(state, action) {
+      const { userId, lastSeen } = action.payload;
+      state.lastSeenByUser[userId] = lastSeen;
+    },
   },
 });
 
@@ -58,6 +63,7 @@ export const {
   updateUserStatus,
   setTyping,
   clearTyping,
+  setLastSeen,
 } = userSlice.actions;
 
 export default userSlice.reducer;

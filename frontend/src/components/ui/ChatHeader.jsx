@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import Avatar from "../common/Avatar";
 import IconButton from "../common/IconButton";
 import { useSelect } from "../layout/ChatArea.jsx";
+import { formatLastSeen } from "../../utils/formatLastSeen.js";
 
 const ChatHeader = ({ selected, isAISelected }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,10 +25,13 @@ const ChatHeader = ({ selected, isAISelected }) => {
   } = useSelect();
   const onlineUsers = useSelector((state) => state.users.onlineUsers);
   const typingUsers = useSelector((state) => state.users.typingUsers);
+  const lastSeenByUser = useSelector((state) => state.users.lastSeenByUser);
   const { name, _id, profileImage } = selected || {};
   const avatarLetter = name?.charAt(0).toUpperCase() || "U";
   const isOnline = onlineUsers.includes(_id) || selected?.isOnline || selected?.status === "online";
   const isTyping = _id && typingUsers[_id];
+  const lastSeen = lastSeenByUser[_id] || selected?.lastSeen;
+  const statusText = isOnline ? "Online" : lastSeen ? `Last seen ${formatLastSeen(lastSeen)}` : "Offline";
 
   if (isAISelected) {
     return (
@@ -110,7 +114,7 @@ const ChatHeader = ({ selected, isAISelected }) => {
                         : "bg-gray-500"
                     }`}
                   />
-                  {isOnline ? "Online" : "Offline"}
+                  {statusText}
                 </>
               )}
             </p>

@@ -1,44 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import ChatItem from "./ChatItem";
 import AIChatItem from "./AIChatItem";
-import { getSocket } from "../../lib/socket.js";
 
 const ChatList = ({ users, onSelectedUser, onSelectAI, isAISelected }) => {
   const [selectedChatId, setSelectedChatId] = useState(null);
-  const [onlineUsers, setOnlineUsers] = useState({});
-  const [lastSeenMap, setLastSeenMap] = useState({});
-
-  useEffect(() => {
-    const socket = getSocket();
-    if (!socket) return;
-
-    const handleUserOnline = (userId) => {
-      setOnlineUsers((prev) => ({ ...prev, [userId]: true }));
-    };
-
-    const handleUserOffline = ({ userId, lastSeen }) => {
-      setOnlineUsers((prev) => ({ ...prev, [userId]: false }));
-      setLastSeenMap((prev) => ({ ...prev, [userId]: lastSeen }));
-    };
-
-    socket.on("user-online", handleUserOnline);
-    socket.on("user-offline", handleUserOffline);
-
-    return () => {
-      socket.off("user-online", handleUserOnline);
-      socket.off("user-offline", handleUserOffline);
-    };
-  }, []);
+  const onlineUsers = useSelector((state) => state.users.onlineUsers);
+  const lastSeenByUser = useSelector((state) => state.users.lastSeenByUser);
 
   const enrichedUsers = users.map((user) => ({
     ...user,
-    status:
-      onlineUsers[user._id] === true
-        ? "online"
-        : onlineUsers[user._id] === false
-          ? "offline"
-          : user.status,
-    lastSeen: lastSeenMap[user._id] || user.lastSeen,
+    status: onlineUsers.includes(user._id) ? "online" : "offline",
+    isOnline: onlineUsers.includes(user._id),
+    lastSeen: lastSeenByUser[user._id] || user.lastSeen,
   }));
 
   const handleSelectChat = (chat) => {
