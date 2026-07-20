@@ -8,6 +8,7 @@ import authService from "../services/authService.js";
 import toast from "react-hot-toast";
 import { disconnectSocket } from "../lib/socket.js";
 import { ArrowLeft, LogOut, Trash2, User, Mail, FileText, AlertCircle, Edit2, Save, X, Camera, Sun, Moon, Monitor, Shield, Palette, ChevronRight } from "lucide-react";
+import { getSocket } from "../lib/socket.js";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -180,7 +181,8 @@ const ProfilePage = () => {
 
   const onlineUsers = useSelector((state) => state.users.onlineUsers);
   const lastSeenByUser = useSelector((state) => state.users.lastSeenByUser);
-  const isOnline = onlineUsers.includes(user?._id) || user?.isOnline === true;
+  const socket = getSocket();
+  const isOnline = onlineUsers.includes(user?._id) || user?.isOnline === true || socket?.connected;
   const lastSeen = lastSeenByUser[user?._id];
 
   return (

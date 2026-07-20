@@ -10,13 +10,11 @@ const ChatItem = ({ chat, isSelected, onClick, onDelete }) => {
   const { name, status, lastSeen, lastMessage, unreadCount } = chat;
   const isOnline = status === "online";
 
-  const subtitle = isOnline
-    ? "Online"
-    : lastMessage
-      ? lastMessage
-      : lastSeen
-        ? `Last seen ${formatLastSeen(lastSeen)}`
-        : "Offline";
+  const subtitle = lastMessage
+    ? lastMessage
+    : lastSeen
+      ? (isOnline ? "Online" : `Last seen ${formatLastSeen(lastSeen)}`)
+      : (isOnline ? "Online" : "Offline");
 
   const handleDelete = async (e) => {
     e.stopPropagation();

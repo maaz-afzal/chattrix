@@ -27,7 +27,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
   const [modalSearch, setModalSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const isOnline = onlineUsers.includes(currentUser?._id);
+  const isOnline = onlineUsers.includes(currentUser?._id) || getSocket()?.connected;
 
   const fetchConversations = useCallback(async () => {
     try {
@@ -76,7 +76,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
       (p) => p._id !== currentUser?._id,
     );
     if (!otherUser) return null;
-    const unreadCount = conv.unreadCount?.get?.(currentUser?._id) || 0;
+    const unreadCount = currentUser?._id ? (conv.unreadCount?.[currentUser._id] || 0) : 0;
     return {
       ...otherUser,
       conversationId: conv._id,
