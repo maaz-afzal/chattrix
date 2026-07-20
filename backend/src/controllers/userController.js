@@ -14,11 +14,11 @@ const getAllUsers = async (req, res) => {
     const limit = parseInt(req.query.limit) || 20;
     const skip = (page - 1) * limit;
 
-    // count user documents (passing filter(user docs))
-    const totalUsers = await User.countDocuments(filter);
-
-    // exclude current user and deleted users +  fetch users with filter, pagination, and sorting
-    const users = await User.find({ _id: { $ne: userId, isDeleted: false } })
+    const users = await User.find({
+      _id: { $ne: userId },
+      isDeleted: false,
+    })
+      .select("-password")
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 });
