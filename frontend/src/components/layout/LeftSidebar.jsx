@@ -158,6 +158,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
             onSelectedUser={onSelected}
             onSelectAI={onSelectAI}
             isAISelected={isAISelected}
+            onDeleteConversation={fetchConversations}
           />
         </div>
 

@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import ChatItem from "./ChatItem";
 import AIChatItem from "./AIChatItem";
 
-const ChatList = ({ users, onSelectedUser, onSelectAI, isAISelected }) => {
+const ChatList = ({ users, onSelectedUser, onSelectAI, isAISelected, onDeleteConversation }) => {
   const [selectedChatId, setSelectedChatId] = useState(null);
   const onlineUsers = useSelector((state) => state.users.onlineUsers);
   const lastSeenByUser = useSelector((state) => state.users.lastSeenByUser);
@@ -35,6 +35,7 @@ const ChatList = ({ users, onSelectedUser, onSelectAI, isAISelected }) => {
           chat={chat}
           isSelected={selectedChatId === chat._id}
           onClick={() => handleSelectChat(chat)}
+          onDelete={onDeleteConversation}
         />
       ))}
 
