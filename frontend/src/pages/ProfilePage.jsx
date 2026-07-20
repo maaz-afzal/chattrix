@@ -2,11 +2,12 @@ import React, { useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout, updateUser } from "../redux/Slices/authSlice.js";
+import { formatLastSeen } from "../utils/formatLastSeen.js";
 import userService from "../services/userService.js";
 import authService from "../services/authService.js";
 import toast from "react-hot-toast";
 import { disconnectSocket } from "../lib/socket.js";
-import { ArrowLeft, Lock, LogOut, Trash2, User, Mail, FileText, AlertCircle, Edit2, Save, X, Camera, Sun, Moon, Monitor, Shield, Palette, ChevronRight } from "lucide-react";
+import { ArrowLeft, LogOut, Trash2, User, Mail, FileText, AlertCircle, Edit2, Save, X, Camera, Sun, Moon, Monitor, Shield, Palette, ChevronRight } from "lucide-react";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -150,6 +151,11 @@ const ProfilePage = () => {
   };
 
   const handleLogout = async () => {
+    try {
+      await authService.logout();
+    } catch {
+      // proceed with local logout even if API fails
+    }
     dispatch(logout());
     disconnectSocket();
     navigate("/login");
@@ -172,7 +178,10 @@ const ProfilePage = () => {
     }
   };
 
-  const isOnline = user?.isOnline === "online";
+  const onlineUsers = useSelector((state) => state.users.onlineUsers);
+  const lastSeenByUser = useSelector((state) => state.users.lastSeenByUser);
+  const isOnline = onlineUsers.includes(user?._id) || user?.isOnline === true;
+  const lastSeen = lastSeenByUser[user?._id];
 
   return (
     <div className="min-h-screen bg-[#0A0A0B] text-white">
@@ -282,7 +291,7 @@ const ProfilePage = () => {
                 <div
                   className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-green-400" : "bg-gray-500"}`}
                 />
-                {isOnline ? "Online" : "Offline"}
+                {isOnline ? "Online" : lastSeen ? `Last seen ${formatLastSeen(lastSeen)}` : "Offline"}
               </div>
             </div>
 
