@@ -162,7 +162,7 @@ const deleteMessage = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
-    const { everyone } = req.body;
+    const { everyone } = req.body || {};
 
     const message = await Message.findById(id);
 
