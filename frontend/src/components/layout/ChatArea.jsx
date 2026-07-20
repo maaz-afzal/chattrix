@@ -48,9 +48,9 @@ const ChatArea = ({ selected, isAISelected }) => {
   };
 
   const handleClearChat = async () => {
-    if (!selected?._id) return;
+    if (!selected?.conversationId) return;
     try {
-      await messageService.clearChat(selected._id);
+      await messageService.clearChat(selected.conversationId);
       toast.success("Chat cleared!");
       setClearTrigger((prev) => prev + 1);
     } catch {

@@ -19,12 +19,12 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
 
   const { selectMode, toggleMessage, clearTrigger } = useSelect();
 
-  const getConversation = async (userId) => {
-    if (!userId) return;
+  const getConversation = async (conversationId) => {
+    if (!conversationId) return;
     try {
       setLoading(true);
       setError(null);
-      const res = await messageService.getConversation(userId);
+      const res = await messageService.getMessages(conversationId);
       setConversation(res);
     } catch (err) {
       console.error("Error fetching conversation:", err);
@@ -37,24 +37,23 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
   useEffect(() => {
     setConversation([]);
     setError(null);
-    if (selected?._id) {
-      getConversation(selected._id);
+    if (selected?.conversationId) {
+      getConversation(selected.conversationId);
     }
   }, [selected, clearTrigger]);
 
   useEffect(() => {
-    if (!selected?._id) return;
+    if (!selected?.conversationId) return;
 
     const socket = getSocket();
     if (!socket) return;
 
     const handleNewMessage = (newMessage) => {
       const currentSelected = selectedRef.current;
-      if (!currentSelected?._id) return;
+      if (!currentSelected?.conversationId) return;
 
       const isRelevant =
-        newMessage.sender?.toString() === currentSelected._id.toString() ||
-        newMessage.receiver?.toString() === currentSelected._id.toString();
+        newMessage.conversationId?.toString() === currentSelected.conversationId.toString();
 
       if (!isRelevant) return;
 
@@ -66,8 +65,8 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
     };
 
     const handleReconnect = () => {
-      if (selectedRef.current?._id) {
-        getConversation(selectedRef.current._id);
+      if (selectedRef.current?.conversationId) {
+        getConversation(selectedRef.current.conversationId);
       }
     };
 
@@ -229,7 +228,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
       <div className="flex-1 flex flex-col items-center justify-center gap-3">
         <p className="text-red-400 text-sm">{error}</p>
         <button
-          onClick={() => getConversation(selected._id)}
+          onClick={() => getConversation(selected.conversationId)}
           className="px-4 py-2 bg-cyan-500/10 border border-cyan-400/30 hover:bg-cyan-500/20 text-cyan-400 text-sm rounded-xl"
         >
           Retry

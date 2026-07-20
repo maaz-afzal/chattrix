@@ -2,7 +2,7 @@ import api from "./api";
 
 // create conversation
 const createConversation = async (receiverId) => {
-  const res = await api.post(`/conversations/${receiverId}`);
+  const res = await api.post("/conversations", { receiverId });
   return res.data;
 };
 

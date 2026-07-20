@@ -1,57 +1,100 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { MessageCircle, Settings, Pencil, X, Search } from "lucide-react";
 import Avatar from "../common/Avatar";
 import IconButton from "../common/IconButton";
+import FilterTabs from "../ui/FilterTabs.jsx"
 import SearchBar from "../ui/SearchBar";
-import FilterTabs from "../ui/FilterTabs";
 import ChatList from "../ui/ChatList";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import userService from "../../services/userService.js";
-import { setAllUsers } from "../../redux/Slices/userSlice.js";
 import conversationService from "../../services/conversationService.js";
+import * as messageService from "../../services/messageService.js";
+import { setAllUsers, setSelectedConversationId } from "../../redux/Slices/userSlice.js";
 import toast from "react-hot-toast";
 
 const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const user = useSelector((state) => state.auth.user);
+  const currentUser = useSelector((state) => state.auth.user);
   const allUsers = useSelector((state) => state.users.allUsers);
   const onlineUsers = useSelector((state) => state.users.onlineUsers);
 
+  const [conversations, setConversations] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [modalSearch, setModalSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const isOnline = onlineUsers.includes(user?._id);
+  const isOnline = onlineUsers.includes(currentUser?._id);
 
+  const fetchConversations = useCallback(async () => {
+    try {
+      const res = await conversationService.getConversations();
+      setConversations(res);
+    } catch {
+      toast.error("Failed to load conversations.");
+    }
+  }, []);
 
-  // fetch all users
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await userService.getAllUsers();
-        dispatch(setAllUsers(res));
-      } catch {
-        toast.error("Failed to load users.");
-      }
-    };
-    fetchUsers();
+  const fetchAllUsers = useCallback(async () => {
+    try {
+      const res = await userService.getAllUsers();
+      dispatch(setAllUsers(res));
+    } catch {
+      toast.error("Failed to load users.");
+    }
   }, [dispatch]);
 
-  const filteredUsers = allUsers.filter((u) =>
-    u.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  useEffect(() => {
+    fetchConversations();
+    fetchAllUsers();
+  }, [fetchConversations, fetchAllUsers]);
+
+  // Transform conversations into user + lastMessage format
+  const chatList = conversations
+    .filter((conv) => !conv.isAIChat)
+    .map((conv) => {
+    const otherUser = conv.participants?.find(
+      (p) => p._id !== currentUser?._id,
+    );
+    if (!otherUser) return null;
+    return {
+      ...otherUser,
+      conversationId: conv._id,
+      lastMessage: conv.lastMessage?.text
+        ? conv.lastMessage.text
+        : conv.lastMessage?.image
+          ? "Image"
+          : null,
+      lastMessageAt: conv.updatedAt,
+    };
+  }).filter(Boolean);
+
+  const filteredUsers = chatList.filter((u) =>
+    u.name?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const modalFilteredUsers = allUsers.filter((u) =>
-    u.name.toLowerCase().includes(modalSearch.toLowerCase()),
+    u.name?.toLowerCase().includes(modalSearch.toLowerCase()),
   );
 
-  const handleConversation = (id) => {
+  const handleConversation = async (selectedUser) => {
     setIsModalOpen(false);
     setModalSearch("");
-    onSelected(user);
+    if (selectedUser.conversationId) {
+      dispatch(setSelectedConversationId(selectedUser.conversationId));
+      onSelected(selectedUser);
+    } else {
+      try {
+        const conv = await messageService.findOrCreateConversation(selectedUser._id);
+        dispatch(setSelectedConversationId(conv._id));
+        onSelected({ ...selectedUser, conversationId: conv._id });
+        fetchConversations();
+      } catch {
+        toast.error("Failed to start conversation.");
+      }
+    }
   };
 
   return (
@@ -106,7 +149,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
         <div className="p-3 border-t border-cyan-500/20">
           <div className="flex items-center gap-3 p-2.5 bg-white/2 rounded-2xl border border-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.06)]">
             <div className="relative shrink-0">
-              <Avatar name={user?.name || "U"} />
+              <Avatar name={currentUser?.name || "U"} />
               {isOnline ? (
                 <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-black shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
               ) : (
@@ -115,7 +158,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-gray-200 font-medium text-sm truncate">
-                {user?.name || "User"}
+                {currentUser?.name || "User"}
               </p>
               <p
                 className={`text-xs ${isOnline ? "text-green-400" : "text-gray-500"}`}
@@ -176,10 +219,10 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
                 modalFilteredUsers.map((u) => (
                   <button
                     key={u._id}
-                    onClick={() => handleConversation(u._id)}
+                    onClick={() => handleConversation(u)}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 transition text-left"
                   >
-                    <Avatar profileImage={user.profileImage} size="sm" online={user.isOnline} />
+                    <Avatar name={u.name} size="sm" />
                     <div className="flex-1 min-w-0">
                       <p className="text-white text-sm font-medium truncate">
                         {u.name}

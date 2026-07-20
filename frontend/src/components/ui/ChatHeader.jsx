@@ -52,15 +52,9 @@ const ChatHeader = ({ selected, isAISelected }) => {
     );
   }
 
-  const { name, avatar, status, lastSeen } = selected;
-  const isOnline = status === "online";
-  const avatarLetter = avatar || name?.charAt(0).toUpperCase() || "U";
-
-  const statusText = isOnline
-    ? "Online"
-    : lastSeen
-    ? `Last seen ${formatLastSeen(lastSeen)}`
-    : "Offline";
+  const { name } = selected;
+  const avatarLetter = name?.charAt(0).toUpperCase() || "U";
+  const isOnline = false;
 
   if (selectMode) {
     return (
@@ -103,14 +97,8 @@ const ChatHeader = ({ selected, isAISelected }) => {
           <div className="min-w-0">
             <p className="text-gray-200 font-semibold truncate">{name}</p>
             <p className="text-gray-500 text-xs flex items-center gap-1">
-              <span
-                className={`w-1.5 h-1.5 rounded-full ${
-                  isOnline
-                    ? "bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.5)]"
-                    : "bg-gray-500"
-                }`}
-              />
-              {statusText}
+              <span className="w-1.5 h-1.5 rounded-full bg-gray-500" />
+              Offline
             </p>
           </div>
         </div>
