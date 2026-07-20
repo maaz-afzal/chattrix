@@ -11,7 +11,7 @@ const getMessages = async (conversationId) => {
 };
 
 const aiChat = async (data) => {
-  const res = await api.post("/message/ai", data);
+  const res = await api.post("/ai/message", data);
   return res.data;
 };
 
@@ -26,8 +26,18 @@ const clearChat = async (conversationId) => {
 };
 
 const deleteMessage = async (id) => {
-  const res = await api.delete(`/message/${id}`);
+  const res = await api.delete(`/messages/${id}`);
   return res.data;
 };
 
-export { findOrCreateConversation, getMessages, aiChat, sendMessage, deleteMessage, clearChat };
+const updateMessage = async (id, data) => {
+  const res = await api.put(`/messages/${id}`, data);
+  return res.data;
+};
+
+const markAsRead = async (id) => {
+  const res = await api.patch(`/messages/${id}/read`);
+  return res.data;
+};
+
+export { findOrCreateConversation, getMessages, aiChat, sendMessage, deleteMessage, updateMessage, markAsRead, clearChat };
