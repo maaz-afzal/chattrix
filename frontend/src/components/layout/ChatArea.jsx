@@ -19,6 +19,7 @@ const ChatArea = ({ selected, isAISelected }) => {
   const [selectMode, setSelectMode] = useState(false);
   const [selectedMessages, setSelectedMessages] = useState([]);
   const [clearTrigger, setClearTrigger] = useState(0);
+  const [sendTrigger, setSendTrigger] = useState(0);
   const [aiMessages, setAiMessages] = useState([
     {
       _id: "ai-welcome",
@@ -79,6 +80,8 @@ const ChatArea = ({ selected, isAISelected }) => {
     selectMode,
     selectedMessages,
     clearTrigger,
+    sendTrigger,
+    setSendTrigger,
     enableSelectMode,
     disableSelectMode,
     toggleMessage,

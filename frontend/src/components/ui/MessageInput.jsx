@@ -1,22 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Send, Image as ImageIcon, X } from "lucide-react";
 import { useSelector } from "react-redux";
+import { getSocket } from "../../lib/socket.js";
 import * as messageService from "../../services/messageService.js";
+import { useSelect } from "../layout/ChatArea.jsx";
 import toast from "react-hot-toast";
 
 const MessageInput = ({
   selected,
   isAISelected,
   setAiMessages,
-  aiMessages,
 }) => {
   const selectedConversationId = useSelector(
     (state) => state.users.selectedConversationId,
   );
+  const { setSendTrigger } = useSelect();
   const [message, setMessage] = useState("");
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const typingTimeout = useRef(null);
 
   const handleAISend = async () => {
     if (!message.trim()) return;
@@ -67,6 +70,7 @@ const MessageInput = ({
       setMessage("");
       setImage(null);
       setImagePreview(null);
+      setSendTrigger((prev) => prev + 1);
     } catch (error) {
       console.error("Error sending message:", error);
       toast.error("Failed to send message. Try again.");
@@ -128,6 +132,10 @@ const MessageInput = ({
       ? "Write a message..."
       : "Select a chat to start messaging";
 
+  useEffect(() => {
+    return () => clearTimeout(typingTimeout.current);
+  }, []);
+
   return (
     <div className="p-4">
       {imagePreview && !isAISelected && (
@@ -161,7 +169,19 @@ const MessageInput = ({
         <input
           type="text"
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={(e) => {
+            setMessage(e.target.value);
+            if (!isAISelected && selected?.conversationId) {
+              const socket = getSocket();
+              if (socket) {
+                socket.emit("typing", { receiverId: selected._id });
+                clearTimeout(typingTimeout.current);
+                typingTimeout.current = setTimeout(() => {
+                  socket.emit("stop-typing", { receiverId: selected._id });
+                }, 2000);
+              }
+            }
+          }}
           onKeyDown={handleKeyDown}
           disabled={isDisabled}
           placeholder={placeholder}

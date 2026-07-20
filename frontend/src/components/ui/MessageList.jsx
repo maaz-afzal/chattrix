@@ -2,11 +2,13 @@ import React, { useEffect, useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import MessageBubble from "./MessageBubble";
 import { Bot } from "lucide-react";
+import { useSelector } from "react-redux";
 import * as messageService from "../../services/messageService.js";
 import { getSocket } from "../../lib/socket.js";
 import { useSelect } from "../layout/ChatArea";
 
 const MessageList = ({ selected, isAISelected, aiMessages }) => {
+  const currentUserId = useSelector((state) => state.auth.user?._id);
   const [conversation, setConversation] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -17,7 +19,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
     selectedRef.current = selected;
   }, [selected]);
 
-  const { selectMode, toggleMessage, clearTrigger } = useSelect();
+  const { selectMode, toggleMessage, clearTrigger, sendTrigger } = useSelect();
 
   const getConversation = async (conversationId) => {
     if (!conversationId) return;
@@ -40,7 +42,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
     if (selected?.conversationId) {
       getConversation(selected.conversationId);
     }
-  }, [selected, clearTrigger]);
+  }, [selected, clearTrigger, sendTrigger]);
 
   useEffect(() => {
     if (!selected?.conversationId) return;
@@ -56,6 +58,11 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
         newMessage.conversationId?.toString() === currentSelected.conversationId.toString();
 
       if (!isRelevant) return;
+
+      const isFromOther = newMessage.sender?.toString() !== currentUserId?.toString();
+      if (isFromOther) {
+        messageService.markAsRead(newMessage._id).catch(() => {});
+      }
 
       setConversation((prev) => {
         const exists = prev.some((msg) => msg._id === newMessage._id);
