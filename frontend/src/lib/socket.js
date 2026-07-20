@@ -7,6 +7,10 @@ let socket = null;
 export const connectSocket = (token) => {
   if (!token) return null;
 
+  if (socket?.connected) {
+    return socket;
+  }
+
   if (socket) {
     socket.disconnect();
     socket = null;

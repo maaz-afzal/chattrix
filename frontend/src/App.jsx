@@ -50,7 +50,7 @@ const App = () => {
       socket.off("user-stop-typing", handleStopTyping);
       disconnectSocket();
     };
-  }, [isLoggedIn, token, dispatch]);
+  }, [isLoggedIn, dispatch]);
 
   return (
     <div>
