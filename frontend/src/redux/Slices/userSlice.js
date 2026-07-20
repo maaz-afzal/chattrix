@@ -5,6 +5,7 @@ const initialState = {
   onlineUsers: [],
   selectedUser: null,
   selectedConversationId: null,
+  typingUsers: {},
 };
 
 const userSlice = createSlice({
@@ -38,6 +39,12 @@ const userSlice = createSlice({
       const user = state.allUsers.find((u) => u._id === userId);
       if (user) user.isOnline = isOnline;
     },
+    setTyping(state, action) {
+      state.typingUsers[action.payload] = true;
+    },
+    clearTyping(state, action) {
+      delete state.typingUsers[action.payload];
+    },
   },
 });
 
@@ -49,6 +56,8 @@ export const {
   setSelectedUser,
   setSelectedConversationId,
   updateUserStatus,
+  setTyping,
+  clearTyping,
 } = userSlice.actions;
 
 export default userSlice.reducer;

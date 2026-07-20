@@ -6,19 +6,50 @@ import SignupPage from "./pages/SignupPage";
 import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Toaster } from "react-hot-toast";
-import { useSelector } from "react-redux";
-import { connectSocket, disconnectSocket } from "./lib/socket.js";
+import { useSelector, useDispatch } from "react-redux";
+import { connectSocket, disconnectSocket, getSocket } from "./lib/socket.js";
+import { addOnlineUser, removeOnlineUser, updateUserStatus, setTyping, clearTyping } from "./redux/Slices/userSlice.js";
 
 const App = () => {
+  const dispatch = useDispatch();
   const { isLoggedIn, token } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (isLoggedIn && token) {
-      connectSocket(token);
-    } else {
+    if (!isLoggedIn || !token) {
       disconnectSocket();
+      return;
     }
-  }, [isLoggedIn, token]);
+
+    const socket = connectSocket(token);
+    if (!socket) return;
+
+    const handleOnline = (userId) => {
+      dispatch(addOnlineUser(userId));
+      dispatch(updateUserStatus({ userId, isOnline: true }));
+    };
+
+    const handleOffline = ({ userId, lastSeen }) => {
+      dispatch(removeOnlineUser(userId));
+      dispatch(updateUserStatus({ userId, isOnline: false }));
+    };
+
+    socket.on("user-online", handleOnline);
+    socket.on("user-offline", handleOffline);
+
+    const handleTyping = (data) => dispatch(setTyping(data.userId));
+    const handleStopTyping = (data) => dispatch(clearTyping(data.userId));
+
+    socket.on("user-typing", handleTyping);
+    socket.on("user-stop-typing", handleStopTyping);
+
+    return () => {
+      socket.off("user-online", handleOnline);
+      socket.off("user-offline", handleOffline);
+      socket.off("user-typing", handleTyping);
+      socket.off("user-stop-typing", handleStopTyping);
+      disconnectSocket();
+    };
+  }, [isLoggedIn, token, dispatch]);
 
   return (
     <div>

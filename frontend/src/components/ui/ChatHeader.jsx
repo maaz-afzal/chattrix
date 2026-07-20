@@ -7,10 +7,10 @@ import {
   CheckSquare,
   Bot,
 } from "lucide-react";
+import { useSelector } from "react-redux";
 import Avatar from "../common/Avatar";
 import IconButton from "../common/IconButton";
 import { useSelect } from "../layout/ChatArea.jsx";
-import { formatLastSeen } from "../../utils/formatLastSeen.js";
 
 const ChatHeader = ({ selected, isAISelected }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,6 +22,12 @@ const ChatHeader = ({ selected, isAISelected }) => {
     handleClearChat,
     handleDeleteSelected,
   } = useSelect();
+  const onlineUsers = useSelector((state) => state.users.onlineUsers);
+  const typingUsers = useSelector((state) => state.users.typingUsers);
+  const { name, _id } = selected || {};
+  const avatarLetter = name?.charAt(0).toUpperCase() || "U";
+  const isOnline = onlineUsers.includes(_id) || selected?.isOnline || selected?.status === "online";
+  const isTyping = _id && typingUsers[_id];
 
   if (isAISelected) {
     return (
@@ -51,10 +57,6 @@ const ChatHeader = ({ selected, isAISelected }) => {
       </div>
     );
   }
-
-  const { name } = selected;
-  const avatarLetter = name?.charAt(0).toUpperCase() || "U";
-  const isOnline = false;
 
   if (selectMode) {
     return (
@@ -97,8 +99,20 @@ const ChatHeader = ({ selected, isAISelected }) => {
           <div className="min-w-0">
             <p className="text-gray-200 font-semibold truncate">{name}</p>
             <p className="text-gray-500 text-xs flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-gray-500" />
-              Offline
+              {isTyping ? (
+                <span className="text-cyan-400">Typing...</span>
+              ) : (
+                <>
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      isOnline
+                        ? "bg-green-400 shadow-[0_0_6px_rgba(74,222,128,0.5)]"
+                        : "bg-gray-500"
+                    }`}
+                  />
+                  {isOnline ? "Online" : "Offline"}
+                </>
+              )}
             </p>
           </div>
         </div>
