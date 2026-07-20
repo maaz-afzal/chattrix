@@ -55,27 +55,18 @@ const sendMessage = async (req, res) => {
     const message = await Message.create({
       conversationId,
       sender: senderId,
-      receiver: receiverId,
       text: text?.trim(),
       image: imageUrl,
     });
 
-    const conversation = await Conversation.findByIdAndUpdate(conversationId, {
-      lastMessage: message._id,
-      updatedAt: new Date(),
+    await Conversation.findByIdAndUpdate(conversationId, {
+      $set: { lastMessage: message._id },
       $inc: { [`unreadCount.${receiverId}`]: 1 },
-    }, { new: true });
+    });
 
     if (io) {
       io.to(receiverId).emit("receive-message", message);
-
-      if (conversation) {
-        io.to(receiverId).emit("unread-update", {
-          conversationId,
-          unreadCount: conversation.unreadCount?.get?.(receiverId?.toString()) || 0,
-        });
-      }
-
+      io.to(receiverId).emit("unread-update", { conversationId });
       io.to(senderId).emit("message-sent", message);
     }
 
@@ -84,10 +75,10 @@ const sendMessage = async (req, res) => {
       message,
     });
   } catch (err) {
-    console.error("sendMessage error:", err.message);
+    console.error("sendMessage error:", err);
 
     res.status(500).json({
-      msg: "Something went wrong",
+      msg: err.message || "Something went wrong",
     });
   }
 };
