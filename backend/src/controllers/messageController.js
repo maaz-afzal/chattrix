@@ -9,7 +9,6 @@ export const setIo = (socketIo) => {
   io = socketIo;
 };
 
-// Send Message
 const sendMessage = async (req, res) => {
   try {
     const { conversationId, receiverId } = req.params;
@@ -113,7 +112,6 @@ const getMessages = async (req, res) => {
   }
 };
 
-// Update message
 const updateMessage = async (req, res) => {
   try {
     const { id } = req.params;
@@ -157,7 +155,6 @@ const updateMessage = async (req, res) => {
   }
 };
 
-// Delete message
 const deleteMessage = async (req, res) => {
   try {
     const { id } = req.params;
@@ -200,7 +197,6 @@ const deleteMessage = async (req, res) => {
   }
 };
 
-// Mark message as read
 const markAsRead = async (req, res) => {
   try {
     const { id } = req.params;
@@ -233,7 +229,6 @@ const markAsRead = async (req, res) => {
   }
 };
 
-// Clear chat for current user
 const clearChat = async (req, res) => {
   try {
     const { conversationId } = req.params;

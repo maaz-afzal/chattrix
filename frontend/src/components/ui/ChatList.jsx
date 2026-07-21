@@ -3,7 +3,13 @@ import { useSelector } from "react-redux";
 import ChatItem from "./ChatItem";
 import AIChatItem from "./AIChatItem";
 
-const ChatList = ({ users, onSelectedUser, onSelectAI, isAISelected, onDeleteConversation }) => {
+const ChatList = ({
+  users,
+  onSelectedUser,
+  onSelectAI,
+  isAISelected,
+  onDeleteConversation,
+}) => {
   const [selectedChatId, setSelectedChatId] = useState(null);
   const onlineUsers = useSelector((state) => state.users.onlineUsers);
   const lastSeenByUser = useSelector((state) => state.users.lastSeenByUser);
@@ -19,16 +25,14 @@ const ChatList = ({ users, onSelectedUser, onSelectAI, isAISelected, onDeleteCon
     setSelectedChatId(chat._id);
     if (onSelectedUser) onSelectedUser(chat);
   };
-
   const handleAIClick = () => {
     setSelectedChatId(null);
     if (onSelectAI) onSelectAI();
   };
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-0.5">
       <AIChatItem isSelected={isAISelected} onClick={handleAIClick} />
-
       {enrichedUsers.map((chat) => (
         <ChatItem
           key={chat._id}
@@ -38,9 +42,10 @@ const ChatList = ({ users, onSelectedUser, onSelectAI, isAISelected, onDeleteCon
           onDelete={onDeleteConversation}
         />
       ))}
-
       {enrichedUsers.length === 0 && (
-        <p className="text-gray-500 text-xs text-center py-4">No users found</p>
+        <p className="px-4 py-10 text-center text-[12px] text-[#555]">
+          No conversations
+        </p>
       )}
     </div>
   );

@@ -15,83 +15,91 @@ const MessageBubble = ({
 }) => {
   const currentUserId = useSelector((state) => state.auth.user?._id);
   const { selectedMessages } = useSelect();
-
   const isMe = sender?.toString() === currentUserId?.toString();
   const isSelected = selectedMessages.includes(_id);
 
-  const formatTime = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const formatTime = (d) => {
+    if (!d) return "";
+    return new Date(d).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   const renderStatus = () => {
     if (!isMe) return null;
-    if (status === "read") {
-      return <CheckCheck className="w-3 h-3 text-cyan-400" />;
-    }
-    if (status === "sent" || status === "delivered") {
-      return <CheckCheck className="w-3 h-3 text-gray-500" />;
-    }
+    if (status === "read")
+      return <CheckCheck className="w-3 h-3 text-[#A37CFF]" />;
+    if (status === "sent" || status === "delivered")
+      return <CheckCheck className="w-3 h-3 text-white/50" />;
     return null;
   };
 
   return (
     <div
-      className={`flex ${isMe ? "justify-end" : "justify-start"} items-start gap-2`}
+      className={`flex items-end gap-2 ${isMe ? "justify-end" : "justify-start"}`}
     >
-      {/* Checkbox in select mode */}
       {isSelectMode && (
         <button
           onClick={onSelect}
-          aria-label={isSelected ? "Deselect message" : "Select message"}
-          className={`mt-2 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+          className={`mb-1 w-4 h-4 shrink-0 rounded-full border-[1.5px] flex items-center justify-center transition-colors ${
             isSelected
-              ? "bg-cyan-500 border-cyan-500 shadow-[0_0_8px_rgba(34,211,238,0.4)]"
-              : "border-gray-600 hover:border-cyan-400"
+              ? "border-[#A37CFF] bg-[#A37CFF]"
+              : "border-[#555] hover:border-[#A37CFF]"
           }`}
         >
-          {isSelected && <Check className="w-3 h-3 text-black" />}
+          {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
         </button>
       )}
 
-      <div className="max-w-[75%] space-y-1">
-        {/* Image */}
-        {image && (
-          <div className="overflow-hidden rounded-2xl border border-cyan-500/20">
-            <img
-              src={image}
-              alt="Message attachment"
-              className="max-w-full max-h-64 object-cover cursor-pointer rounded-2xl"
-              onClick={() => window.open(image, "_blank")}
-              onError={(e) => {
-                e.target.style.display = "none";
-              }}
-            />
-          </div>
-        )}
-
-        {/* Text */}
-        {text && (
-          <div
-            className={`rounded-2xl px-4 py-2.5 border ${
-              isMe
-                ? "bg-cyan-500/10 rounded-br-sm text-cyan-100 border-cyan-500/20 shadow-[0_0_10px_rgba(34,211,238,0.1)]"
-                : "bg-white/2 rounded-bl-sm text-gray-200 border-white/4"
-            }`}
-          >
-            <p className="text-sm whitespace-pre-wrap wrap-break-words">{text}</p>
-          </div>
-        )}
-
-        {/* Time & status */}
+      <div className="max-w-[82%] sm:max-w-[70%]">
         <div
-          className={`flex items-center gap-1 text-xs text-gray-500 ${
-            isMe ? "justify-end" : "justify-start"
+          className={`rounded-2xl px-3 py-1.5 ${
+            isMe
+              ? "bg-[#144D37] text-white rounded-br-sm"
+              : "bg-[#1D1E1F] text-[#eee] rounded-bl-sm"
           }`}
         >
-          <span>{formatTime(createdAt)}</span>
-          {renderStatus()}
+          {image && (
+            <div className={text ? "mb-1.5" : ""}>
+              <img
+                src={image}
+                alt="Attachment"
+                className="max-h-60 max-w-full cursor-pointer rounded-xl object-cover"
+                onClick={() => window.open(image, "_blank")}
+                onError={(e) => {
+                  e.target.style.display = "none";
+                }}
+              />
+            </div>
+          )}
+
+          {text && (
+            <div className="flex items-end gap-2">
+              <p className="break-words whitespace-pre-wrap text-[13px] leading-[1.45] flex-1 min-w-0">
+                {text}
+              </p>
+              <div className="flex items-center gap-1 shrink-0 pb-px">
+                <span
+                  className={`text-[10px] ${isMe ? "text-white/50" : "text-[#666]"}`}
+                >
+                  {formatTime(createdAt)}
+                </span>
+                {renderStatus()}
+              </div>
+            </div>
+          )}
+
+          {image && !text && (
+            <div className="flex items-center gap-1 justify-end mt-1">
+              <span
+                className={`text-[10px] ${isMe ? "text-white/50" : "text-[#666]"}`}
+              >
+                {formatTime(createdAt)}
+              </span>
+              {renderStatus()}
+            </div>
+          )}
         </div>
       </div>
     </div>

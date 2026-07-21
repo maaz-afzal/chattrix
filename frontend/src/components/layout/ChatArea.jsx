@@ -9,32 +9,21 @@ const SelectContext = createContext();
 
 const useSelect = () => {
   const context = useContext(SelectContext);
-  if (!context) {
-    throw new Error("useSelect must be used within ChatArea");
-  }
+  if (!context) throw new Error("useSelect must be used within ChatArea");
   return context;
 };
 
-const ChatArea = ({ selected, isAISelected }) => {
+const ChatArea = ({ selected, isAISelected, onBack }) => {
   const [selectMode, setSelectMode] = useState(false);
   const [selectedMessages, setSelectedMessages] = useState([]);
   const [clearTrigger, setClearTrigger] = useState(0);
   const [sendTrigger, setSendTrigger] = useState(0);
-  const [aiMessages, setAiMessages] = useState([
-    {
-      _id: "ai-welcome",
-      text: "Hello! I'm your AI Assistant. How can I help you today?",
-      sender: "ai",
-      createdAt: new Date().toISOString(),
-      status: "sent",
-    },
-  ]);
+  const [aiMessages, setAiMessages] = useState([]);
 
   const enableSelectMode = () => {
     setSelectMode(true);
     setSelectedMessages([]);
   };
-
   const disableSelectMode = () => {
     setSelectMode(false);
     setSelectedMessages([]);
@@ -49,6 +38,11 @@ const ChatArea = ({ selected, isAISelected }) => {
   };
 
   const handleClearChat = async () => {
+    if (isAISelected) {
+      setAiMessages([]);
+      toast.success("AI chat cleared!");
+      return;
+    }
     if (!selected?.conversationId) return;
     try {
       await messageService.clearChat(selected.conversationId);
@@ -62,9 +56,7 @@ const ChatArea = ({ selected, isAISelected }) => {
   const handleDeleteSelected = async () => {
     try {
       if (selectedMessages.length === 0) return;
-      for (const id of selectedMessages) {
-        await messageService.deleteMessage(id);
-      }
+      for (const id of selectedMessages) await messageService.deleteMessage(id);
       toast.success(
         `${selectedMessages.length} message${selectedMessages.length > 1 ? "s" : ""} deleted!`,
       );
@@ -90,14 +82,20 @@ const ChatArea = ({ selected, isAISelected }) => {
   };
 
   return (
-    <main className="flex-1 min-w-0 bg-black/80 backdrop-blur-xl border border-cyan-500/20 shadow-[0_0_30px_rgba(34,211,238,0.08)] flex flex-col overflow-hidden">
+    <main className="flex-1 min-w-0 flex flex-col overflow-hidden bg-[#161616]">
       <SelectContext.Provider value={value}>
-        <ChatHeader selected={selected} isAISelected={isAISelected} />
-        <MessageList
+        <ChatHeader
           selected={selected}
           isAISelected={isAISelected}
-          aiMessages={aiMessages}
+          onBack={onBack}
         />
+        <div className="flex-1 min-h-0">
+          <MessageList
+            selected={selected}
+            isAISelected={isAISelected}
+            aiMessages={aiMessages}
+          />
+        </div>
         <MessageInput
           selected={selected}
           isAISelected={isAISelected}
@@ -110,5 +108,4 @@ const ChatArea = ({ selected, isAISelected }) => {
 };
 
 export default ChatArea;
-
 export { useSelect };

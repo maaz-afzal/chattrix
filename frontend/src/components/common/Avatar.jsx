@@ -2,19 +2,32 @@ import React, { useState } from "react";
 
 const Avatar = ({ name, profileImage, size = "md", online = false }) => {
   const [imgError, setImgError] = useState(false);
-  const sizeClasses = {
-    sm: "w-8 h-8 text-xs",
-    md: "w-10 h-10 text-sm",
-    lg: "w-12 h-12 text-base",
-    xl: "w-24 h-24 text-3xl",
+
+  const sizes = {
+    sm: "w-9 h-9 text-[12px]",
+    md: "w-10 h-10 text-[13px]",
+    lg: "w-12 h-12 text-[15px]",
+    xl: "w-20 h-20 text-[24px]",
   };
 
+  const palettes = [
+    "bg-[#2a2352] text-[#A37CFF]",
+    "bg-[#1e3a2e] text-[#6ee7b7]",
+    "bg-[#3a2a1e] text-[#fbbf24]",
+    "bg-[#352028] text-[#fda4af]",
+    "bg-[#1e2e3a] text-[#93c5fd]",
+    "bg-[#352e1e] text-[#fcd34d]",
+  ];
+
+  const index = name ? name.charCodeAt(0) % palettes.length : 0;
   const showImage = profileImage && !imgError;
 
   return (
     <div className="relative shrink-0">
       {showImage ? (
-        <div className={`${sizeClasses[size]} overflow-hidden rounded-2xl border border-cyan-400/40`}>
+        <div
+          className={`${sizes[size]} overflow-hidden rounded-full bg-[#1D1E1F]`}
+        >
           <img
             src={profileImage}
             alt={name || "Avatar"}
@@ -24,17 +37,13 @@ const Avatar = ({ name, profileImage, size = "md", online = false }) => {
         </div>
       ) : (
         <div
-          className={`${sizeClasses[size]} bg-cyan-500/10 rounded-2xl border border-cyan-400/40 flex items-center justify-center shadow-[0_0_15px_rgba(34,211,238,0.2)]`}
+          className={`${sizes[size]} rounded-full flex items-center justify-center font-semibold ${palettes[index]}`}
         >
-          <span
-            className={`text-cyan-400 font-semibold ${size === "xl" ? "text-3xl" : "text-sm"}`}
-          >
-            {name?.charAt(0)?.toUpperCase() || "U"}
-          </span>
+          {name?.charAt(0)?.toUpperCase() || "U"}
         </div>
       )}
       {online && (
-        <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-black shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
+        <span className="absolute -bottom-0.5 -right-0.5 w-[10px] h-[10px] rounded-full bg-emerald-500 border-2 border-[#161616]" />
       )}
     </div>
   );

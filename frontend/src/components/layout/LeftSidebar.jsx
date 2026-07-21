@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { MessageCircle, Settings, Pencil, X, Search } from "lucide-react";
+import { Settings, Plus, X, Search } from "lucide-react";
 import Avatar from "../common/Avatar";
 import IconButton from "../common/IconButton";
-import FilterTabs from "../ui/FilterTabs.jsx"
-import SearchBar from "../ui/SearchBar";
+import FilterTabs from "../ui/FilterTabs.jsx";
 import ChatList from "../ui/ChatList";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +10,10 @@ import userService from "../../services/userService.js";
 import conversationService from "../../services/conversationService.js";
 import { getSocket } from "../../lib/socket.js";
 import * as messageService from "../../services/messageService.js";
-import { setAllUsers, setSelectedConversationId } from "../../redux/Slices/userSlice.js";
+import {
+  setAllUsers,
+  setSelectedConversationId,
+} from "../../redux/Slices/userSlice.js";
 import toast from "react-hot-toast";
 
 const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
@@ -26,8 +28,10 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [modalSearch, setModalSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
 
-  const isOnline = onlineUsers.includes(currentUser?._id) || getSocket()?.connected;
+  const isOnline =
+    onlineUsers.includes(currentUser?._id) || getSocket()?.connected;
 
   const fetchConversations = useCallback(async () => {
     try {
@@ -68,27 +72,29 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
     };
   }, [fetchConversations]);
 
-  // Transform conversations into user + lastMessage format
   const chatList = conversations
     .filter((conv) => !conv.isAIChat)
     .map((conv) => {
-    const otherUser = conv.participants?.find(
-      (p) => p._id !== currentUser?._id,
-    );
-    if (!otherUser) return null;
-    const unreadCount = currentUser?._id ? (conv.unreadCount?.[currentUser._id] || 0) : 0;
-    return {
-      ...otherUser,
-      conversationId: conv._id,
-      lastMessage: conv.lastMessage?.text
-        ? conv.lastMessage.text
-        : conv.lastMessage?.image
-          ? "Image"
-          : null,
-      lastMessageAt: conv.updatedAt,
-      unreadCount,
-    };
-  }).filter(Boolean);
+      const otherUser = conv.participants?.find(
+        (p) => p._id !== currentUser?._id,
+      );
+      if (!otherUser) return null;
+      const unreadCount = currentUser?._id
+        ? conv.unreadCount?.[currentUser._id] || 0
+        : 0;
+      return {
+        ...otherUser,
+        conversationId: conv._id,
+        lastMessage: conv.lastMessage?.text
+          ? conv.lastMessage.text
+          : conv.lastMessage?.image
+            ? "Image"
+            : null,
+        lastMessageAt: conv.updatedAt,
+        unreadCount,
+      };
+    })
+    .filter(Boolean);
 
   const filteredUsers = chatList.filter((u) =>
     u.name?.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -101,12 +107,15 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
   const handleConversation = async (selectedUser) => {
     setIsModalOpen(false);
     setModalSearch("");
+
     if (selectedUser.conversationId) {
       dispatch(setSelectedConversationId(selectedUser.conversationId));
       onSelected(selectedUser);
     } else {
       try {
-        const res = await messageService.findOrCreateConversation(selectedUser._id);
+        const res = await messageService.findOrCreateConversation(
+          selectedUser._id,
+        );
         const conversationId = res.conversation?._id || res._id;
         dispatch(setSelectedConversationId(conversationId));
         onSelected({ ...selectedUser, conversationId });
@@ -119,44 +128,55 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
 
   return (
     <>
-      <aside className="w-full max-w-xs shrink-0 bg-black/80 backdrop-blur-xl rounded border border-cyan-500/20 shadow-[0_0_30px_rgba(34,211,238,0.08)] flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="px-5 pt-5 pb-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-cyan-500/10 rounded-2xl border border-cyan-400/40 flex items-center justify-center shadow-[0_0_15px_rgba(34,211,238,0.2)]">
-              <MessageCircle className="w-5 h-5 text-cyan-400" />
-            </div>
-            <div>
-              <span className="font-bold text-lg text-white">Chattrix</span>
-            </div>
+      <aside className="w-100 border-r border-[#2E2E2F] bg-[#161616] flex flex-col overflow-hidden">
+        <div className="px-4 pt-5 pb-3">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-[22px] font-bold text-white tracking-tight">
+              Chattrix
+            </h1>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="w-8 h-8 rounded-lg bg-[#A37CFF] hover:bg-[#9370f0] text-white flex items-center justify-center transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
           </div>
 
-          {/* Pencil Button */}
-          <IconButton
-            icon={Pencil}
-            ariaLabel="New chat"
-            size="sm"
-            onClick={() => setIsModalOpen(true)}
-            className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/40"
-          />
+          <div
+            className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all ${
+              searchFocused
+                ? "bg-[#1D1E1F] ring-1 ring-[#A37CFF]/30"
+                : "bg-[#1D1E1F]"
+            }`}
+          >
+            <Search
+              className={`w-4 h-4 shrink-0 ${searchFocused ? "text-[#A37CFF]" : "text-[#666]"}`}
+            />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
+              placeholder="Search"
+              className="w-full bg-transparent outline-none text-[13px] text-white placeholder:text-[#666]"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="text-[#666] hover:text-white"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          <div className="mt-3">
+            <FilterTabs />
+          </div>
         </div>
 
-        {/* Search */}
-        <div className="px-5 pb-3">
-          <SearchBar
-            value={searchQuery}
-            onChange={setSearchQuery}
-            placeholder="Search users..."
-          />
-        </div>
-
-        {/* Filter Tabs */}
-        <div className="px-5 pb-3">
-          <FilterTabs />
-        </div>
-
-        {/* Chat List */}
-        <div className="flex-1 overflow-y-auto min-h-0 px-3 pb-3">
+        <div className="flex-1 min-h-0 overflow-y-auto px-2 py-1">
           <ChatList
             users={filteredUsers}
             onSelectedUser={onSelected}
@@ -166,74 +186,78 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
           />
         </div>
 
-        {/* User Profile */}
-        <div className="p-3 border-t border-cyan-500/20">
-          <div className="flex items-center gap-3 p-2.5 bg-white/2 rounded-2xl border border-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.06)]">
+        <div className="px-3 py-3 border-t border-[#2E2E2F]">
+          <div
+            onClick={() => navigate("/profile")}
+            className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-[#1D1E1F] transition-colors cursor-pointer"
+          >
             <div className="relative shrink-0">
-              <Avatar name={currentUser?.name} profileImage={currentUser?.profileImage} />
-              {isOnline ? (
-                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-black shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
-              ) : (
-                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-gray-500 rounded-full border-2 border-black" />
-              )}
+              <Avatar
+                name={currentUser?.name}
+                profileImage={currentUser?.profileImage}
+                size="sm"
+              />
+              <span
+                className={`absolute -bottom-0.5 -right-0.5 w-[10px] h-[10px] rounded-full border-2 border-[#161616] ${
+                  isOnline ? "bg-emerald-500" : "bg-[#555]"
+                }`}
+              />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-gray-200 font-medium text-sm truncate">
+              <p className="text-[13px] font-medium text-white truncate">
                 {currentUser?.name || "User"}
               </p>
               <p
-                className={`text-xs ${isOnline ? "text-green-400" : "text-gray-500"}`}
+                className={`text-[11px] ${isOnline ? "text-emerald-500" : "text-[#666]"}`}
               >
                 {isOnline ? "Online" : "Offline"}
               </p>
             </div>
-            <IconButton
-              icon={Settings}
-              ariaLabel="Go to settings"
-              size="sm"
-              onClick={() => navigate("/profile")}
-            />
+            <Settings className="w-4 h-4 text-[#666]" />
           </div>
         </div>
       </aside>
 
-      {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="bg-black/90 border border-cyan-500/30 rounded-2xl w-full max-w-md mx-4 shadow-[0_0_50px_rgba(34,211,238,0.15)] overflow-hidden">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-cyan-500/20">
-              <h3 className="text-white font-semibold text-lg">New Chat</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/70"
+            onClick={() => {
+              setIsModalOpen(false);
+              setModalSearch("");
+            }}
+          />
+          <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-[#2E2E2F] bg-[#161616]">
+            <div className="px-5 py-4 border-b border-[#2E2E2F] flex items-center justify-between">
+              <h3 className="text-[15px] font-semibold text-white">New Chat</h3>
               <button
                 onClick={() => {
                   setIsModalOpen(false);
                   setModalSearch("");
                 }}
-                className="p-1.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition"
+                className="p-1.5 rounded-lg text-[#666] hover:text-white hover:bg-[#1D1E1F] transition-colors"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Modal Search */}
-            <div className="px-5 py-3 border-b border-cyan-500/10">
-              <div className="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2 border border-cyan-500/20 focus-within:border-cyan-400/60 transition">
-                <Search className="w-4 h-4 text-gray-500" />
+            <div className="p-4 border-b border-[#2E2E2F]">
+              <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#1D1E1F]">
+                <Search className="w-4 h-4 text-[#666]" />
                 <input
                   type="text"
                   value={modalSearch}
                   onChange={(e) => setModalSearch(e.target.value)}
-                  placeholder="Search users..."
-                  className="bg-transparent outline-none text-white text-sm w-full placeholder:text-gray-500"
+                  placeholder="Search people"
+                  className="w-full bg-transparent outline-none text-[13px] text-white placeholder:text-[#666]"
                   autoFocus
                 />
               </div>
             </div>
 
-            {/* Modal User List */}
-            <div className="max-h-96 overflow-y-auto p-2">
+            <div className="max-h-[360px] overflow-y-auto p-2">
               {modalFilteredUsers.length === 0 ? (
-                <p className="text-gray-500 text-sm text-center py-8">
+                <p className="py-10 text-center text-[13px] text-[#666]">
                   No users found.
                 </p>
               ) : (
@@ -241,14 +265,20 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
                   <button
                     key={u._id}
                     onClick={() => handleConversation(u)}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 transition text-left"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#1D1E1F] transition-colors text-left"
                   >
-                    <Avatar name={u.name} profileImage={u.profileImage} size="sm" />
+                    <Avatar
+                      name={u.name}
+                      profileImage={u.profileImage}
+                      size="sm"
+                    />
                     <div className="flex-1 min-w-0">
-                      <p className="text-white text-sm font-medium truncate">
+                      <p className="text-[13px] font-medium text-white truncate">
                         {u.name}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p
+                        className={`text-[11px] ${onlineUsers.includes(u._id) ? "text-emerald-500" : "text-[#666]"}`}
+                      >
                         {onlineUsers.includes(u._id) ? "Online" : "Offline"}
                       </p>
                     </div>

@@ -53,7 +53,7 @@ const getConversations = async (req, res) => {
       participants: userId,
     })
 
-      .populate("participants", "name profileImage status lastSeen")
+      .populate("participants", "name profileImage isOnline lastSeen")
       .populate({
         path: "lastMessage",
         select: "text image sender createdAt status",
@@ -89,7 +89,7 @@ const getConversationById = async (req, res) => {
       participants: userId,
     })
 
-      .populate("participants", "name profileImage status lastSeen")
+      .populate("participants", "name profileImage isOnline lastSeen")
 
       .populate("lastMessage");
 
@@ -126,7 +126,6 @@ const deleteConversation = async (req, res) => {
       });
     }
 
-    // Remove user from participants
     conversation.participants = conversation.participants.filter(
       (id) => id.toString() !== userId,
     );

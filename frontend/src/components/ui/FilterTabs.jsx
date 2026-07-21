@@ -2,9 +2,15 @@ import React from "react";
 
 const FilterTabs = () => {
   return (
-    <div className="flex gap-2">
-      <span className="px-3 py-1.5 text-xs font-medium rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-400/30 shadow-[0_0_10px_rgba(34,211,238,0.15)]">
+    <div className="flex items-center gap-1.5">
+      <span className="px-3 py-1 rounded-full bg-[#A37CFF]/15 text-[#A37CFF] text-[11px] font-semibold cursor-pointer">
         All
+      </span>
+      <span className="px-3 py-1 rounded-full text-[#666] text-[11px] font-medium hover:bg-[#1D1E1F] cursor-pointer transition-colors">
+        Unread
+      </span>
+      <span className="px-3 py-1 rounded-full text-[#666] text-[11px] font-medium hover:bg-[#1D1E1F] cursor-pointer transition-colors">
+        Online
       </span>
     </div>
   );

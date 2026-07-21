@@ -41,14 +41,12 @@ const initSocket = (server) => {
       console.error("Socket connect DB error:", err);
     }
 
-    // Typing
     socket.on("typing", ({ receiverId }) => {
       io.to(receiverId).emit("user-typing", {
         userId,
       });
     });
 
-    // Stop typing
     socket.on("stop-typing", ({ receiverId }) => {
       io.to(receiverId).emit("user-stop-typing", {
         userId,

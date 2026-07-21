@@ -6,7 +6,6 @@ import {
 } from "../middlewares/userValidation.js";
 import mongoose from "mongoose";
 
-// Get all users except current user
 const getAllUsers = async (req, res) => {
   try {
     const userId = req.user.id;

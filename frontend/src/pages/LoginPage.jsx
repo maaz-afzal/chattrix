@@ -5,10 +5,11 @@ import {
   Mail,
   Lock,
   ArrowRight,
-  MessageCircle,
+  MessageSquareText,
   Bot,
+  Shield,
   Zap,
-  CheckCircle,
+  Globe,
 } from "lucide-react";
 import { login } from "../redux/Slices/authSlice.js";
 import authService from "../services/authService.js";
@@ -17,7 +18,9 @@ import toast from "react-hot-toast";
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const [loading, setLoading] = useState(false);
+  const [focused, setFocused] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -68,204 +71,180 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-black text-white">
-      {/* Neon background glow */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-20 -top-20 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl" />
-        <div className="absolute -bottom-25 -right-15] h-80 w-80 rounded-full bg-indigo-500/10 blur-3xl" />
-        <div className="absolute inset-0 opacity-20 bg-[linear-gradient(rgba(59,130,246,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.12)_1px,transparent_1px)] [bg-size:36px_36px]" />
-      </div>
+    <div className="min-h-screen bg-[#161616] text-white flex">
+      <div className="hidden lg:flex lg:w-120 xl:w-130 shrink-0 flex-col justify-between p-10 bg-[#161616] border-r border-[#2E2E2F]">
+        <div>
+          <div className="flex items-center gap-3 mb-12">
+            <div className="w-10 h-10 rounded-xl bg-[#A37CFF]/12 flex items-center justify-center">
+              <MessageSquareText className="w-5 h-5 text-[#A37CFF]" />
+            </div>
+            <span className="text-[18px] font-bold text-white tracking-tight">
+              Chattrix
+            </span>
+          </div>
 
-      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-8">
-        <div className="grid w-full max-w-6xl overflow-hidden rounded-3xl border border-cyan-500/20 bg-black/80 shadow-[0_0_40px_rgba(34,211,238,0.12)] backdrop-blur-sm lg:grid-cols-2">
-          {/* Left Info Panel */}
-          <div className="hidden border-r border-cyan-500/20 bg-black/70 p-10 lg:flex lg:flex-col lg:justify-between">
-            <div>
-              <div className="mb-10 flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan-400/40 bg-cyan-500/10 shadow-[0_0_20px_rgba(34,211,238,0.25)]">
-                  <MessageCircle className="h-6 w-6 text-cyan-400" />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold tracking-wide text-white">
-                    Chattrix
-                  </h1>
-                  <p className="text-xs font-medium text-cyan-400/80 tracking-wide">
-                    Chat with anyone, anywhere
-                  </p>
-                </div>
+          <h2 className="text-[32px] xl:text-[36px] font-bold leading-[1.15] text-white mb-4">
+            Welcome
+            <br />
+            <span className="text-[#A37CFF]">back.</span>
+          </h2>
+
+          <p className="text-[14px] text-[#888] leading-relaxed max-w-sm mb-10">
+            Sign in to continue your conversations and connect with people
+            around the world.
+          </p>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-4 rounded-xl bg-[#1D1E1F] px-4 py-3.5">
+              <div className="w-9 h-9 rounded-lg bg-[#A37CFF]/10 flex items-center justify-center shrink-0">
+                <Zap className="w-4 h-4 text-[#A37CFF]" />
               </div>
-
-              {/* Feature Tags */}
-              <div className="mb-8 flex flex-wrap items-center gap-2">
-                <div className="flex items-center gap-1.5 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-3.5 py-1.5 shadow-[0_0_18px_rgba(34,211,238,0.15)]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400"></div>
-                  <span className="text-xs font-medium text-cyan-300">
-                    Secure
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-3.5 py-1.5 shadow-[0_0_18px_rgba(34,211,238,0.15)]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400"></div>
-                  <span className="text-xs font-medium text-cyan-300">
-                    Fast
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-3.5 py-1.5 shadow-[0_0_18px_rgba(34,211,238,0.15)]">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400"></div>
-                  <span className="text-xs font-medium text-cyan-300">
-                    Intelligent
-                  </span>
-                </div>
-              </div>
-
-              <h2 className="mb-4 max-w-lg text-4xl font-bold leading-tight text-white xl:text-5xl">
-                Chat with anyone,
-                <br />
-                <span className="text-cyan-400">anywhere, instantly.</span>
-              </h2>
-
-              <p className="max-w-md text-base leading-7 text-gray-400">
-                A simple and fast messaging app. Connect with people around the
-                world and chat with your own AI assistant.
-              </p>
-
-              <div className="mt-10 space-y-4">
-                <div className="rounded-2xl border border-cyan-500/20 bg-white/2 p-4 shadow-[0_0_18px_rgba(34,211,238,0.06)]">
-                  <div className="mb-2 flex items-center gap-3">
-                    <MessageCircle className="h-5 w-5 text-cyan-400" />
-                    <p className="font-semibold text-white">
-                      Real-time messaging
-                    </p>
-                  </div>
-                  <p className="text-sm text-gray-400">
-                    Messages delivered instantly with smooth and responsive
-                    experience.
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-cyan-500/20 bg-white/2 p-4 shadow-[0_0_18px_rgba(34,211,238,0.06)]">
-                  <div className="mb-2 flex items-center gap-3">
-                    <Bot className="h-5 w-5 text-cyan-400" />
-                    <p className="font-semibold text-white">
-                      Personal AI chatbot
-                    </p>
-                  </div>
-                  <p className="text-sm text-gray-400">
-                    Chat with your own AI assistant powered by Gemini.
-                  </p>
-                </div>
+              <div>
+                <p className="text-[13px] font-medium text-white">
+                  Real-time messaging
+                </p>
+                <p className="text-[11px] text-[#666] mt-0.5">
+                  Instant delivery with live indicators
+                </p>
               </div>
             </div>
 
-            <div className="mt-10 rounded-2xl border border-green-500/20 bg-green-500/5 p-4">
-              <div className="flex items-start gap-3">
-                <CheckCircle className="mt-0.5 h-5 w-5 text-green-400" />
-                <p className="text-sm leading-6 text-gray-300">
-                  Your chats are private and secure. Only you and the person
-                  you're talking to can see the messages.
+            <div className="flex items-center gap-4 rounded-xl bg-[#1D1E1F] px-4 py-3.5">
+              <div className="w-9 h-9 rounded-lg bg-[#A37CFF]/10 flex items-center justify-center shrink-0">
+                <Bot className="w-4 h-4 text-[#A37CFF]" />
+              </div>
+              <div>
+                <p className="text-[13px] font-medium text-white">
+                  AI Assistant
+                </p>
+                <p className="text-[11px] text-[#666] mt-0.5">
+                  Built-in Gemini powered chatbot
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 rounded-xl bg-[#1D1E1F] px-4 py-3.5">
+              <div className="w-9 h-9 rounded-lg bg-[#A37CFF]/10 flex items-center justify-center shrink-0">
+                <Globe className="w-4 h-4 text-[#A37CFF]" />
+              </div>
+              <div>
+                <p className="text-[13px] font-medium text-white">
+                  Connect globally
+                </p>
+                <p className="text-[11px] text-[#666] mt-0.5">
+                  Chat with anyone, anywhere
                 </p>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Right Login Panel */}
-          <div className="flex items-center justify-center p-6 sm:p-8 lg:p-12">
-            <div className="w-full max-w-md">
-              {/* Mobile Logo */}
-              <div className="mb-8 flex items-center justify-center gap-3 lg:hidden">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-cyan-400/40 bg-cyan-500/10 shadow-[0_0_20px_rgba(34,211,238,0.25)]">
-                  <MessageCircle className="h-6 w-6 text-cyan-400" />
+        <div className="flex items-start gap-3 rounded-xl bg-emerald-500/6 border border-emerald-500/10 px-4 py-3.5">
+          <Shield className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+          <p className="text-[12px] text-[#888] leading-relaxed">
+            Your conversations are private. Only you and the recipient can read
+            messages.
+          </p>
+        </div>
+      </div>
+
+      <div className="flex-1 flex items-center justify-center px-5 py-8">
+        <div className="w-full max-w-100">
+          <div className="flex items-center justify-center gap-3 mb-8 lg:hidden">
+            <div className="w-10 h-10 rounded-xl bg-[#A37CFF]/12 flex items-center justify-center">
+              <MessageSquareText className="w-5 h-5 text-[#A37CFF]" />
+            </div>
+            <span className="text-[18px] font-bold text-white">Chattrix</span>
+          </div>
+
+          <div className="mb-8">
+            <h2 className="text-[24px] font-bold text-white mb-1">Sign in</h2>
+            <p className="text-[13px] text-[#666]">
+              Enter your credentials to continue
+            </p>
+          </div>
+
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div>
+              <label className="block text-[12px] font-medium text-[#999] mb-2">
+                Email
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                  <Mail
+                    className={`w-4 h-4 transition-colors ${
+                      focused === "email" ? "text-[#A37CFF]" : "text-[#555]"
+                    }`}
+                  />
                 </div>
-                <div>
-                  <h1 className="text-xl font-bold text-white">Chattrix</h1>
-                  <p className="text-xs font-medium text-cyan-400/80 tracking-wide">
-                    Chat with anyone, anywhere
-                  </p>
-                </div>
-              </div>
-
-              <div className="relative overflow-hidden rounded-3xl border border-cyan-500/20 bg-[#050505] p-6 shadow-[0_0_30px_rgba(34,211,238,0.08)] sm:p-8">
-                {/* top neon line */}
-                <div className="absolute left-0 top-0 h-0.5 w-full bg-linear-to-r from-transparent via-cyan-400 to-transparent opacity-80" />
-
-                <div className="mb-8 text-center">
-                  <p className="mb-2 text-xs font-medium text-cyan-400/70 tracking-wide">
-                    Welcome
-                  </p>
-                  <h2 className="text-3xl font-bold text-white">Sign in</h2>
-                  <p className="mt-2 text-sm text-gray-400">
-                    Enter your details to continue
-                  </p>
-                </div>
-
-                <form className="space-y-5" onSubmit={handleSubmit}>
-                  {/* Email */}
-                  <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-300">
-                      Email Address
-                    </label>
-                    <div className="relative">
-                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                        <Mail className="h-5 w-5 text-cyan-400/70" />
-                      </div>
-                      <input
-                        type="email"
-                        name="email"
-                        onChange={handleChange}
-                        value={formData.email}
-                        disabled={loading}
-                        placeholder="you@example.com"
-                        className="block w-full rounded-2xl border border-cyan-500/20 bg-black px-4 py-3 pl-11 text-white placeholder:text-gray-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-200"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Password */}
-                  <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-300">
-                      Password
-                    </label>
-                    <div className="relative">
-                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                        <Lock className="h-5 w-5 text-cyan-400/70" />
-                      </div>
-                      <input
-                        type="password"
-                        name="password"
-                        onChange={handleChange}
-                        value={formData.password}
-                        disabled={loading}
-                        placeholder="Enter your password"
-                        className="block w-full rounded-2xl border border-cyan-500/20 bg-black px-4 py-3 pl-11 text-white placeholder:text-gray-500 focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 transition-all duration-200"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Button */}
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="flex w-full items-center justify-center rounded-2xl border border-cyan-400/30 bg-cyan-500/10 px-4 py-3 text-sm font-semibold text-cyan-300 shadow-[0_0_20px_rgba(34,211,238,0.12)] transition-all duration-200 hover:bg-cyan-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-black disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {loading ? "Signing in..." : "Sign In"}
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </button>
-
-                  {/* Signup Link */}
-                  <div className="pt-2 text-center">
-                    <p className="text-sm text-gray-400">
-                      Don't have an account?{" "}
-                      <Link
-                        to="/signup"
-                        className="font-medium text-cyan-400 transition-colors hover:text-cyan-300"
-                      >
-                        Create an account
-                      </Link>
-                    </p>
-                  </div>
-                </form>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  onFocus={() => setFocused("email")}
+                  onBlur={() => setFocused("")}
+                  disabled={loading}
+                  placeholder="you@example.com"
+                  className="w-full rounded-lg bg-[#212120] pl-10 pr-4 py-2.5 text-[13px] text-white placeholder:text-[#555] outline-none border border-transparent focus:border-[#A37CFF]/30 focus:ring-1 focus:ring-[#A37CFF]/20 transition-all disabled:opacity-50"
+                />
               </div>
             </div>
-          </div>
+
+            <div>
+              <label className="block text-[12px] font-medium text-[#999] mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                  <Lock
+                    className={`w-4 h-4 transition-colors ${
+                      focused === "password" ? "text-[#A37CFF]" : "text-[#555]"
+                    }`}
+                  />
+                </div>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  onFocus={() => setFocused("password")}
+                  onBlur={() => setFocused("")}
+                  disabled={loading}
+                  placeholder="Enter your password"
+                  className="w-full rounded-lg bg-[#212120] pl-10 pr-4 py-2.5 text-[13px] text-white placeholder:text-[#555] outline-none border border-transparent focus:border-[#A37CFF]/30 focus:ring-1 focus:ring-[#A37CFF]/20 transition-all disabled:opacity-50"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#A37CFF] hover:bg-[#9370f0] px-4 py-2.5 text-[13px] font-semibold text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+            >
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  Sign In
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
+
+          <p className="mt-6 text-center text-[13px] text-[#666]">
+            Don't have an account?{" "}
+            <Link
+              to="/signup"
+              className="font-medium text-[#A37CFF] hover:text-[#b99aff] transition-colors"
+            >
+              Create account
+            </Link>
+          </p>
         </div>
       </div>
     </div>

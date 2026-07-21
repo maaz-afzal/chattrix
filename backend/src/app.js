@@ -14,7 +14,6 @@ const app = express();
 
 app.use(helmet());
 
-// cors
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || "http://localhost:5173",
@@ -24,19 +23,16 @@ app.use(
 
 app.use(express.json({ limit: "5mb" }));
 
-// app routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/conversations", conversationRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/ai", aiRoutes);
 
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({ msg: "Route not found" });
 });
 
-// global error handler
 app.use((err, req, res, next) => {
   if (process.env.NODE_ENV === "production") {
     res.status(500).json({ msg: "Server error" });
