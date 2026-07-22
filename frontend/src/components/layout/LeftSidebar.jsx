@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Settings, Plus, X, Search } from "lucide-react";
-import Avatar from "../common/Avatar";
+import { Settings, X, Search, SquarePen } from "lucide-react";
+import Avatar from "../common/Avatar.jsx";
 import IconButton from "../common/IconButton";
-import FilterTabs from "../ui/FilterTabs.jsx";
-import ChatList from "../ui/ChatList";
+import FilterTabs from "../chat/FilterTabs.jsx";
+import ChatList from "../chat/ChatList.jsx";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import userService from "../../services/userService.js";
@@ -138,7 +138,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
               onClick={() => setIsModalOpen(true)}
               className="w-8 h-8 rounded-lg bg-[#A37CFF] hover:bg-[#9370f0] text-white flex items-center justify-center transition-colors"
             >
-              <Plus className="w-4 h-4" />
+              <SquarePen className="w-4 h-4" />
             </button>
           </div>
 
@@ -198,7 +198,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
                 size="sm"
               />
               <span
-                className={`absolute -bottom-0.5 -right-0.5 w-[10px] h-[10px] rounded-full border-2 border-[#161616] ${
+                className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#161616] ${
                   isOnline ? "bg-emerald-500" : "bg-[#555]"
                 }`}
               />
@@ -255,7 +255,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
               </div>
             </div>
 
-            <div className="max-h-[360px] overflow-y-auto p-2">
+            <div className="max-h-90 overflow-y-auto p-2">
               {modalFilteredUsers.length === 0 ? (
                 <p className="py-10 text-center text-[13px] text-[#666]">
                   No users found.

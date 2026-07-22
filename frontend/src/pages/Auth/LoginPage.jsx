@@ -11,8 +11,8 @@ import {
   Zap,
   Globe,
 } from "lucide-react";
-import { login } from "../redux/Slices/authSlice.js";
-import authService from "../services/authService.js";
+import { login } from "../../redux/Slices/authSlice.js";
+import authService from "../../services/authService.js";
 import toast from "react-hot-toast";
 
 const LoginPage = () => {

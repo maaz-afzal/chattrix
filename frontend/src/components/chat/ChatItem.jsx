@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { ChevronRight, Trash2 } from "lucide-react";
-import Avatar from "../common/Avatar";
+import { ChevronDown, Trash2 } from "lucide-react";
+import Avatar from "../common/Avatar.jsx";
 import { formatLastSeen } from "../../utils/formatLastSeen.js";
 import conversationService from "../../services/conversationService.js";
+import Badge from "../common/Badge.jsx";
 import toast from "react-hot-toast";
 
 const ChatItem = ({ chat, isSelected, onClick, onDelete }) => {
@@ -57,11 +58,7 @@ const ChatItem = ({ chat, isSelected, onClick, onDelete }) => {
             {subtitle}
           </p>
         </div>
-        {unreadCount > 0 && (
-          <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[#A37CFF] text-white text-[10px] font-bold flex items-center justify-center shrink-0">
-            {unreadCount > 99 ? "99+" : unreadCount}
-          </span>
-        )}
+        <Badge count={unreadCount} />
       </button>
 
       <button
@@ -69,9 +66,9 @@ const ChatItem = ({ chat, isSelected, onClick, onDelete }) => {
           e.stopPropagation();
           setMenuOpen(!menuOpen);
         }}
-        className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-[#555] hover:text-white hover:bg-[#2E2E2F] opacity-0 group-hover:opacity-100 transition-all"
+        className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-[#555] hover:text-white hover:bg-[#2E2E2F] opacity-0 group-hover:opacity-100 transition-all"
       >
-        <ChevronRight className="w-3.5 h-3.5" />
+        <ChevronDown className="w-3.5 h-3.5" />
       </button>
 
       {menuOpen && (
@@ -80,13 +77,13 @@ const ChatItem = ({ chat, isSelected, onClick, onDelete }) => {
             className="fixed inset-0 z-40"
             onClick={() => setMenuOpen(false)}
           />
-          <div className="absolute right-1.5 top-full mt-1 z-50 w-40 rounded-xl border border-[#2E2E2F] bg-[#1D1E1F] overflow-hidden shadow-xl">
+          <div className="absolute right-1.5 top-full -mt-3 z-50 w-30 rounded-xl border border-[#2E2E2F] bg-[#1D1E1F] overflow-hidden shadow-xl">
             <button
               onClick={handleDelete}
-              className="w-full flex items-center gap-2 px-3 py-2.5 text-left text-[12px] text-[#f87171] hover:bg-[#2E2E2F] transition-colors"
+              className="w-full flex items-center gap-2 px-3 py-2 text-left text-[12px] text-[#f87171] hover:bg-[#2E2E2F] transition-colors"
             >
               <Trash2 className="w-3.5 h-3.5" />
-              Delete
+              Delete chat
             </button>
           </div>
         </>

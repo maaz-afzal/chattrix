@@ -1,6 +1,6 @@
 import api from "./api";
 
-const createConversation = async (receiverId) => {
+const findOrCreateConversation = async (receiverId) => {
   const res = await api.post("/conversations", { receiverId });
   return res.data;
 };
@@ -20,4 +20,4 @@ const deleteConversation = async (id) => {
   return res.data;
 };
 
-export default { createConversation, getConversations, getConversationById, deleteConversation };
+export default { findOrCreateConversation, getConversations, getConversationById, deleteConversation };

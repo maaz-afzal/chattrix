@@ -14,11 +14,13 @@ const Badge = ({ count, variant = "default", size = "sm" }) => {
   };
 
   return (
-    <span
-      className={`${sizes[size]} ${variants[variant]} inline-flex items-center justify-center rounded-full font-bold`}
-    >
-      {count > 99 ? "99+" : count}
-    </span>
+    <>
+      {count > 0 && (
+        <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[#A37CFF] text-white text-[10px] font-bold flex items-center justify-center shrink-0">
+          {count > 99 ? "99+" : count}
+        </span>
+      )}
+    </>
   );
 };
 

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
-import ChatHeader from "../ui/ChatHeader";
-import MessageList from "../ui/MessageList";
-import MessageInput from "../ui/MessageInput";
+import ChatHeader from "../chat/ChatHeader";
+import MessageList from "../chat/MessageList";
+import MessageInput from "../chat/MessageInput";
 import toast from "react-hot-toast";
 import * as messageService from "../../services/messageService";
 

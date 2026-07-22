@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
-import SignupPage from "./pages/SignupPage";
-import ProfilePage from "./pages/ProfilePage";
-import ProtectedRoute from "./components/ProtectedRoute";
+import HomePage from "./pages/Home/HomePage.jsx";
+import LoginPage from "./pages/Auth/LoginPage.jsx";
+import SignupPage from "./pages/Auth/SignupPage.jsx";
+import ProfilePage from "./pages/Profile/ProfilePage.jsx";
+import ProtectedRoute from "./components/common/ProtectedRoute.jsx";
 import { Toaster } from "react-hot-toast";
 import { useSelector, useDispatch } from "react-redux";
 import { connectSocket, disconnectSocket, getSocket } from "./lib/socket.js";

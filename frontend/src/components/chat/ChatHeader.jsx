@@ -6,10 +6,9 @@ import {
   X,
   CheckSquare,
   Bot,
-  Shield,
 } from "lucide-react";
 import { useSelector } from "react-redux";
-import Avatar from "../common/Avatar";
+import Avatar from "../common/Avatar.jsx";
 import { useSelect } from "../layout/ChatArea.jsx";
 import { formatLastSeen } from "../../utils/formatLastSeen.js";
 
@@ -128,8 +127,7 @@ const ChatHeader = ({ selected, isAISelected, onBack }) => {
                 AI Assistant
               </p>
               <div className="flex items-center gap-1 mt-0.5">
-                <Shield className="w-3 h-3 text-[#A37CFF]" />
-                <span className="text-[10px] text-[#A37CFF]">Gemini</span>
+                <span className="text-[10px] text-[#A37CFF]">Online</span>
               </div>
             </div>
           </div>

@@ -12,9 +12,9 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import authService from "../services/authService.js";
+import authService from "../../services/authService.js";
 import { useDispatch } from "react-redux";
-import { login } from "../redux/Slices/authSlice";
+import { login } from "../../redux/Slices/authSlice.js";
 import { Link } from "react-router-dom";
 
 const SignupPage = () => {

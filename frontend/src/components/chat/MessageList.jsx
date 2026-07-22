@@ -82,7 +82,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
   if (isAISelected) {
     return (
       <div className="flex-1 min-h-0 overflow-y-auto bg-[#161616]">
-        <div className="w-full max-w-[700px] mx-auto px-5 py-6">
+        <div className="w-full max-w-6xl mx-auto px-5 py-6">
           {aiMessages.length === 0 && (
             <div className="flex flex-col items-center justify-center py-16">
               <div className="w-14 h-14 rounded-2xl bg-[#A37CFF]/10 flex items-center justify-center mb-3">
@@ -236,7 +236,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
 
   return (
     <div className="flex-1 min-h-0 overflow-y-auto bg-[#161616]">
-      <div className="max-w-[700px] mx-auto px-5 py-5">
+      <div className="max-w-6xl mx-auto px-5 py-5">
         {conversation.length === 0 ? (
           <p className="text-center py-8 text-[13px] text-[#555]">
             No messages yet. Say hello!
