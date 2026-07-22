@@ -2,13 +2,14 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 
-import authRoutes from "./routes/authRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
-import messageRoutes from "./routes/messageRoutes.js";
-import conversationRoutes from "./routes/conversationRoutes.js";
-import aiRoutes from "./routes/aiRoutes.js";
-
-import authMiddleware from "./middlewares/authMiddleware.js";
+import {
+  authRoutes,
+  userRoutes,
+  messageRoutes,
+  conversationRoutes,
+  aiRoutes,
+} from "./routes/index.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 const app = express();
 
@@ -16,7 +17,7 @@ app.use(helmet());
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: process.env.FRONTEND_URL || "http://localhost:5173" || "*",
     credentials: true,
   }),
 );
@@ -33,12 +34,6 @@ app.use((req, res) => {
   res.status(404).json({ msg: "Route not found" });
 });
 
-app.use((err, req, res, next) => {
-  if (process.env.NODE_ENV === "production") {
-    res.status(500).json({ msg: "Server error" });
-  } else {
-    res.status(500).json({ msg: err.message });
-  }
-});
+app.use(errorHandler);
 
 export default app;

@@ -1,158 +1,33 @@
-import mongoose from "mongoose";
-import Conversation from "../models/Conversation.js";
-import Message from "../models/Message.js";
+import { conversationService } from "../services/index.js";
+import { catchAsync } from "../middlewares/errorHandler.js";
+import { sendResponse } from "../utils/responseHandler.js";
 
-const findOrCreateConversation = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const { receiverId } = req.body;
+export const findOrCreateConversation = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+  const { receiverId } = req.body;
+  const conversation = await conversationService.findOrCreateConversation(
+    userId,
+    receiverId,
+  );
+  sendResponse(res, 200, { conversation });
+});
 
-    if (!mongoose.Types.ObjectId.isValid(receiverId)) {
-      return res.status(400).json({
-        msg: "Invalid user ID",
-      });
-    }
+export const getConversations = catchAsync(async (req, res) => {
+  const conversations = await conversationService.getConversations(req.user.id);
+  sendResponse(res, 200, conversations);
+});
 
-    if (userId === receiverId) {
-      return res.status(400).json({
-        msg: "Cannot create conversation with yourself",
-      });
-    }
+export const getConversationById = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const conversation = await conversationService.getConversationById(
+    req.user.id,
+    id,
+  );
+  sendResponse(res, 200, conversation);
+});
 
-    let conversation = await Conversation.findOne({
-      participants: {
-        $all: [userId, receiverId],
-      },
-      isAIChat: false,
-    });
-
-    if (!conversation) {
-      conversation = await Conversation.create({
-        participants: [userId, receiverId],
-        isAIChat: false,
-      });
-    }
-
-    res.status(200).json({
-      conversation,
-    });
-  } catch (err) {
-    console.error("findOrCreateConversation error:", err.message);
-
-    res.status(500).json({
-      msg: "Something went wrong",
-    });
-  }
-};
-
-const getConversations = async (req, res) => {
-  try {
-    const userId = req.user.id;
-
-    const conversations = await Conversation.find({
-      participants: userId,
-    })
-
-      .populate("participants", "name profileImage isOnline lastSeen")
-      .populate({
-        path: "lastMessage",
-        select: "text image sender createdAt status",
-      })
-
-      .sort({
-        updatedAt: -1,
-      });
-
-    res.status(200).json(conversations);
-  } catch (err) {
-    console.error("getConversations error:", err.message);
-
-    res.status(500).json({
-      msg: "Something went wrong",
-    });
-  }
-};
-
-const getConversationById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user.id;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        msg: "Invalid conversation ID",
-      });
-    }
-
-    const conversation = await Conversation.findOne({
-      _id: id,
-      participants: userId,
-    })
-
-      .populate("participants", "name profileImage isOnline lastSeen")
-
-      .populate("lastMessage");
-
-    if (!conversation) {
-      return res.status(404).json({
-        msg: "Conversation not found",
-      });
-    }
-
-    res.status(200).json(conversation);
-  } catch (err) {
-    console.error("getConversationById error:", err.message);
-
-    res.status(500).json({
-      msg: "Something went wrong",
-    });
-  }
-};
-
-const deleteConversation = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const userId = req.user.id;
-
-    const conversation = await Conversation.findOne({
-      _id: id,
-      participants: userId,
-    });
-
-    if (!conversation) {
-      return res.status(404).json({
-        msg: "Conversation not found",
-      });
-    }
-
-    conversation.participants = conversation.participants.filter(
-      (id) => id.toString() !== userId,
-    );
-
-    await conversation.save();
-    res.status(200).json({
-      msg: "Conversation deleted",
-    });
-  } catch (err) {
-    console.error("deleteConversation error:", err.message);
-
-    res.status(500).json({
-      msg: "Something went wrong",
-    });
-  }
-};
-
-const updateLastMessage = async (conversationId, messageId) => {
-  await Conversation.findByIdAndUpdate(conversationId, {
-    lastMessage: messageId,
-  });
-};
-
-export {
-  findOrCreateConversation,
-  getConversations,
-  getConversationById,
-  deleteConversation,
-  updateLastMessage,
-};
+export const deleteConversation = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  await conversationService.deleteConversation(req.user.id, id);
+  sendResponse(res, 200, null, "Conversation deleted");
+});

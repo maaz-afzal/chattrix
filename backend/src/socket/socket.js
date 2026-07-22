@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { handleConnection, handleDisconnect } from "./events.js";
 
 const initSocket = (server) => {
   const io = new Server(server, {
@@ -27,52 +28,18 @@ const initSocket = (server) => {
   });
 
   io.on("connection", async (socket) => {
-    const { userId } = socket;
-
-    socket.join(userId);
-
-    try {
-      await User.findByIdAndUpdate(userId, {
-        isOnline: true,
-      });
-
-      socket.broadcast.emit("user-online", userId);
-    } catch (err) {
-      console.error("Socket connect DB error:", err);
-    }
+    await handleConnection(socket, io);
 
     socket.on("typing", ({ receiverId }) => {
-      io.to(receiverId).emit("user-typing", {
-        userId,
-      });
+      io.to(receiverId).emit("user-typing", { userId: socket.userId });
     });
 
     socket.on("stop-typing", ({ receiverId }) => {
-      io.to(receiverId).emit("user-stop-typing", {
-        userId,
-      });
+      io.to(receiverId).emit("user-stop-typing", { userId: socket.userId });
     });
 
     socket.on("disconnect", async () => {
-      const sockets = await io.in(userId).fetchSockets();
-
-      if (sockets.length === 0) {
-        try {
-          const lastSeen = new Date();
-
-          await User.findByIdAndUpdate(userId, {
-            isOnline: false,
-            lastSeen,
-          });
-
-          socket.broadcast.emit("user-offline", {
-            userId,
-            lastSeen,
-          });
-        } catch (err) {
-          console.error("Socket disconnect DB error:", err);
-        }
-      }
+      await handleDisconnect(socket, io);
     });
   });
 
