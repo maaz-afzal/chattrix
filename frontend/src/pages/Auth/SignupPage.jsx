@@ -61,9 +61,10 @@ const SignupPage = () => {
     try {
       setLoading(true);
       const response = await authService.register(formData);
+      console.log(response)
 
-      if (response.token && response.user) {
-        dispatch(login({ token: response.token, user: response.user }));
+      if (response.data.token && response.data.user) {
+        dispatch(login({ token: response.data.token, user: response.data.user }));
         setFormData({ name: "", email: "", password: "" });
         toast.success("Signup successful!");
         navigate("/");
@@ -83,7 +84,7 @@ const SignupPage = () => {
   return (
     <div className="min-h-screen bg-[#161616] text-white flex">
       
-      <div className="hidden lg:flex lg:w-[480px] xl:w-[520px] shrink-0 flex-col justify-between p-10 bg-[#161616] border-r border-[#2E2E2F]">
+      <div className="hidden lg:flex lg:w-120 xl:w-130 shrink-0 flex-col justify-between p-10 bg-[#161616] border-r border-[#2E2E2F]">
         <div>
           <div className="flex items-center gap-3 mb-12">
             <div className="w-10 h-10 rounded-xl bg-[#A37CFF]/12 flex items-center justify-center">
@@ -150,7 +151,7 @@ const SignupPage = () => {
           </div>
         </div>
 
-        <div className="flex items-start gap-3 rounded-xl bg-emerald-500/[0.06] border border-emerald-500/10 px-4 py-3.5">
+        <div className="flex items-start gap-3 rounded-xl bg-emerald-500/600 border border-emerald-500/10 px-4 py-3.5">
           <Shield className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
           <p className="text-[12px] text-[#888] leading-relaxed">
             Your conversations are private. Only you and the recipient can read
@@ -161,7 +162,7 @@ const SignupPage = () => {
 
       
       <div className="flex-1 flex items-center justify-center px-5 py-8">
-        <div className="w-full max-w-[400px]">
+        <div className="w-full max-w-100">
           
           <div className="flex items-center justify-center gap-3 mb-8 lg:hidden">
             <div className="w-10 h-10 rounded-xl bg-[#A37CFF]/12 flex items-center justify-center">

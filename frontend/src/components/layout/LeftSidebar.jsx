@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import userService from "../../services/userService.js";
 import conversationService from "../../services/conversationService.js";
 import { getSocket } from "../../lib/socket.js";
-import * as messageService from "../../services/messageService.js";
 import {
   setAllUsers,
   setSelectedConversationId,
@@ -113,10 +112,10 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
       onSelected(selectedUser);
     } else {
       try {
-        const res = await messageService.findOrCreateConversation(
+        const res = await conversationService.findOrCreateConversation(
           selectedUser._id,
         );
-        const conversationId = res.conversation?._id || res._id;
+        const conversationId = res.conversation._id || res._id;
         dispatch(setSelectedConversationId(conversationId));
         onSelected({ ...selectedUser, conversationId });
         fetchConversations();

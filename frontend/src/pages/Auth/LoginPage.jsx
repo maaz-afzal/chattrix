@@ -52,8 +52,8 @@ const LoginPage = () => {
       setLoading(true);
       const response = await authService.login(formData);
 
-      if (response.token && response.user) {
-        dispatch(login({ token: response.token, user: response.user }));
+      if (response.data.token && response.data.user) {
+        dispatch(login({ token: response.data.token, user: response.data.user }));
         setFormData({ email: "", password: "" });
         toast.success("Login successful!");
         navigate("/");
