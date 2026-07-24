@@ -50,7 +50,7 @@ const sendAIMessage = async (userId, conversationId, text) => {
   const aiMessage = await Message.create({
     conversationId,
     sender: userId,
-    receiver: userId,
+    senderType: "ai",
     text: aiReply,
   });
 

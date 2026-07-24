@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import ChatHeader from "../chat/ChatHeader";
 import MessageList from "../chat/MessageList";
 import MessageInput from "../chat/MessageInput";
 import toast from "react-hot-toast";
 import * as messageService from "../../services/messageService";
+import aiService from "../../services/aiService.js";
 
 const SelectContext = createContext();
 
@@ -19,6 +20,33 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
   const [clearTrigger, setClearTrigger] = useState(0);
   const [sendTrigger, setSendTrigger] = useState(0);
   const [aiMessages, setAiMessages] = useState([]);
+  const [aiConversationId, setAiConversationId] = useState(null);
+
+  useEffect(() => {
+    if (!isAISelected) {
+      setAiConversationId(null);
+      return;
+    }
+    aiService.createAIConversation().then((data) => {
+      const convId = data.conversation?._id || data._id;
+      setAiConversationId(convId);
+    }).catch(() => toast.error("Failed to start AI chat"));
+  }, [isAISelected]);
+
+  useEffect(() => {
+    if (!aiConversationId) return;
+    aiService.getAIHistory(aiConversationId).then((messages) => {
+      setAiMessages(
+        (messages || []).map((msg) => ({
+          _id: msg._id,
+          text: msg.text,
+          sender: msg.senderType === "ai" ? "ai" : "user",
+          createdAt: msg.createdAt,
+          status: "sent",
+        })),
+      );
+    }).catch(() => {});
+  }, [aiConversationId]);
 
   const enableSelectMode = () => {
     setSelectMode(true);
@@ -39,6 +67,9 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
 
   const handleClearChat = async () => {
     if (isAISelected) {
+      if (aiConversationId) {
+        await aiService.clearAIHistory(aiConversationId).catch(() => {});
+      }
       setAiMessages([]);
       toast.success("AI chat cleared!");
       return;
@@ -101,6 +132,7 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
           isAISelected={isAISelected}
           setAiMessages={setAiMessages}
           aiMessages={aiMessages}
+          aiConversationId={aiConversationId}
         />
       </SelectContext.Provider>
     </main>

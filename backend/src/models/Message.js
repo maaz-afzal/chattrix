@@ -37,6 +37,11 @@ const MessageSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    senderType: {
+      type: String,
+      enum: ["user", "ai"],
+      default: "user",
+    },
   },
   {
     timestamps: true,
@@ -44,6 +49,7 @@ const MessageSchema = new mongoose.Schema(
 );
 
 MessageSchema.pre("validate", function () {
+  if (this.deletedForEveryone) return;
   if (!this.text && !this.image) {
     this.invalidate("text", "Message must have text or image");
     this.invalidate("image", "Message must have text or image");

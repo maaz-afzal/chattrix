@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { Send, Paperclip, X, Trash2 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { getSocket } from "../../lib/socket.js";
-import * as messageService from "../../services/messageService.js";
+import messageService from "../../services/messageService.js";
+import aiService from "../../services/aiService.js";
 import { useSelect } from "../layout/ChatArea.jsx";
 import toast from "react-hot-toast";
 
-const MessageInput = ({ selected, isAISelected, setAiMessages }) => {
+const MessageInput = ({ selected, isAISelected, setAiMessages, aiConversationId }) => {
   const selectedConversationId = useSelector(
     (state) => state.users.selectedConversationId,
   );
@@ -24,7 +25,7 @@ const MessageInput = ({ selected, isAISelected, setAiMessages }) => {
   const typingTimeout = useRef(null);
 
   const handleAISend = async () => {
-    if (!message.trim()) return;
+    if (!message.trim() || !aiConversationId) return;
     const userMsg = {
       _id: Date.now().toString(),
       text: message.trim(),
@@ -36,14 +37,17 @@ const MessageInput = ({ selected, isAISelected, setAiMessages }) => {
     setMessage("");
     try {
       setLoading(true);
-      const response = await messageService.aiChat({ text: userMsg.text });
+      const response = await aiService.sendAIMessage({
+        text: userMsg.text,
+        conversationId: aiConversationId,
+      });
       setAiMessages((prev) => [
         ...prev,
         {
-          _id: (Date.now() + 1).toString(),
-          text: response.reply,
+          _id: response._id || (Date.now() + 1).toString(),
+          text: response.text || response.reply?.text || response,
           sender: "ai",
-          createdAt: new Date().toISOString(),
+          createdAt: response.createdAt || new Date().toISOString(),
           status: "sent",
         },
       ]);
