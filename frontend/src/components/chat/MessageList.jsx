@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import MessageBubble from "./MessageBubble";
 import { Bot } from "lucide-react";
 import { useSelector } from "react-redux";
-import * as messageService from "../../services/messageService.js";
+import messageService from "../../services/messageService.js";
 import { getSocket } from "../../lib/socket.js";
 import { useSelect } from "../layout/ChatArea";
 

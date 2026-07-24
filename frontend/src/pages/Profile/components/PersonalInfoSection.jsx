@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useDispatch } from "react-redux";
+import { updateUser } from "../../../redux/Slices/authSlice.js";
 import { Edit2, Camera, Trash2 } from "lucide-react";
 import userService from "../../../services/userService.js";
 import toast from "react-hot-toast";
@@ -32,18 +33,20 @@ const PersonalInfoSection = ({ user, isOnline, lastSeen, formatLastSeen }) => {
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setUploadingImage(true);
     try {
-      setUploadingImage(true);
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        await userService.updateProfile({ profileImage: reader.result });
-        dispatch(updateUser({ ...user, profileImage: reader.result }));
-        toast.success("Updated!");
-        setUploadingImage(false);
-      };
-      reader.readAsDataURL(file);
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      await userService.updateProfile({ profileImage: dataUrl });
+      dispatch(updateUser({ ...user, profileImage: dataUrl }));
+      toast.success("Updated!");
     } catch {
       toast.error("Failed");
+    } finally {
       setUploadingImage(false);
     }
   };
@@ -68,21 +71,19 @@ const PersonalInfoSection = ({ user, isOnline, lastSeen, formatLastSeen }) => {
     }
     try {
       setLoading(true);
-      const res = await userService.updateProfile({
+      await userService.updateProfile({
         name: formData.name.trim(),
         bio: formData.bio.trim(),
       });
-      if (res.success) {
-        dispatch(
-          updateUser({
-            ...user,
-            name: formData.name.trim(),
-            bio: formData.bio.trim(),
-          }),
-        );
-        toast.success("Saved!");
-        setIsEdit(false);
-      }
+      dispatch(
+        updateUser({
+          ...user,
+          name: formData.name.trim(),
+          bio: formData.bio.trim(),
+        }),
+      );
+      toast.success("Saved!");
+      setIsEdit(false);
     } catch (e) {
       toast.error(e.response?.data?.msg || "Failed");
     } finally {

@@ -3,7 +3,7 @@ import ChatHeader from "../chat/ChatHeader";
 import MessageList from "../chat/MessageList";
 import MessageInput from "../chat/MessageInput";
 import toast from "react-hot-toast";
-import * as messageService from "../../services/messageService";
+import messageService from "../../services/messageService";
 import aiService from "../../services/aiService.js";
 
 const SelectContext = createContext();

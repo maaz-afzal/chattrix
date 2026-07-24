@@ -1,16 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import LeftSidebar from "./LeftSidebar";
 import ChatArea from "./ChatArea";
 import { useDispatch } from "react-redux";
 import { setSelectedConversationId } from "../../redux/Slices/userSlice";
-import aiService from "../../services/aiService";
 
 const MainLayout = () => {
   const dispatch = useDispatch();
   const [selectedUser, setSelectedUser] = useState(null);
   const [isAISelected, setIsAISelected] = useState(false);
   const [showChat, setShowChat] = useState(false);
-  const [aiConversation, setAiConversation] = useState([]);
 
   const handleSelectUser = (user) => {
     setSelectedUser(user);
@@ -21,13 +19,10 @@ const MainLayout = () => {
     }
   };
 
-  const handleSelectAI = async () => {
+  const handleSelectAI = () => {
     setIsAISelected(true);
     setSelectedUser(null);
     setShowChat(true);
-    const res = await aiService.createAIConversation();
-    console.log(res)
-    setAiConversation(res);
   };
 
   const handleBack = () => {
