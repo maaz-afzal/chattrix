@@ -28,17 +28,15 @@ const SecuritySection = () => {
     }
     try {
       setLoading(true);
-      const res = await authService.changePassword(passwordData);
-      if (res.success) {
-        toast.success("Updated!");
-        setPasswordData({
-          currentPassword: "",
-          newPassword: "",
-          confirmPassword: "",
-        });
-      }
+      await authService.changePassword(passwordData);
+      toast.success("Password updated successfully.!");
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
     } catch (e) {
-      toast.error(e.response?.data?.msg || "Failed");
+      toast.error(e.response?.data?.msg || "Failed to update password!");
     } finally {
       setLoading(false);
     }

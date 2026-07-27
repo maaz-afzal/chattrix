@@ -23,20 +23,20 @@ const AccountSection = () => {
   };
 
   const handleDelete = async () => {
-    try {
-      setLoading(true);
-      const res = await authService.deleteAccount();
-      if (res.success) {
+    const handleDelete = async () => {
+      try {
+        setLoading(true);
+        await authService.deleteAccount();
         disconnectSocket();
         dispatch(logout());
         navigate("/login");
+      } catch (e) {
+        toast.error(e.response?.data?.msg || "Failed to delete Account!");
+      } finally {
+        setLoading(false);
+        setShowDelete(false);
       }
-    } catch (e) {
-      toast.error(e.response?.data?.msg || "Failed");
-    } finally {
-      setLoading(false);
-      setShowDelete(false);
-    }
+    };
   };
 
   return (

@@ -54,6 +54,10 @@ const sendAIMessage = async (userId, conversationId, text) => {
     text: aiReply,
   });
 
+  await Conversation.findByIdAndUpdate(conversationId, {
+    $set: { lastMessage: aiMessage._id, updatedAt: new Date() },
+  });
+
   return aiMessage;
 };
 

@@ -64,13 +64,22 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
       if (selectedRef.current?.conversationId)
         getConversation(selectedRef.current.conversationId);
     };
+    const handleMessageRead = (messageId) => {
+      setConversation((prev) =>
+        prev.map((msg) =>
+          msg._id === messageId ? { ...msg, status: "read" } : msg,
+        ),
+      );
+    };
 
     socket.on("receive-message", handleNewMessage);
     socket.on("message-sent", handleNewMessage);
+    socket.on("message-read", handleMessageRead);
     socket.on("connect", handleReconnect);
     return () => {
       socket.off("receive-message", handleNewMessage);
       socket.off("message-sent", handleNewMessage);
+      socket.off("message-read", handleMessageRead);
       socket.off("connect", handleReconnect);
     };
   }, [selected, currentUserId]);

@@ -7,7 +7,12 @@ import aiService from "../../services/aiService.js";
 import { useSelect } from "../layout/ChatArea.jsx";
 import toast from "react-hot-toast";
 
-const MessageInput = ({ selected, isAISelected, setAiMessages, aiConversationId }) => {
+const MessageInput = ({
+  selected,
+  isAISelected,
+  setAiMessages,
+  aiConversationId,
+}) => {
   const selectedConversationId = useSelector(
     (state) => state.users.selectedConversationId,
   );
@@ -44,10 +49,10 @@ const MessageInput = ({ selected, isAISelected, setAiMessages, aiConversationId 
       setAiMessages((prev) => [
         ...prev,
         {
-          _id: response._id || (Date.now() + 1).toString(),
-          text: response.text || response.reply?.text || response,
+          _id: response.reply?._id || (Date.now() + 1).toString(),
+          text: response.reply?.text || response.text || response,
           sender: "ai",
-          createdAt: response.createdAt || new Date().toISOString(),
+          createdAt: response.reply?.createdAt || new Date().toISOString(),
           status: "sent",
         },
       ]);
@@ -59,7 +64,7 @@ const MessageInput = ({ selected, isAISelected, setAiMessages, aiConversationId 
   };
 
   const handleNormalSend = async () => {
-    console.log(selected)
+    console.log(selected);
     if (!selected?._id) return;
     if (!selectedConversationId) {
       toast.error("Conversation not ready.");
@@ -159,13 +164,13 @@ const MessageInput = ({ selected, isAISelected, setAiMessages, aiConversationId 
   }
 
   return (
-    <div className="shrink-0 border-t border-[#2E2E2F] bg-[#161616] px-4 py-2">
+    <div className="shrink-0 border-t border-[#2E2E2F] bg-[#161616] px-4 py-4">
       {imagePreview && !isAISelected && (
         <div className="mb-2 inline-flex items-center gap-2 rounded-lg bg-[#1D1E1F] px-2.5 py-2">
           <img
             src={imagePreview}
             alt="Preview"
-            className="w-9 h-9 rounded-md object-cover"
+            className="w-10 h-10 rounded-md object-cover"
           />
           <button
             onClick={removeImage}
@@ -207,14 +212,14 @@ const MessageInput = ({ selected, isAISelected, setAiMessages, aiConversationId 
             onKeyDown={handleKeyDown}
             disabled={isDisabled}
             placeholder={placeholder}
-            className="w-full bg-transparent py-2 text-[13px] text-white placeholder:text-[#666] outline-none disabled:opacity-30"
+            className="w-full bg-transparent py-3 text-[13px] text-white placeholder:text-[#666] outline-none disabled:opacity-30"
           />
         </div>
 
         <button
           onClick={handleSend}
           disabled={!canSend}
-          className={`w-9 h-9 shrink-0 rounded-lg flex items-center justify-center transition-all ${
+          className={`w-10 h-10 shrink-0 rounded-lg flex items-center justify-center transition-all ${
             canSend
               ? "bg-[#A37CFF] text-white hover:bg-[#9370f0]"
               : "bg-[#212120] text-[#555]"
