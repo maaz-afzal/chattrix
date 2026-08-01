@@ -23,6 +23,11 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
   const [aiConversationId, setAiConversationId] = useState(null);
 
   useEffect(() => {
+    setSelectMode(false);
+    setSelectedMessages([]);
+  }, [selected?._id, isAISelected]);
+
+  useEffect(() => {
     if (!isAISelected) {
       setAiConversationId(null);
       return;

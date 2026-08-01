@@ -38,7 +38,7 @@ const getConversations = async (userId) => {
     participants: userId,
     deletedFor: { $ne: userId },
   })
-    .populate("participants", "name profileImage isOnline lastSeen")
+    .populate("participants", "name profileImage isOnline lastSeen email bio")
     .populate({
       path: "lastMessage",
       select: "text image sender createdAt status deletedFor deletedForEveryone",
@@ -58,7 +58,7 @@ const getConversationById = async (userId, conversationId) => {
     participants: userId,
     deletedFor: { $ne: userId },
   })
-    .populate("participants", "name profileImage isOnline lastSeen")
+    .populate("participants", "name profileImage isOnline lastSeen email bio")
     .populate("lastMessage");
 
   if (!conversation) {

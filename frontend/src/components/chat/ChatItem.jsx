@@ -68,7 +68,7 @@ const ChatItem = ({ chat, isSelected, onClick, onDelete }) => {
           e.stopPropagation();
           setMenuOpen(!menuOpen);
         }}
-        className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-[#9a9a9c] dark:text-[#555] hover:text-[#1a1a1b] dark:hover:text-white hover:bg-[#ececee] dark:hover:bg-[#2E2E2F] opacity-0 group-hover:opacity-100 transition-all"
+        className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-[#9a9a9c] dark:text-[#555] hover:text-[#1a1a1b] dark:hover:text-white hover:bg-[#ececee] dark:hover:bg-[#2E2E2F] sm:opacity-0 sm:group-hover:opacity-100 transition-all"
       >
         <ChevronDown className="w-3.5 h-3.5" />
       </button>

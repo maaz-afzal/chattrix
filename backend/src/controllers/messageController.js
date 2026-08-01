@@ -65,6 +65,11 @@ export const deleteMessage = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { everyone } = req.body || {};
   await messageService.deleteMessage(req.user.id, id, everyone);
+
+  if (io) {
+    io.to(req.user.id).emit("unread-update", { id });
+  }
+
   sendResponse(res, 200, null, "Message deleted successfully");
 });
 
@@ -85,5 +90,10 @@ export const markAsRead = catchAsync(async (req, res) => {
 export const clearChat = catchAsync(async (req, res) => {
   const { conversationId } = req.params;
   await messageService.clearChat(req.user.id, conversationId);
+
+  if (io) {
+    io.to(req.user.id).emit("unread-update", { conversationId });
+  }
+
   sendResponse(res, 200, null, "Chat cleared successfully");
 });

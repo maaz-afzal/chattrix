@@ -50,12 +50,14 @@ const searchUsers = async (query, currentUserId) => {
     throw new AppError("Search query is required.", 400);
   }
 
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
   const users = await User.find({
     _id: { $ne: currentUserId },
     isDeleted: false,
     $or: [
-      { name: { $regex: query, $options: "i" } },
-      { email: { $regex: query, $options: "i" } },
+      { name: { $regex: escaped, $options: "i" } },
+      { email: { $regex: escaped, $options: "i" } },
     ],
   })
     .select("-password")
