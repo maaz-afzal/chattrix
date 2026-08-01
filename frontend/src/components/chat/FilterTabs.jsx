@@ -1,5 +1,3 @@
-import React from "react";
-
 const FilterTabs = ({ active = "all", onChange }) => {
   const tabs = [
     { key: "all", label: "All" },

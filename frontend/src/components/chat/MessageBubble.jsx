@@ -1,4 +1,3 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import { CheckCheck, Check } from "lucide-react";
 import { useSelect } from "../layout/ChatArea";

@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Settings, X, Search, SquarePen } from "lucide-react";
 import Avatar from "../common/Avatar.jsx";
-import IconButton from "../common/IconButton";
 import FilterTabs from "../chat/FilterTabs.jsx";
 import ChatList from "../chat/ChatList.jsx";
 import { useSelector, useDispatch } from "react-redux";

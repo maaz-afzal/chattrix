@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { ChevronDown, Trash2 } from "lucide-react";
 import Avatar from "../common/Avatar.jsx";
 import { formatLastSeen } from "../../utils/formatLastSeen.js";

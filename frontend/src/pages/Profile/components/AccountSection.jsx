@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../../redux/Slices/authSlice.js";
@@ -16,7 +16,9 @@ const AccountSection = () => {
   const handleLogout = async () => {
     try {
       await authService.logout();
-    } catch {}
+    } catch {
+      // ignore network errors; local logout must still happen
+    }
     dispatch(logout());
     disconnectSocket();
     navigate("/login");

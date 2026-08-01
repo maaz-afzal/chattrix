@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   MoreVertical,
   ChevronLeft,
@@ -84,11 +84,8 @@ const ChatHeader = ({ selected, isAISelected, onBack }) => {
 
   const {
     selectMode,
-    selectedMessages,
     enableSelectMode,
-    disableSelectMode,
     handleClearChat,
-    handleDeleteSelected,
   } = useSelect();
 
   const onlineUsers = useSelector((state) => state.users.onlineUsers);

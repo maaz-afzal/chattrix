@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import MessageBubble from "./MessageBubble";
 import { Bot } from "lucide-react";

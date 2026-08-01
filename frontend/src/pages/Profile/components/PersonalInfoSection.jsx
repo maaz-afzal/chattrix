@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { updateUser } from "../../../redux/Slices/authSlice.js";
 import { Edit2, Camera, Trash2 } from "lucide-react";

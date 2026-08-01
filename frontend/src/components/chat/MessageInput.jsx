@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Send, Paperclip, X, Trash2 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { getSocket } from "../../lib/socket.js";
