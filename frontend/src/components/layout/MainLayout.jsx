@@ -29,6 +29,13 @@ const MainLayout = () => {
     setShowChat(false);
   };
 
+  const handleDeleteConversation = (conversationId) => {
+    if (selectedUser?.conversationId === conversationId) {
+      setSelectedUser(null);
+      setShowChat(false);
+    }
+  };
+
   return (
     <div className="h-screen overflow-hidden bg-[#f7f7f8] dark:bg-[#161616]">
       <div className="h-full w-full flex overflow-hidden">
@@ -39,6 +46,7 @@ const MainLayout = () => {
             onSelected={handleSelectUser}
             onSelectAI={handleSelectAI}
             isAISelected={isAISelected}
+            onDeleteConversation={handleDeleteConversation}
           />
         </div>
 

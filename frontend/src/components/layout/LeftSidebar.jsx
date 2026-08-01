@@ -15,7 +15,7 @@ import {
 } from "../../redux/Slices/userSlice.js";
 import toast from "react-hot-toast";
 
-const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
+const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversation }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -167,6 +167,11 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
     }
   };
 
+  const handleDeleteConversation = (conversationId) => {
+    fetchConversations();
+    if (onDeleteConversation) onDeleteConversation(conversationId);
+  };
+
   return (
     <>
       <aside className="w-100 border-r border-[#e2e2e4] dark:border-[#2E2E2F] bg-[#f7f7f8] dark:bg-[#161616] flex flex-col overflow-hidden">
@@ -226,7 +231,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
             onSelectedUser={onSelected}
             onSelectAI={onSelectAI}
             isAISelected={isAISelected}
-            onDeleteConversation={fetchConversations}
+            onDeleteConversation={handleDeleteConversation}
           />
         </div>
 
