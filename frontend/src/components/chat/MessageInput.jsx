@@ -70,6 +70,11 @@ const MessageInput = ({
       return;
     }
     if (!message.trim() && !image) return;
+    const socket = getSocket();
+    if (socket) {
+      clearTimeout(typingTimeout.current);
+      socket.emit("stop-typing", { receiverId: selected._id });
+    }
     try {
       setLoading(true);
       await messageService.sendMessage(selectedConversationId, selected._id, {
