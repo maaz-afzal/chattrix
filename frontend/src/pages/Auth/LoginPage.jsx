@@ -71,67 +71,67 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#161616] text-white flex">
-      <div className="hidden lg:flex lg:w-120 xl:w-130 shrink-0 flex-col justify-between p-10 bg-[#161616] border-r border-[#2E2E2F]">
+    <div className="min-h-screen bg-[#f7f7f8] dark:bg-[#161616] text-[#1a1a1b] dark:text-white flex">
+      <div className="hidden lg:flex lg:w-120 xl:w-130 shrink-0 flex-col justify-between p-10 bg-[#f7f7f8] dark:bg-[#161616] border-r border-[#e2e2e4] dark:border-[#2E2E2F]">
         <div>
           <div className="flex items-center gap-3 mb-12">
             <div className="w-10 h-10 rounded-xl bg-[#A37CFF]/12 flex items-center justify-center">
               <MessageSquareText className="w-5 h-5 text-[#A37CFF]" />
             </div>
-            <span className="text-[18px] font-bold text-white tracking-tight">
+            <span className="text-[18px] font-bold text-[#1a1a1b] dark:text-white tracking-tight">
               Chattrix
             </span>
           </div>
 
-          <h2 className="text-[32px] xl:text-[36px] font-bold leading-[1.15] text-white mb-4">
+          <h2 className="text-[32px] xl:text-[36px] font-bold leading-[1.15] text-[#1a1a1b] dark:text-white mb-4">
             Welcome
             <br />
             <span className="text-[#A37CFF]">back.</span>
           </h2>
 
-          <p className="text-[14px] text-[#888] leading-relaxed max-w-sm mb-10">
+          <p className="text-[14px] text-[#6b6b6d] dark:text-[#888] leading-relaxed max-w-sm mb-10">
             Sign in to continue your conversations and connect with people
             around the world.
           </p>
 
           <div className="space-y-3">
-            <div className="flex items-center gap-4 rounded-xl bg-[#1D1E1F] px-4 py-3.5">
+            <div className="flex items-center gap-4 rounded-xl bg-[#ececee] dark:bg-[#1D1E1F] px-4 py-3.5">
               <div className="w-9 h-9 rounded-lg bg-[#A37CFF]/10 flex items-center justify-center shrink-0">
                 <Zap className="w-4 h-4 text-[#A37CFF]" />
               </div>
               <div>
-                <p className="text-[13px] font-medium text-white">
+                <p className="text-[13px] font-medium text-[#1a1a1b] dark:text-white">
                   Real-time messaging
                 </p>
-                <p className="text-[11px] text-[#666] mt-0.5">
+                <p className="text-[11px] text-[#8a8a8c] dark:text-[#666] mt-0.5">
                   Instant delivery with live indicators
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-4 rounded-xl bg-[#1D1E1F] px-4 py-3.5">
+            <div className="flex items-center gap-4 rounded-xl bg-[#ececee] dark:bg-[#1D1E1F] px-4 py-3.5">
               <div className="w-9 h-9 rounded-lg bg-[#A37CFF]/10 flex items-center justify-center shrink-0">
                 <Bot className="w-4 h-4 text-[#A37CFF]" />
               </div>
               <div>
-                <p className="text-[13px] font-medium text-white">
+                <p className="text-[13px] font-medium text-[#1a1a1b] dark:text-white">
                   AI Assistant
                 </p>
-                <p className="text-[11px] text-[#666] mt-0.5">
+                <p className="text-[11px] text-[#8a8a8c] dark:text-[#666] mt-0.5">
                   Built-in Gemini powered chatbot
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-4 rounded-xl bg-[#1D1E1F] px-4 py-3.5">
+            <div className="flex items-center gap-4 rounded-xl bg-[#ececee] dark:bg-[#1D1E1F] px-4 py-3.5">
               <div className="w-9 h-9 rounded-lg bg-[#A37CFF]/10 flex items-center justify-center shrink-0">
                 <Globe className="w-4 h-4 text-[#A37CFF]" />
               </div>
               <div>
-                <p className="text-[13px] font-medium text-white">
+                <p className="text-[13px] font-medium text-[#1a1a1b] dark:text-white">
                   Connect globally
                 </p>
-                <p className="text-[11px] text-[#666] mt-0.5">
+                <p className="text-[11px] text-[#8a8a8c] dark:text-[#666] mt-0.5">
                   Chat with anyone, anywhere
                 </p>
               </div>
@@ -141,7 +141,7 @@ const LoginPage = () => {
 
         <div className="flex items-start gap-3 rounded-xl bg-emerald-500/6 border border-emerald-500/10 px-4 py-3.5">
           <Shield className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
-          <p className="text-[12px] text-[#888] leading-relaxed">
+          <p className="text-[12px] text-[#6b6b6d] dark:text-[#888] leading-relaxed">
             Your conversations are private. Only you and the recipient can read
             messages.
           </p>
@@ -154,26 +154,26 @@ const LoginPage = () => {
             <div className="w-10 h-10 rounded-xl bg-[#A37CFF]/12 flex items-center justify-center">
               <MessageSquareText className="w-5 h-5 text-[#A37CFF]" />
             </div>
-            <span className="text-[18px] font-bold text-white">Chattrix</span>
+            <span className="text-[18px] font-bold text-[#1a1a1b] dark:text-white">Chattrix</span>
           </div>
 
           <div className="mb-8">
-            <h2 className="text-[24px] font-bold text-white mb-1">Sign in</h2>
-            <p className="text-[13px] text-[#666]">
+            <h2 className="text-[24px] font-bold text-[#1a1a1b] dark:text-white mb-1">Sign in</h2>
+            <p className="text-[13px] text-[#8a8a8c] dark:text-[#666]">
               Enter your credentials to continue
             </p>
           </div>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-[12px] font-medium text-[#999] mb-2">
+              <label className="block text-[12px] font-medium text-[#6b6b6d] dark:text-[#999] mb-2">
                 Email
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
                   <Mail
                     className={`w-4 h-4 transition-colors ${
-                      focused === "email" ? "text-[#A37CFF]" : "text-[#555]"
+                      focused === "email" ? "text-[#A37CFF]" : "text-[#8a8a8c] dark:text-[#555]"
                     }`}
                   />
                 </div>
@@ -186,20 +186,20 @@ const LoginPage = () => {
                   onBlur={() => setFocused("")}
                   disabled={loading}
                   placeholder="you@example.com"
-                  className="w-full rounded-lg bg-[#212120] pl-10 pr-4 py-2.5 text-[13px] text-white placeholder:text-[#555] outline-none border border-transparent focus:border-[#A37CFF]/30 focus:ring-1 focus:ring-[#A37CFF]/20 transition-all disabled:opacity-50"
+                  className="w-full rounded-lg bg-[#ececee] dark:bg-[#212120] pl-10 pr-4 py-2.5 text-[13px] text-[#1a1a1b] dark:text-white placeholder:text-[#9a9a9c] dark:placeholder:text-[#555] outline-none border border-transparent focus:border-[#A37CFF]/30 focus:ring-1 focus:ring-[#A37CFF]/20 transition-all disabled:opacity-50"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[12px] font-medium text-[#999] mb-2">
+              <label className="block text-[12px] font-medium text-[#6b6b6d] dark:text-[#999] mb-2">
                 Password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
                   <Lock
                     className={`w-4 h-4 transition-colors ${
-                      focused === "password" ? "text-[#A37CFF]" : "text-[#555]"
+                      focused === "password" ? "text-[#A37CFF]" : "text-[#8a8a8c] dark:text-[#555]"
                     }`}
                   />
                 </div>
@@ -212,7 +212,7 @@ const LoginPage = () => {
                   onBlur={() => setFocused("")}
                   disabled={loading}
                   placeholder="Enter your password"
-                  className="w-full rounded-lg bg-[#212120] pl-10 pr-4 py-2.5 text-[13px] text-white placeholder:text-[#555] outline-none border border-transparent focus:border-[#A37CFF]/30 focus:ring-1 focus:ring-[#A37CFF]/20 transition-all disabled:opacity-50"
+                  className="w-full rounded-lg bg-[#ececee] dark:bg-[#212120] pl-10 pr-4 py-2.5 text-[13px] text-[#1a1a1b] dark:text-white placeholder:text-[#9a9a9c] dark:placeholder:text-[#555] outline-none border border-transparent focus:border-[#A37CFF]/30 focus:ring-1 focus:ring-[#A37CFF]/20 transition-all disabled:opacity-50"
                 />
               </div>
             </div>
@@ -236,7 +236,7 @@ const LoginPage = () => {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-[13px] text-[#666]">
+          <p className="mt-6 text-center text-[13px] text-[#8a8a8c] dark:text-[#666]">
             Don't have an account?{" "}
             <Link
               to="/signup"

@@ -12,9 +12,10 @@ const IconButton = ({
   const sizes = { sm: "w-8 h-8", md: "w-9 h-9", lg: "w-10 h-10" };
   const iconSizes = { sm: "w-4 h-4", md: "w-[18px] h-[18px]", lg: "w-5 h-5" };
   const variants = {
-    default: "text-[#999] hover:text-white hover:bg-[#1D1E1F]",
+    default:
+      "text-[#5c5c5e] dark:text-[#999] hover:text-[#1a1a1b] dark:hover:text-white hover:bg-[#ececee] dark:hover:bg-[#1D1E1F]",
     primary: "bg-[#A37CFF] text-white hover:bg-[#9370f0]",
-    ghost: "text-[#666] hover:text-white hover:bg-[#1D1E1F]",
+    ghost: "text-[#8a8a8c] dark:text-[#666] hover:text-[#1a1a1b] dark:hover:text-white hover:bg-[#ececee] dark:hover:bg-[#1D1E1F]",
   };
 
   return (

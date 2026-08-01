@@ -45,7 +45,7 @@ const MessageBubble = ({
           className={`mb-1 w-4 h-4 shrink-0 rounded-full border-[1.5px] flex items-center justify-center transition-colors ${
             isSelected
               ? "border-[#A37CFF] bg-[#A37CFF]"
-              : "border-[#555] hover:border-[#A37CFF]"
+              : "border-[#9a9a9c] dark:border-[#555] hover:border-[#A37CFF]"
           }`}
         >
           {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
@@ -57,7 +57,7 @@ const MessageBubble = ({
           className={`rounded-2xl px-3 py-1.5 ${
             isMe
               ? "bg-[#144D37] text-white rounded-br-sm"
-              : "bg-[#1D1E1F] text-[#eee] rounded-bl-sm"
+              : "bg-[#ececee] dark:bg-[#1D1E1F] text-[#1a1a1b] dark:text-[#eee] rounded-bl-sm"
           }`}
         >
           {image && (
@@ -81,7 +81,7 @@ const MessageBubble = ({
               </p>
               <div className="flex items-center gap-1 shrink-0 pb-px">
                 <span
-                  className={`text-[10px] ${isMe ? "text-white/50" : "text-[#666]"}`}
+                  className={`text-[10px] ${isMe ? "text-white/50" : "text-[#8a8a8c] dark:text-[#666]"}`}
                 >
                   {formatTime(createdAt)}
                 </span>
@@ -93,7 +93,7 @@ const MessageBubble = ({
           {image && !text && (
             <div className="flex items-center gap-1 justify-end mt-1">
               <span
-                className={`text-[10px] ${isMe ? "text-white/50" : "text-[#666]"}`}
+                className={`text-[10px] ${isMe ? "text-white/50" : "text-[#8a8a8c] dark:text-[#666]"}`}
               >
                 {formatTime(createdAt)}
               </span>

@@ -21,16 +21,16 @@ const ProfilePage = () => {
   const lastSeen = lastSeenByUser[user?._id];
 
   return (
-    <div className="min-h-screen bg-[#161616] text-white">
-      <div className="sticky top-0 z-20 border-b border-[#2E2E2F] bg-[#161616]/95 backdrop-blur-md">
+    <div className="min-h-screen bg-[#f7f7f8] dark:bg-[#161616] text-[#1a1a1b] dark:text-white">
+      <div className="sticky top-0 z-20 border-b border-[#e2e2e4] dark:border-[#2E2E2F] bg-[#f7f7f8]/95 dark:bg-[#161616]/95 backdrop-blur-md">
         <div className="max-w-2xl mx-auto h-14 px-5 flex items-center justify-between">
           <button
             onClick={() => navigate("/")}
-            className="p-2 rounded-lg hover:bg-[#1D1E1F] transition-colors"
+            className="p-2 rounded-lg hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] transition-colors"
           >
-            <ArrowLeft className="w-4.5 h-4.5 text-[#999]" />
+            <ArrowLeft className="w-4.5 h-4.5 text-[#5c5c5e] dark:text-[#999]" />
           </button>
-          <h1 className="text-[14px] font-semibold text-white">Settings</h1>
+          <h1 className="text-[14px] font-semibold text-[#1a1a1b] dark:text-white">Settings</h1>
           <div className="w-8" />
         </div>
       </div>

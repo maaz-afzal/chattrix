@@ -138,23 +138,23 @@ const MessageInput = ({
 
   if (selectMode) {
     return (
-      <div className="shrink-0 border-t border-[#2E2E2F] bg-[#161616] px-4 py-2">
+      <div className="shrink-0 border-t border-[#e2e2e4] dark:border-[#2E2E2F] bg-[#f7f7f8] dark:bg-[#161616] px-4 py-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
               onClick={disableSelectMode}
-              className="p-1.5 rounded-lg hover:bg-[#1D1E1F] transition-colors"
+              className="p-1.5 rounded-lg hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] transition-colors"
             >
-              <X className="w-4 h-4 text-white" />
+              <X className="w-4 h-4 text-[#1a1a1b] dark:text-white" />
             </button>
-            <span className="text-[13px] text-white">
+            <span className="text-[13px] text-[#1a1a1b] dark:text-white">
               {selectedMessages.length} selected
             </span>
           </div>
           <button
             onClick={handleDeleteSelected}
             disabled={selectedMessages.length === 0}
-            className="p-2 rounded-lg text-[#f87171] hover:bg-[#1D1E1F] disabled:opacity-30 transition-colors"
+            className="p-2 rounded-lg text-[#f87171] hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] disabled:opacity-30 transition-colors"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -164,9 +164,9 @@ const MessageInput = ({
   }
 
   return (
-    <div className="shrink-0 border-t border-[#2E2E2F] bg-[#161616] px-4 py-4">
+    <div className="shrink-0 border-t border-[#e2e2e4] dark:border-[#2E2E2F] bg-[#f7f7f8] dark:bg-[#161616] px-4 py-4">
       {imagePreview && !isAISelected && (
-        <div className="mb-2 inline-flex items-center gap-2 rounded-lg bg-[#1D1E1F] px-2.5 py-2">
+        <div className="mb-2 inline-flex items-center gap-2 rounded-lg bg-[#ececee] dark:bg-[#1D1E1F] px-2.5 py-2">
           <img
             src={imagePreview}
             alt="Preview"
@@ -174,7 +174,7 @@ const MessageInput = ({
           />
           <button
             onClick={removeImage}
-            className="p-1 rounded text-[#666] hover:text-[#f87171]"
+            className="p-1 rounded text-[#8a8a8c] dark:text-[#666] hover:text-[#f87171]"
           >
             <X className="w-3 h-3" />
           </button>
@@ -186,13 +186,13 @@ const MessageInput = ({
           <button
             onClick={handleImageSelect}
             disabled={isDisabled}
-            className="p-2 rounded-lg text-[#666] hover:text-white hover:bg-[#1D1E1F] disabled:opacity-30 transition-colors"
+            className="p-2 rounded-lg text-[#8a8a8c] dark:text-[#666] hover:text-[#1a1a1b] dark:hover:text-white hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] disabled:opacity-30 transition-colors"
           >
             <Paperclip className="w-4.5 h-4.5" />
           </button>
         )}
 
-        <div className="flex-1 bg-[#212120] rounded-lg px-3">
+        <div className="flex-1 bg-[#e4e4e6] dark:bg-[#212120] rounded-lg px-3">
           <input
             type="text"
             value={message}
@@ -212,7 +212,7 @@ const MessageInput = ({
             onKeyDown={handleKeyDown}
             disabled={isDisabled}
             placeholder={placeholder}
-            className="w-full bg-transparent py-3 text-[13px] text-white placeholder:text-[#666] outline-none disabled:opacity-30"
+            className="w-full bg-transparent py-3 text-[13px] text-[#1a1a1b] dark:text-white placeholder:text-[#9a9a9c] dark:placeholder:text-[#666] outline-none disabled:opacity-30"
           />
         </div>
 
@@ -222,7 +222,7 @@ const MessageInput = ({
           className={`w-10 h-10 shrink-0 rounded-lg flex items-center justify-center transition-all ${
             canSend
               ? "bg-[#A37CFF] text-white hover:bg-[#9370f0]"
-              : "bg-[#212120] text-[#555]"
+              : "bg-[#e4e4e6] dark:bg-[#212120] text-[#9a9a9c] dark:text-[#555]"
           }`}
         >
           {loading ? (

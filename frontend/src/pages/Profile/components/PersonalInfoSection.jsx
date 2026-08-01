@@ -28,7 +28,7 @@ const PersonalInfoSection = ({ user, isOnline, lastSeen, formatLastSeen }) => {
   const toneIndex = user?.name ? user.name.charCodeAt(0) % palettes.length : 0;
 
   const inputClass =
-    "w-full rounded-lg bg-[#212120] px-3 py-2.5 text-[13px] text-white placeholder:text-[#666] outline-none focus:ring-1 focus:ring-[#A37CFF]/30";
+    "w-full rounded-lg bg-[#ececee] dark:bg-[#212120] px-3 py-2.5 text-[13px] text-[#1a1a1b] dark:text-white placeholder:text-[#9a9a9c] dark:placeholder:text-[#666] outline-none focus:ring-1 focus:ring-[#A37CFF]/30";
 
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -96,16 +96,16 @@ const PersonalInfoSection = ({ user, isOnline, lastSeen, formatLastSeen }) => {
   };
 
   return (
-    <section className="rounded-2xl border border-[#2E2E2F] bg-[#161616] overflow-hidden">
-      <div className="px-5 py-4 border-b border-[#2E2E2F] flex items-center justify-between">
+    <section className="rounded-2xl border border-[#e2e2e4] dark:border-[#2E2E2F] bg-[#f7f7f8] dark:bg-[#161616] overflow-hidden">
+      <div className="px-5 py-4 border-b border-[#e2e2e4] dark:border-[#2E2E2F] flex items-center justify-between">
         <div>
-          <h2 className="text-[13px] font-semibold text-white">Profile</h2>
-          <p className="text-[11px] text-[#666] mt-0.5">Manage your details</p>
+          <h2 className="text-[13px] font-semibold text-[#1a1a1b] dark:text-white">Profile</h2>
+          <p className="text-[11px] text-[#8a8a8c] dark:text-[#666] mt-0.5">Manage your details</p>
         </div>
         {!isEdit && (
           <button
             onClick={() => setIsEdit(true)}
-            className="h-8 px-3 flex items-center gap-1.5 rounded-lg bg-[#1D1E1F] text-[12px] text-white hover:bg-[#2E2E2F] transition-colors"
+            className="h-8 px-3 flex items-center gap-1.5 rounded-lg bg-[#ececee] dark:bg-[#1D1E1F] text-[12px] text-[#1a1a1b] dark:text-white hover:bg-[#e2e2e4] dark:hover:bg-[#2E2E2F] transition-colors"
           >
             <Edit2 className="w-3 h-3" /> Edit
           </button>
@@ -116,7 +116,7 @@ const PersonalInfoSection = ({ user, isOnline, lastSeen, formatLastSeen }) => {
         <div className="flex flex-col items-center mb-5">
           <div className="relative group mb-3">
             <div
-              className={`w-20 h-20 rounded-full overflow-hidden flex items-center justify-center ${user?.profileImage ? "bg-[#1D1E1F]" : palettes[toneIndex]}`}
+              className={`w-20 h-20 rounded-full overflow-hidden flex items-center justify-center ${user?.profileImage ? "bg-[#ececee] dark:bg-[#1D1E1F]" : palettes[toneIndex]}`}
             >
               {user?.profileImage ? (
                 <img
@@ -146,7 +146,7 @@ const PersonalInfoSection = ({ user, isOnline, lastSeen, formatLastSeen }) => {
 
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-[#A37CFF] hover:bg-[#9370f0] border-[3px] border-[#161616] flex items-center justify-center transition-colors"
+              className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-[#A37CFF] hover:bg-[#9370f0] border-[3px] border-[#f7f7f8] dark:border-[#161616] flex items-center justify-center transition-colors"
             >
               <Camera className="w-3 h-3 text-white" />
             </button>
@@ -160,10 +160,10 @@ const PersonalInfoSection = ({ user, isOnline, lastSeen, formatLastSeen }) => {
           </div>
 
           <div
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium ${isOnline ? "bg-emerald-500/10 text-emerald-500" : "bg-[#1D1E1F] text-[#666]"}`}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium ${isOnline ? "bg-emerald-500/10 text-emerald-500" : "bg-[#ececee] dark:bg-[#1D1E1F] text-[#8a8a8c] dark:text-[#666]"}`}
           >
             <span
-              className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-emerald-500" : "bg-[#666]"}`}
+              className={`w-1.5 h-1.5 rounded-full ${isOnline ? "bg-emerald-500" : "bg-[#9a9a9c] dark:bg-[#666]"}`}
             />
             {isOnline
               ? "Online"
@@ -175,7 +175,7 @@ const PersonalInfoSection = ({ user, isOnline, lastSeen, formatLastSeen }) => {
 
         <div className="space-y-3">
           <div>
-            <label className="block text-[11px] text-[#666] uppercase tracking-wider mb-1.5">
+            <label className="block text-[11px] text-[#8a8a8c] dark:text-[#666] uppercase tracking-wider mb-1.5">
               Name
             </label>
             {isEdit ? (
@@ -188,17 +188,17 @@ const PersonalInfoSection = ({ user, isOnline, lastSeen, formatLastSeen }) => {
                 className={inputClass}
               />
             ) : (
-              <p className="text-[13px] text-white">{user?.name}</p>
+              <p className="text-[13px] text-[#1a1a1b] dark:text-white">{user?.name}</p>
             )}
           </div>
           <div>
-            <label className="block text-[11px] text-[#666] uppercase tracking-wider mb-1.5">
+            <label className="block text-[11px] text-[#8a8a8c] dark:text-[#666] uppercase tracking-wider mb-1.5">
               Email
             </label>
-            <p className="text-[13px] text-[#ccc]">{user?.email}</p>
+            <p className="text-[13px] text-[#4d4d4f] dark:text-[#ccc]">{user?.email}</p>
           </div>
           <div>
-            <label className="block text-[11px] text-[#666] uppercase tracking-wider mb-1.5">
+            <label className="block text-[11px] text-[#8a8a8c] dark:text-[#666] uppercase tracking-wider mb-1.5">
               Bio
             </label>
             {isEdit ? (
@@ -211,7 +211,7 @@ const PersonalInfoSection = ({ user, isOnline, lastSeen, formatLastSeen }) => {
                 className={`${inputClass} resize-none`}
               />
             ) : (
-              <p className="text-[13px] text-[#ccc]">{user?.bio || "No bio"}</p>
+              <p className="text-[13px] text-[#4d4d4f] dark:text-[#ccc]">{user?.bio || "No bio"}</p>
             )}
           </div>
         </div>
@@ -220,7 +220,7 @@ const PersonalInfoSection = ({ user, isOnline, lastSeen, formatLastSeen }) => {
           <div className="mt-4 flex gap-2">
             <button
               onClick={() => setIsEdit(false)}
-              className="flex-1 h-9 rounded-lg bg-[#1D1E1F] text-[13px] text-white hover:bg-[#2E2E2F] transition-colors"
+              className="flex-1 h-9 rounded-lg bg-[#ececee] dark:bg-[#1D1E1F] text-[13px] text-[#1a1a1b] dark:text-white hover:bg-[#e2e2e4] dark:hover:bg-[#2E2E2F] transition-colors"
             >
               Cancel
             </button>

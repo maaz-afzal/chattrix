@@ -37,7 +37,9 @@ const ChatItem = ({ chat, isSelected, onClick, onDelete }) => {
       <button
         onClick={onClick}
         className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors ${
-          isSelected ? "bg-[#1D1E1F]" : "hover:bg-[#1D1E1F]/60"
+          isSelected
+            ? "bg-[#e8e8ea] dark:bg-[#1D1E1F]"
+            : "hover:bg-[#e8e8ea]/60 dark:hover:bg-[#1D1E1F]/60"
         }`}
       >
         <Avatar
@@ -48,12 +50,12 @@ const ChatItem = ({ chat, isSelected, onClick, onDelete }) => {
         />
         <div className="flex-1 min-w-0">
           <p
-            className={`truncate text-[13px] ${unreadCount > 0 ? "text-white font-semibold" : "text-[#ddd] font-medium"}`}
+            className={`truncate text-[13px] ${unreadCount > 0 ? "text-[#1a1a1b] dark:text-white font-semibold" : "text-[#3d3d3f] dark:text-[#ddd] font-medium"}`}
           >
             {name}
           </p>
           <p
-            className={`truncate text-[11px] mt-0.5 ${isOnline && !lastMessage ? "text-emerald-500" : "text-[#666]"}`}
+            className={`truncate text-[11px] mt-0.5 ${isOnline && !lastMessage ? "text-emerald-500" : "text-[#8a8a8c] dark:text-[#666]"}`}
           >
             {subtitle}
           </p>
@@ -66,7 +68,7 @@ const ChatItem = ({ chat, isSelected, onClick, onDelete }) => {
           e.stopPropagation();
           setMenuOpen(!menuOpen);
         }}
-        className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-[#555] hover:text-white hover:bg-[#2E2E2F] opacity-0 group-hover:opacity-100 transition-all"
+        className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-[#9a9a9c] dark:text-[#555] hover:text-[#1a1a1b] dark:hover:text-white hover:bg-[#ececee] dark:hover:bg-[#2E2E2F] opacity-0 group-hover:opacity-100 transition-all"
       >
         <ChevronDown className="w-3.5 h-3.5" />
       </button>
@@ -77,10 +79,10 @@ const ChatItem = ({ chat, isSelected, onClick, onDelete }) => {
             className="fixed inset-0 z-40"
             onClick={() => setMenuOpen(false)}
           />
-          <div className="absolute right-1.5 top-full -mt-3 z-50 w-30 rounded-xl border border-[#2E2E2F] bg-[#1D1E1F] overflow-hidden shadow-xl">
+          <div className="absolute right-1.5 top-full -mt-3 z-50 w-30 rounded-xl border border-[#e2e2e4] dark:border-[#2E2E2F] bg-white dark:bg-[#1D1E1F] overflow-hidden shadow-xl">
             <button
               onClick={handleDelete}
-              className="w-full flex items-center gap-2 px-3 py-2 text-left text-[12px] text-[#f87171] hover:bg-[#2E2E2F] transition-colors"
+              className="w-full flex items-center gap-2 px-3 py-2 text-left text-[12px] text-[#f87171] hover:bg-[#ececee] dark:hover:bg-[#2E2E2F] transition-colors"
             >
               <Trash2 className="w-3.5 h-3.5" />
               Delete chat

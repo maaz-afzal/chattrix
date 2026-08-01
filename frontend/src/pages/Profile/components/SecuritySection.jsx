@@ -11,7 +11,7 @@ const SecuritySection = () => {
   });
 
   const inputClass =
-    "w-full rounded-lg bg-[#212120] px-3 py-2.5 text-[13px] text-white placeholder:text-[#666] outline-none focus:ring-1 focus:ring-[#A37CFF]/30";
+    "w-full rounded-lg bg-[#ececee] dark:bg-[#212120] px-3 py-2.5 text-[13px] text-[#1a1a1b] dark:text-white placeholder:text-[#9a9a9c] dark:placeholder:text-[#666] outline-none focus:ring-1 focus:ring-[#A37CFF]/30";
 
   const handleChangePassword = async () => {
     if (!passwordData.currentPassword) {
@@ -43,9 +43,9 @@ const SecuritySection = () => {
   };
 
   return (
-    <section className="rounded-2xl border border-[#2E2E2F] bg-[#161616] overflow-hidden">
-      <div className="px-5 py-4 border-b border-[#2E2E2F]">
-        <h2 className="text-[13px] font-semibold text-white">Security</h2>
+    <section className="rounded-2xl border border-[#e2e2e4] dark:border-[#2E2E2F] bg-[#f7f7f8] dark:bg-[#161616] overflow-hidden">
+      <div className="px-5 py-4 border-b border-[#e2e2e4] dark:border-[#2E2E2F]">
+        <h2 className="text-[13px] font-semibold text-[#1a1a1b] dark:text-white">Security</h2>
       </div>
       <div className="p-4 space-y-2">
         <input

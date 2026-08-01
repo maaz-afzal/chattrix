@@ -21,12 +21,12 @@ const UserInfoModal = ({ user, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/70" onClick={onClose} />
-      <div className="relative w-full max-w-sm rounded-2xl border border-[#2E2E2F] bg-[#161616] overflow-hidden">
-        <div className="px-5 py-4 border-b border-[#2E2E2F] flex items-center justify-between">
-          <h3 className="text-[14px] font-semibold text-white">Contact Info</h3>
+      <div className="relative w-full max-w-sm rounded-2xl border border-[#e2e2e4] dark:border-[#2E2E2F] bg-[#f7f7f8] dark:bg-[#161616] overflow-hidden">
+        <div className="px-5 py-4 border-b border-[#e2e2e4] dark:border-[#2E2E2F] flex items-center justify-between">
+          <h3 className="text-[14px] font-semibold text-[#1a1a1b] dark:text-white">Contact Info</h3>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-[#666] hover:text-white hover:bg-[#1D1E1F] transition-colors"
+            className="p-1.5 rounded-lg text-[#8a8a8c] dark:text-[#666] hover:text-[#1a1a1b] dark:hover:text-white hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -39,11 +39,11 @@ const UserInfoModal = ({ user, onClose }) => {
             size="xl"
             online={isOnline}
           />
-          <h2 className="text-[17px] font-semibold text-white mt-4">
+          <h2 className="text-[17px] font-semibold text-[#1a1a1b] dark:text-white mt-4">
             {user?.name}
           </h2>
           <p
-            className={`text-[12px] mt-1 ${isOnline ? "text-emerald-500" : "text-[#666]"}`}
+            className={`text-[12px] mt-1 ${isOnline ? "text-emerald-500" : "text-[#8a8a8c] dark:text-[#666]"}`}
           >
             {isOnline
               ? "Online"
@@ -55,19 +55,19 @@ const UserInfoModal = ({ user, onClose }) => {
 
         <div className="px-5 pb-5 space-y-3">
           {user?.email && (
-            <div className="rounded-xl bg-[#1D1E1F] p-3">
-              <p className="text-[10px] uppercase tracking-wider text-[#666] mb-1">
+            <div className="rounded-xl bg-[#ececee] dark:bg-[#1D1E1F] p-3">
+              <p className="text-[10px] uppercase tracking-wider text-[#8a8a8c] dark:text-[#666] mb-1">
                 Email
               </p>
-              <p className="text-[13px] text-[#ccc]">{user.email}</p>
+              <p className="text-[13px] text-[#4d4d4f] dark:text-[#ccc]">{user.email}</p>
             </div>
           )}
           {user?.bio && (
-            <div className="rounded-xl bg-[#1D1E1F] p-3">
-              <p className="text-[10px] uppercase tracking-wider text-[#666] mb-1">
+            <div className="rounded-xl bg-[#ececee] dark:bg-[#1D1E1F] p-3">
+              <p className="text-[10px] uppercase tracking-wider text-[#8a8a8c] dark:text-[#666] mb-1">
                 Bio
               </p>
-              <p className="text-[13px] text-[#ccc] leading-relaxed">
+              <p className="text-[13px] text-[#4d4d4f] dark:text-[#ccc] leading-relaxed">
                 {user.bio}
               </p>
             </div>
@@ -110,20 +110,20 @@ const ChatHeader = ({ selected, isAISelected, onBack }) => {
 
   if (isAISelected) {
     return (
-      <div className="shrink-0 border-b border-[#2E2E2F] bg-[#161616] px-4 py-2">
+      <div className="shrink-0 border-b border-[#e2e2e4] dark:border-[#2E2E2F] bg-[#f7f7f8] dark:bg-[#161616] px-4 py-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
-              className="p-1.5 rounded-lg hover:bg-[#1D1E1F] transition-colors"
+              className="p-1.5 rounded-lg hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] transition-colors"
             >
-              <ChevronLeft className="w-5 h-5 text-[#999]" />
+              <ChevronLeft className="w-5 h-5 text-[#5c5c5e] dark:text-[#999]" />
             </button>
             <div className="w-9 h-9 rounded-full bg-[#A37CFF]/15 flex items-center justify-center">
               <Bot className="w-4 h-4 text-[#A37CFF]" />
             </div>
             <div>
-              <p className="text-[13px] font-semibold text-white leading-tight">
+              <p className="text-[13px] font-semibold text-[#1a1a1b] dark:text-white leading-tight">
                 AI Assistant
               </p>
               <div className="flex items-center gap-1 mt-0.5">
@@ -135,7 +135,7 @@ const ChatHeader = ({ selected, isAISelected, onBack }) => {
           <div className="relative">
             <button
               onClick={() => setMenuOpen(true)}
-              className="p-1.5 rounded-lg text-[#666] hover:text-white hover:bg-[#1D1E1F] transition-colors"
+              className="p-1.5 rounded-lg text-[#8a8a8c] dark:text-[#666] hover:text-[#1a1a1b] dark:hover:text-white hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] transition-colors"
             >
               <MoreVertical className="w-4 h-4" />
             </button>
@@ -145,13 +145,13 @@ const ChatHeader = ({ selected, isAISelected, onBack }) => {
                   className="fixed inset-0 z-40"
                   onClick={() => setMenuOpen(false)}
                 />
-                <div className="absolute right-0 top-full mt-1 z-50 w-40 rounded-xl border border-[#2E2E2F] bg-[#1D1E1F] overflow-hidden shadow-xl">
+                <div className="absolute right-0 top-full mt-1 z-50 w-40 rounded-xl border border-[#e2e2e4] dark:border-[#2E2E2F] bg-white dark:bg-[#1D1E1F] overflow-hidden shadow-xl">
                   <button
                     onClick={() => {
                       handleClearChat();
                       setMenuOpen(false);
                     }}
-                    className="w-full px-3 py-2.5 flex items-center gap-2 text-left text-[12px] text-[#f87171] hover:bg-[#2E2E2F] transition-colors"
+                    className="w-full px-3 py-2.5 flex items-center gap-2 text-left text-[12px] text-[#f87171] hover:bg-[#ececee] dark:hover:bg-[#2E2E2F] transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     Clear Chat
@@ -167,9 +167,9 @@ const ChatHeader = ({ selected, isAISelected, onBack }) => {
 
   if (!selected) {
     return (
-      <div className="shrink-0 flex-1 flex flex-col items-center justify-center bg-[#161616]">
-        <h2 className="text-[24px] font-bold text-white mb-1">Chattrix</h2>
-        <p className="text-[13px] text-[#666]">
+      <div className="shrink-0 flex-1 flex flex-col items-center justify-center bg-[#f7f7f8] dark:bg-[#161616]">
+        <h2 className="text-[24px] font-bold text-[#1a1a1b] dark:text-white mb-1">Chattrix</h2>
+        <p className="text-[13px] text-[#8a8a8c] dark:text-[#666]">
           Select a chat to start messaging
         </p>
       </div>
@@ -180,14 +180,14 @@ const ChatHeader = ({ selected, isAISelected, onBack }) => {
 
   return (
     <>
-      <div className="shrink-0 border-b border-[#2E2E2F] bg-[#161616] px-4 py-2">
+      <div className="shrink-0 border-b border-[#e2e2e4] dark:border-[#2E2E2F] bg-[#f7f7f8] dark:bg-[#161616] px-4 py-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={onBack}
-              className="p-1.5 rounded-lg hover:bg-[#1D1E1F] transition-colors"
+              className="p-1.5 rounded-lg hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] transition-colors"
             >
-              <ChevronLeft className="w-5 h-5 text-[#999]" />
+              <ChevronLeft className="w-5 h-5 text-[#5c5c5e] dark:text-[#999]" />
             </button>
 
             <button
@@ -201,7 +201,7 @@ const ChatHeader = ({ selected, isAISelected, onBack }) => {
                 online={isOnline}
               />
               <div className="min-w-0 text-left">
-                <p className="text-[13px] font-semibold text-white truncate">
+                <p className="text-[13px] font-semibold text-[#1a1a1b] dark:text-white truncate">
                   {name}
                 </p>
                 <p className="text-[11px] mt-px truncate">
@@ -209,7 +209,7 @@ const ChatHeader = ({ selected, isAISelected, onBack }) => {
                     <span className="text-[#A37CFF]">Typing...</span>
                   ) : (
                     <span
-                      className={isOnline ? "text-emerald-500" : "text-[#666]"}
+                      className={isOnline ? "text-emerald-500" : "text-[#8a8a8c] dark:text-[#666]"}
                     >
                       {statusText}
                     </span>
@@ -222,7 +222,7 @@ const ChatHeader = ({ selected, isAISelected, onBack }) => {
           <div className="relative">
             <button
               onClick={() => setMenuOpen(true)}
-              className="p-1.5 rounded-lg text-[#666] hover:text-white hover:bg-[#1D1E1F] transition-colors"
+              className="p-1.5 rounded-lg text-[#8a8a8c] dark:text-[#666] hover:text-[#1a1a1b] dark:hover:text-white hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] transition-colors"
             >
               <MoreVertical className="w-4 h-4" />
             </button>
@@ -232,24 +232,24 @@ const ChatHeader = ({ selected, isAISelected, onBack }) => {
                   className="fixed inset-0 z-40"
                   onClick={() => setMenuOpen(false)}
                 />
-                <div className="absolute right-0 top-full mt-1 z-50 w-44 rounded-xl border border-[#2E2E2F] bg-[#1D1E1F] overflow-hidden shadow-xl">
+                <div className="absolute right-0 top-full mt-1 z-50 w-44 rounded-xl border border-[#e2e2e4] dark:border-[#2E2E2F] bg-white dark:bg-[#1D1E1F] overflow-hidden shadow-xl">
                   <button
                     onClick={() => {
                       enableSelectMode();
                       setMenuOpen(false);
                     }}
-                    className="w-full px-3 py-2.5 flex items-center gap-2 text-left text-[12px] text-white hover:bg-[#2E2E2F] transition-colors"
+                    className="w-full px-3 py-2.5 flex items-center gap-2 text-left text-[12px] text-[#1a1a1b] dark:text-white hover:bg-[#ececee] dark:hover:bg-[#2E2E2F] transition-colors"
                   >
                     <CheckSquare className="w-3.5 h-3.5 text-[#A37CFF]" />
                     Select Messages
                   </button>
-                  <div className="mx-2 h-px bg-[#2E2E2F]" />
+                  <div className="mx-2 h-px bg-[#e2e2e4] dark:bg-[#2E2E2F]" />
                   <button
                     onClick={() => {
                       handleClearChat();
                       setMenuOpen(false);
                     }}
-                    className="w-full px-3 py-2.5 flex items-center gap-2 text-left text-[12px] text-[#f87171] hover:bg-[#2E2E2F] transition-colors"
+                    className="w-full px-3 py-2.5 flex items-center gap-2 text-left text-[12px] text-[#f87171] hover:bg-[#ececee] dark:hover:bg-[#2E2E2F] transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     Clear Chat

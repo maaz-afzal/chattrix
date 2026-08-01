@@ -104,17 +104,17 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
 
   if (isAISelected) {
     return (
-      <div className="flex-1 min-h-0 overflow-y-auto bg-[#161616]">
+      <div className="flex-1 min-h-0 overflow-y-auto bg-[#f7f7f8] dark:bg-[#161616]">
         <div className="w-full max-w-6xl mx-auto px-5 py-6">
           {aiMessages.length === 0 && (
             <div className="flex flex-col items-center justify-center py-16">
               <div className="w-14 h-14 rounded-2xl bg-[#A37CFF]/10 flex items-center justify-center mb-3">
                 <Bot className="w-7 h-7 text-[#A37CFF]" />
               </div>
-              <h3 className="text-[15px] font-semibold text-white">
+              <h3 className="text-[15px] font-semibold text-[#1a1a1b] dark:text-white">
                 AI Assistant
               </h3>
-              <p className="text-[12px] text-[#666] mt-1">Ask me anything</p>
+              <p className="text-[12px] text-[#8a8a8c] dark:text-[#666] mt-1">Ask me anything</p>
             </div>
           )}
 
@@ -128,7 +128,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
                   className={`max-w-[82%] sm:max-w-[72%] rounded-2xl px-3 py-2 ${
                     msg.sender === "user"
                       ? "bg-[#144D37] text-white rounded-br-sm"
-                      : "bg-[#1D1E1F] text-[#ddd] rounded-bl-sm"
+                      : "bg-[#ececee] dark:bg-[#1D1E1F] text-[#1a1a1b] dark:text-[#ddd] rounded-bl-sm"
                   }`}
                 >
                   {msg.sender === "user" ? (
@@ -169,12 +169,12 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
                           ),
                           li: ({ children }) => <li>{children}</li>,
                           code: ({ children }) => (
-                            <code className="bg-[#161616] text-[#A37CFF] px-1.5 py-0.5 rounded text-[12px] font-mono">
+                            <code className="bg-[#ececee] dark:bg-[#161616] text-[#A37CFF] px-1.5 py-0.5 rounded text-[12px] font-mono">
                               {children}
                             </code>
                           ),
                           pre: ({ children }) => (
-                            <pre className="bg-[#161616] border border-[#2E2E2F] p-3 rounded-xl overflow-x-auto my-2 text-[12px] font-mono">
+                            <pre className="bg-[#ececee] dark:bg-[#161616] border border-[#e2e2e4] dark:border-[#2E2E2F] p-3 rounded-xl overflow-x-auto my-2 text-[12px] font-mono">
                               {children}
                             </pre>
                           ),
@@ -189,15 +189,15 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
                             </a>
                           ),
                           strong: ({ children }) => (
-                            <strong className="font-semibold text-white">
+                            <strong className="font-semibold text-[#1a1a1b] dark:text-white">
                               {children}
                             </strong>
                           ),
                           em: ({ children }) => (
-                            <em className="italic text-[#bbb]">{children}</em>
+                            <em className="italic text-[#5c5c5e] dark:text-[#bbb]">{children}</em>
                           ),
                           blockquote: ({ children }) => (
-                            <blockquote className="border-l-2 border-[#A37CFF]/40 pl-3 my-2 text-[#aaa]">
+                            <blockquote className="border-l-2 border-[#A37CFF]/40 pl-3 my-2 text-[#6b6b6d] dark:text-[#aaa]">
                               {children}
                             </blockquote>
                           ),
@@ -208,7 +208,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
                     </div>
                   )}
                   <p
-                    className={`mt-1 text-right text-[10px] ${msg.sender === "user" ? "text-white/50" : "text-[#666]"}`}
+                    className={`mt-1 text-right text-[10px] ${msg.sender === "user" ? "text-white/50" : "text-[#8a8a8c] dark:text-[#666]"}`}
                   >
                     {new Date(msg.createdAt).toLocaleTimeString([], {
                       hour: "2-digit",
@@ -229,7 +229,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-[#161616]">
+      <div className="flex-1 flex items-center justify-center bg-[#f7f7f8] dark:bg-[#161616]">
         <div className="flex gap-1.5">
           {[0, 1, 2].map((i) => (
             <span
@@ -245,11 +245,11 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
 
   if (error) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center gap-3 bg-[#161616]">
+      <div className="flex-1 flex flex-col items-center justify-center gap-3 bg-[#f7f7f8] dark:bg-[#161616]">
         <p className="text-[13px] text-[#f87171]">{error}</p>
         <button
           onClick={() => getConversation(selected.conversationId)}
-          className="px-4 py-2 rounded-lg bg-[#1D1E1F] text-[13px] text-white hover:bg-[#2E2E2F] transition-colors"
+          className="px-4 py-2 rounded-lg bg-[#ececee] dark:bg-[#1D1E1F] text-[13px] text-[#1a1a1b] dark:text-white hover:bg-[#e2e2e4] dark:hover:bg-[#2E2E2F] transition-colors"
         >
           Retry
         </button>
@@ -258,10 +258,10 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
   }
 
   return (
-    <div className="flex-1 min-h-0 overflow-y-auto bg-[#161616]">
+    <div className="flex-1 min-h-0 overflow-y-auto bg-[#f7f7f8] dark:bg-[#161616]">
       <div className="max-w-6xl mx-auto px-5 py-5">
         {conversation.length === 0 ? (
-          <p className="text-center py-8 text-[13px] text-[#555]">
+          <p className="text-center py-8 text-[13px] text-[#9a9a9c] dark:text-[#555]">
             No messages yet. Say hello!
           </p>
         ) : (

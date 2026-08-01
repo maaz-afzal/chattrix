@@ -43,7 +43,7 @@ const ChatList = ({
         />
       ))}
       {enrichedUsers.length === 0 && (
-        <p className="px-4 py-10 text-center text-[12px] text-[#555]">
+        <p className="px-4 py-10 text-center text-[12px] text-[#9a9a9c] dark:text-[#555]">
           No conversations
         </p>
       )}

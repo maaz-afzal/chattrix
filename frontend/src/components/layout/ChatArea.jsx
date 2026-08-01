@@ -113,7 +113,7 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
   };
 
   return (
-    <main className="flex-1 min-w-0 flex flex-col overflow-hidden bg-[#161616]">
+    <main className="flex-1 min-w-0 flex flex-col overflow-hidden bg-[#f7f7f8] dark:bg-[#161616]">
       <SelectContext.Provider value={value}>
         <ChatHeader
           selected={selected}

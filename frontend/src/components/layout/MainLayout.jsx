@@ -30,7 +30,7 @@ const MainLayout = () => {
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-[#161616]">
+    <div className="h-screen overflow-hidden bg-[#f7f7f8] dark:bg-[#161616]">
       <div className="h-full w-full flex overflow-hidden">
         <div
           className={`${showChat ? "hidden lg:flex" : "flex"} w-full lg:w-auto lg:max-w-95 shrink-0`}

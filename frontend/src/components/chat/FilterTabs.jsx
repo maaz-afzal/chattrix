@@ -6,10 +6,10 @@ const FilterTabs = () => {
       <span className="px-3 py-1 rounded-full bg-[#A37CFF]/15 text-[#A37CFF] text-[11px] font-semibold cursor-pointer">
         All
       </span>
-      <span className="px-3 py-1 rounded-full text-[#666] text-[11px] font-medium hover:bg-[#1D1E1F] cursor-pointer transition-colors">
+      <span className="px-3 py-1 rounded-full text-[#8a8a8c] dark:text-[#666] text-[11px] font-medium hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] cursor-pointer transition-colors">
         Unread
       </span>
-      <span className="px-3 py-1 rounded-full text-[#666] text-[11px] font-medium hover:bg-[#1D1E1F] cursor-pointer transition-colors">
+      <span className="px-3 py-1 rounded-full text-[#8a8a8c] dark:text-[#666] text-[11px] font-medium hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] cursor-pointer transition-colors">
         Online
       </span>
     </div>

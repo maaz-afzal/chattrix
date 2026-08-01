@@ -26,7 +26,7 @@ const Avatar = ({ name, profileImage, size = "md", online = false }) => {
     <div className="relative shrink-0">
       {showImage ? (
         <div
-          className={`${sizes[size]} overflow-hidden rounded-full bg-[#1D1E1F]`}
+          className={`${sizes[size]} overflow-hidden rounded-full bg-[#ececee] dark:bg-[#1D1E1F]`}
         >
           <img
             src={profileImage}
@@ -43,7 +43,7 @@ const Avatar = ({ name, profileImage, size = "md", online = false }) => {
         </div>
       )}
       {online && (
-        <span className="absolute -bottom-0.5 -right-0.5 w-[10px] h-[10px] rounded-full bg-emerald-500 border-2 border-[#161616]" />
+        <span className="absolute -bottom-0.5 -right-0.5 w-[10px] h-[10px] rounded-full bg-emerald-500 border-2 border-[#f7f7f8] dark:border-[#161616]" />
       )}
     </div>
   );

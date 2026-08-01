@@ -129,10 +129,10 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
 
   return (
     <>
-      <aside className="w-100 border-r border-[#2E2E2F] bg-[#161616] flex flex-col overflow-hidden">
+      <aside className="w-100 border-r border-[#e2e2e4] dark:border-[#2E2E2F] bg-[#f7f7f8] dark:bg-[#161616] flex flex-col overflow-hidden">
         <div className="px-4 pt-5 pb-3">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-[22px] font-bold text-white tracking-tight">
+            <h1 className="text-[22px] font-bold text-[#1a1a1b] dark:text-white tracking-tight">
               Chattrix
             </h1>
             <button
@@ -146,12 +146,12 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
           <div
             className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all ${
               searchFocused
-                ? "bg-[#1D1E1F] ring-1 ring-[#A37CFF]/30"
-                : "bg-[#1D1E1F]"
+                ? "bg-[#ececee] dark:bg-[#1D1E1F] ring-1 ring-[#A37CFF]/30"
+                : "bg-[#ececee] dark:bg-[#1D1E1F]"
             }`}
           >
             <Search
-              className={`w-4 h-4 shrink-0 ${searchFocused ? "text-[#A37CFF]" : "text-[#666]"}`}
+              className={`w-4 h-4 shrink-0 ${searchFocused ? "text-[#A37CFF]" : "text-[#8a8a8c] dark:text-[#666]"}`}
             />
             <input
               type="text"
@@ -160,12 +160,12 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setSearchFocused(false)}
               placeholder="Search"
-              className="w-full bg-transparent outline-none text-[13px] text-white placeholder:text-[#666]"
+              className="w-full bg-transparent outline-none text-[13px] text-[#1a1a1b] dark:text-white placeholder:text-[#9a9a9c] dark:placeholder:text-[#666]"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="text-[#666] hover:text-white"
+                className="text-[#8a8a8c] dark:text-[#666] hover:text-[#1a1a1b] dark:hover:text-white"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -187,10 +187,10 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
           />
         </div>
 
-        <div className="px-3 py-3 border-t border-[#2E2E2F]">
+        <div className="px-3 py-3 border-t border-[#e2e2e4] dark:border-[#2E2E2F]">
           <div
             onClick={() => navigate("/profile")}
-            className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-[#1D1E1F] transition-colors cursor-pointer"
+            className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] transition-colors cursor-pointer"
           >
             <div className="relative shrink-0">
               <Avatar
@@ -199,22 +199,22 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
                 size="sm"
               />
               <span
-                className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#161616] ${
-                  isOnline ? "bg-emerald-500" : "bg-[#555]"
+                className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#f7f7f8] dark:border-[#161616] ${
+                  isOnline ? "bg-emerald-500" : "bg-[#9a9a9c] dark:bg-[#555]"
                 }`}
               />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-medium text-white truncate">
+              <p className="text-[13px] font-medium text-[#1a1a1b] dark:text-white truncate">
                 {currentUser?.name || "User"}
               </p>
               <p
-                className={`text-[11px] ${isOnline ? "text-emerald-500" : "text-[#666]"}`}
+                className={`text-[11px] ${isOnline ? "text-emerald-500" : "text-[#8a8a8c] dark:text-[#666]"}`}
               >
                 {isOnline ? "Online" : "Offline"}
               </p>
             </div>
-            <Settings className="w-4 h-4 text-[#666]" />
+            <Settings className="w-4 h-4 text-[#8a8a8c] dark:text-[#666]" />
           </div>
         </div>
       </aside>
@@ -228,29 +228,29 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
               setModalSearch("");
             }}
           />
-          <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-[#2E2E2F] bg-[#161616]">
-            <div className="px-5 py-4 border-b border-[#2E2E2F] flex items-center justify-between">
-              <h3 className="text-[15px] font-semibold text-white">New Chat</h3>
+          <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-[#e2e2e4] dark:border-[#2E2E2F] bg-[#f7f7f8] dark:bg-[#161616]">
+            <div className="px-5 py-4 border-b border-[#e2e2e4] dark:border-[#2E2E2F] flex items-center justify-between">
+              <h3 className="text-[15px] font-semibold text-[#1a1a1b] dark:text-white">New Chat</h3>
               <button
                 onClick={() => {
                   setIsModalOpen(false);
                   setModalSearch("");
                 }}
-                className="p-1.5 rounded-lg text-[#666] hover:text-white hover:bg-[#1D1E1F] transition-colors"
+                className="p-1.5 rounded-lg text-[#8a8a8c] dark:text-[#666] hover:text-[#1a1a1b] dark:hover:text-white hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-4 border-b border-[#2E2E2F]">
-              <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#1D1E1F]">
-                <Search className="w-4 h-4 text-[#666]" />
+            <div className="p-4 border-b border-[#e2e2e4] dark:border-[#2E2E2F]">
+              <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#ececee] dark:bg-[#1D1E1F]">
+                <Search className="w-4 h-4 text-[#8a8a8c] dark:text-[#666]" />
                 <input
                   type="text"
                   value={modalSearch}
                   onChange={(e) => setModalSearch(e.target.value)}
                   placeholder="Search people"
-                  className="w-full bg-transparent outline-none text-[13px] text-white placeholder:text-[#666]"
+                  className="w-full bg-transparent outline-none text-[13px] text-[#1a1a1b] dark:text-white placeholder:text-[#9a9a9c] dark:placeholder:text-[#666]"
                   autoFocus
                 />
               </div>
@@ -258,7 +258,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
 
             <div className="max-h-90 overflow-y-auto p-2">
               {modalFilteredUsers.length === 0 ? (
-                <p className="py-10 text-center text-[13px] text-[#666]">
+                <p className="py-10 text-center text-[13px] text-[#8a8a8c] dark:text-[#666]">
                   No users found.
                 </p>
               ) : (
@@ -266,7 +266,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
                   <button
                     key={u._id}
                     onClick={() => handleConversation(u)}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#1D1E1F] transition-colors text-left"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] transition-colors text-left"
                   >
                     <Avatar
                       name={u.name}
@@ -274,11 +274,11 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
                       size="sm"
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-[13px] font-medium text-white truncate">
+                      <p className="text-[13px] font-medium text-[#1a1a1b] dark:text-white truncate">
                         {u.name}
                       </p>
                       <p
-                        className={`text-[11px] ${onlineUsers.includes(u._id) ? "text-emerald-500" : "text-[#666]"}`}
+                        className={`text-[11px] ${onlineUsers.includes(u._id) ? "text-emerald-500" : "text-[#8a8a8c] dark:text-[#666]"}`}
                       >
                         {onlineUsers.includes(u._id) ? "Online" : "Offline"}
                       </p>

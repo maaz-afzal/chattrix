@@ -39,20 +39,20 @@ const AccountSection = () => {
 
   return (
     <>
-      <section className="rounded-2xl border border-red-500/20 bg-[#161616] overflow-hidden">
+      <section className="rounded-2xl border border-red-500/20 bg-[#f7f7f8] dark:bg-[#161616] overflow-hidden">
         <div className="px-5 py-4 border-b border-red-500/10">
           <h2 className="text-[13px] font-semibold text-[#f87171]">Account</h2>
         </div>
         <div className="p-2 space-y-1">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-[#1D1E1F] transition-colors group"
+            className="w-full flex items-center justify-between px-4 py-3 rounded-xl hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] transition-colors group"
           >
             <div className="text-left">
-              <p className="text-[13px] text-white">Logout</p>
-              <p className="text-[11px] text-[#666] mt-0.5">Sign out</p>
+              <p className="text-[13px] text-[#1a1a1b] dark:text-white">Logout</p>
+              <p className="text-[11px] text-[#8a8a8c] dark:text-[#666] mt-0.5">Sign out</p>
             </div>
-            <ChevronRight className="w-4 h-4 text-[#555] group-hover:text-white" />
+            <ChevronRight className="w-4 h-4 text-[#9a9a9c] dark:text-[#555] group-hover:text-[#1a1a1b] dark:group-hover:text-white" />
           </button>
           <button
             onClick={() => setShowDelete(true)}
@@ -60,7 +60,7 @@ const AccountSection = () => {
           >
             <div className="text-left">
               <p className="text-[13px] text-[#f87171]">Delete Account</p>
-              <p className="text-[11px] text-[#666] mt-0.5">
+              <p className="text-[11px] text-[#8a8a8c] dark:text-[#666] mt-0.5">
                 Permanently remove
               </p>
             </div>
@@ -75,22 +75,22 @@ const AccountSection = () => {
             className="absolute inset-0 bg-black/70"
             onClick={() => setShowDelete(false)}
           />
-          <div className="relative w-full max-w-sm rounded-2xl border border-[#2E2E2F] bg-[#161616]">
+          <div className="relative w-full max-w-sm rounded-2xl border border-[#e2e2e4] dark:border-[#2E2E2F] bg-[#f7f7f8] dark:bg-[#161616]">
             <div className="px-6 pt-6 pb-4 text-center">
               <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center mx-auto mb-4">
                 <Trash2 className="w-5 h-5 text-[#f87171]" />
               </div>
-              <h3 className="text-[15px] font-semibold text-white mb-1.5">
+              <h3 className="text-[15px] font-semibold text-[#1a1a1b] dark:text-white mb-1.5">
                 Delete Account
               </h3>
-              <p className="text-[12px] text-[#888] leading-relaxed">
+              <p className="text-[12px] text-[#6b6b6d] dark:text-[#888] leading-relaxed">
                 Your profile will be deleted but messages remain visible.
               </p>
             </div>
             <div className="px-5 pb-5 flex gap-2">
               <button
                 onClick={() => setShowDelete(false)}
-                className="flex-1 h-9 rounded-lg bg-[#1D1E1F] text-[13px] text-white hover:bg-[#2E2E2F]"
+                className="flex-1 h-9 rounded-lg bg-[#ececee] dark:bg-[#1D1E1F] text-[13px] text-[#1a1a1b] dark:text-white hover:bg-[#e2e2e4] dark:hover:bg-[#2E2E2F]"
               >
                 Cancel
               </button>
