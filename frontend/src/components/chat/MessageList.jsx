@@ -14,17 +14,27 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
   const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
   const selectedRef = useRef(selected);
+  const scrollRef = useRef(null);
+  const nearBottomRef = useRef(true);
+
+  const handleScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    nearBottomRef.current =
+      el.scrollHeight - el.scrollTop - el.clientHeight < 150;
+  };
+
   useEffect(() => {
     selectedRef.current = selected;
   }, [selected]);
 
   const { selectMode, toggleMessage, clearTrigger, sendTrigger } = useSelect();
 
-  const getConversation = async (conversationId) => {
+  const getConversation = async (conversationId, initial = false) => {
     if (!conversationId) return;
     try {
-      setLoading(true);
       setError(null);
+      if (initial) setLoading(true);
       const res = await messageService.getMessages(conversationId);
       setConversation(res);
     } catch (err) {
@@ -35,10 +45,18 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
     }
   };
 
+  const prevSelectedIdRef = useRef(null);
+
   useEffect(() => {
-    setConversation([]);
+    const convId = selected?.conversationId;
+    const isSwitch = prevSelectedIdRef.current !== convId;
+    prevSelectedIdRef.current = convId;
+    if (isSwitch) {
+      setConversation([]);
+      nearBottomRef.current = true;
+    }
     setError(null);
-    if (selected?.conversationId) getConversation(selected.conversationId);
+    if (convId) getConversation(convId, isSwitch);
   }, [selected, clearTrigger, sendTrigger]);
 
   useEffect(() => {
@@ -99,12 +117,18 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
   }, [selected, currentUserId]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (nearBottomRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [conversation, aiMessages]);
 
   if (isAISelected) {
     return (
-      <div className="flex-1 min-h-0 overflow-y-auto bg-[#f7f7f8] dark:bg-[#161616]">
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="flex-1 min-h-0 overflow-y-auto bg-[#f7f7f8] dark:bg-[#161616]"
+      >
         <div className="w-full max-w-6xl mx-auto px-5 py-6">
           {aiMessages.length === 0 && (
             <div className="flex flex-col items-center justify-center py-16">
@@ -258,7 +282,11 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
   }
 
   return (
-    <div className="flex-1 min-h-0 overflow-y-auto bg-[#f7f7f8] dark:bg-[#161616]">
+    <div
+      ref={scrollRef}
+      onScroll={handleScroll}
+      className="flex-1 min-h-0 overflow-y-auto bg-[#f7f7f8] dark:bg-[#161616]"
+    >
       <div className="max-w-6xl mx-auto px-5 py-5">
         {conversation.length === 0 ? (
           <p className="text-center py-8 text-[13px] text-[#9a9a9c] dark:text-[#555]">

@@ -28,6 +28,30 @@ const MessageInput = ({
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const typingTimeout = useRef(null);
+  const prevReceiverRef = useRef(null);
+
+  useEffect(() => {
+    const socket = getSocket();
+    if (
+      socket &&
+      prevReceiverRef.current &&
+      prevReceiverRef.current !== selected?._id
+    ) {
+      socket.emit("stop-typing", { receiverId: prevReceiverRef.current });
+    }
+    prevReceiverRef.current = selected?._id;
+    clearTimeout(typingTimeout.current);
+  }, [selected?._id]);
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(typingTimeout.current);
+      const socket = getSocket();
+      if (socket && prevReceiverRef.current) {
+        socket.emit("stop-typing", { receiverId: prevReceiverRef.current });
+      }
+    };
+  }, [selected?._id]);
 
   const handleAISend = async () => {
     if (!message.trim() || !aiConversationId) return;
@@ -135,10 +159,6 @@ const MessageInput = ({
     : selected
       ? "Message"
       : "Select a chat";
-
-  useEffect(() => {
-    return () => clearTimeout(typingTimeout.current);
-  }, []);
 
   if (selectMode) {
     return (

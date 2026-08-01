@@ -93,6 +93,10 @@ const updateMessage = async (userId, messageId, text) => {
     throw new AppError("Message text is required", 400);
   }
 
+  if (text.length > 2000) {
+    throw new AppError("Message cannot exceed 2000 characters", 400);
+  }
+
   message.text = text.trim();
 
   await message.save();

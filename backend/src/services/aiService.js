@@ -27,6 +27,10 @@ const sendAIMessage = async (userId, conversationId, text) => {
     throw new AppError("Message text is required", 400);
   }
 
+  if (text.length > 2000) {
+    throw new AppError("Message cannot exceed 2000 characters", 400);
+  }
+
   if (!mongoose.Types.ObjectId.isValid(conversationId)) {
     throw new AppError("Invalid conversation ID", 400);
   }
