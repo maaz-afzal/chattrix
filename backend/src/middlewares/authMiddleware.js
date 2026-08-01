@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
@@ -9,15 +10,18 @@ const authMiddleware = (req, res, next) => {
     }
     const token = authHeader.split(" ")[1];
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-      if (err) {
-        return res.status(401).json({ msg: "Unauthorized" });
-      }
-      req.user = user;
-      next();
-    });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findById(decoded.id).select("-password");
+
+    if (!user || user.isDeleted) {
+      return res.status(401).json({ msg: "Unauthorized" });
+    }
+
+    req.user = { id: user._id };
+    next();
   } catch (err) {
-    res.status(401).json({ err: "Unauthorized" });
+    res.status(401).json({ msg: "Unauthorized" });
   }
 };
 

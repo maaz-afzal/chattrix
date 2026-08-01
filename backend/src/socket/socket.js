@@ -11,7 +11,7 @@ const initSocket = (server) => {
     },
   });
 
-  io.use((socket, next) => {
+  io.use(async (socket, next) => {
     const token = socket.handshake.auth.token;
 
     if (!token) {
@@ -20,6 +20,10 @@ const initSocket = (server) => {
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id).select("isDeleted");
+      if (!user || user.isDeleted) {
+        return next(new Error("Authentication error: Invalid token."));
+      }
       socket.userId = decoded.id;
       next();
     } catch {
