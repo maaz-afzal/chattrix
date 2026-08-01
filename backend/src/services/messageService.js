@@ -124,16 +124,22 @@ const deleteMessage = async (userId, messageId, everyone = false) => {
   return true;
 };
 
-const markAsRead = async (messageId) => {
+const markAsRead = async (userId, messageId) => {
   const message = await Message.findById(messageId);
 
   if (!message) {
     throw new AppError("Message not found", 404);
   }
 
-  message.status = "read";
+  if (message.status !== "read") {
+    message.status = "read";
+    await message.save();
+  }
 
-  await message.save();
+  await Conversation.updateOne(
+    { _id: message.conversationId },
+    { $set: { [`unreadCount.${userId}`]: 0 } },
+  );
 
   return message;
 };

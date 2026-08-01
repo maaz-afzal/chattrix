@@ -28,6 +28,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
   const [modalSearch, setModalSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [filterTab, setFilterTab] = useState("all");
 
   const isOnline =
     onlineUsers.includes(currentUser?._id) || getSocket()?.connected;
@@ -101,6 +102,12 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
     u.name?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
+  const tabFilteredUsers = filteredUsers.filter((u) => {
+    if (filterTab === "unread") return (u.unreadCount || 0) > 0;
+    if (filterTab === "online") return onlineUsers.includes(u._id);
+    return true;
+  });
+
   const modalFilteredUsers = allUsers.filter((u) =>
     u.name?.toLowerCase().includes(modalSearch.toLowerCase()),
   );
@@ -173,13 +180,13 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
           </div>
 
           <div className="mt-3">
-            <FilterTabs />
+            <FilterTabs active={filterTab} onChange={setFilterTab} />
           </div>
         </div>
 
         <div className="flex-1 min-h-0 overflow-y-auto px-2 py-1">
           <ChatList
-            users={filteredUsers}
+            users={tabFilteredUsers}
             onSelectedUser={onSelected}
             onSelectAI={onSelectAI}
             isAISelected={isAISelected}

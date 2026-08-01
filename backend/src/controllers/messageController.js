@@ -47,6 +47,8 @@ export const getMessages = catchAsync(async (req, res) => {
     uniqueSenders.forEach((senderId) => {
       io.to(senderId).emit("messages-read", conversationId);
     });
+
+    io.to(req.user.id).emit("unread-update", { conversationId });
   }
 
   sendResponse(res, 200, messages);
@@ -68,10 +70,13 @@ export const deleteMessage = catchAsync(async (req, res) => {
 
 export const markAsRead = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const message = await messageService.markAsRead(id);
+  const message = await messageService.markAsRead(req.user.id, id);
 
   if (io) {
     io.to(message.sender.toString()).emit("message-read", id);
+    io.to(req.user.id).emit("unread-update", {
+      conversationId: message.conversationId,
+    });
   }
 
   sendResponse(res, 200, null, "Message marked as read");
