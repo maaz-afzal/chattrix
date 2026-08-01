@@ -15,7 +15,7 @@ const AIChatItem = ({ isSelected, onClick }) => {
         <div className="w-10 h-10 rounded-full bg-[#A37CFF]/12 flex items-center justify-center">
           <Bot className="w-5 h-5 text-[#A37CFF]" />
         </div>
-        <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-[#161616] bg-emerald-500" />
+        <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#f7f7f8] dark:border-[#161616] bg-emerald-500" />
       </div>
       <div className="flex-1 min-w-0">
         <p className="truncate text-[13px] font-medium text-[#1a1a1b] dark:text-white">

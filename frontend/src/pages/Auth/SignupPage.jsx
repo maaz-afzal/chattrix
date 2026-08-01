@@ -60,7 +60,6 @@ const SignupPage = () => {
     try {
       setLoading(true);
       const response = await authService.register(formData);
-      console.log(response);
 
       if (response.data.token && response.data.user) {
         dispatch(

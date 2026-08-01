@@ -30,12 +30,12 @@ export const sendAIMessage = catchAsync(async (req, res) => {
 
 export const getAIHistory = catchAsync(async (req, res) => {
   const { conversationId } = req.params;
-  const messages = await aiService.getAIHistory(conversationId);
+  const messages = await aiService.getAIHistory(req.user.id, conversationId);
   sendResponse(res, 200, messages);
 });
 
 export const clearAIHistory = catchAsync(async (req, res) => {
   const { conversationId } = req.params;
-  await aiService.clearAIHistory(conversationId);
+  await aiService.clearAIHistory(req.user.id, conversationId);
   sendResponse(res, 200, null, "AI history cleared");
 });

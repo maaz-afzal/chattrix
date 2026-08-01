@@ -35,6 +35,18 @@ const sendAIMessage = async (userId, conversationId, text) => {
     throw new AppError("Invalid conversation ID", 400);
   }
 
+  const conversation = await Conversation.findById(conversationId).select(
+    "participants isAIChat",
+  );
+
+  if (
+    !conversation ||
+    !conversation.isAIChat ||
+    !conversation.participants.some((id) => id.toString() === userId.toString())
+  ) {
+    throw new AppError("AI conversation not found", 404);
+  }
+
   await Message.create({
     conversationId,
     sender: userId,
@@ -65,7 +77,19 @@ const sendAIMessage = async (userId, conversationId, text) => {
   return aiMessage;
 };
 
-const getAIHistory = async (conversationId) => {
+const getAIHistory = async (userId, conversationId) => {
+  const conversation = await Conversation.findById(conversationId).select(
+    "participants isAIChat",
+  );
+
+  if (
+    !conversation ||
+    !conversation.isAIChat ||
+    !conversation.participants.some((id) => id.toString() === userId.toString())
+  ) {
+    throw new AppError("AI conversation not found", 404);
+  }
+
   const messages = await Message.find({
     conversationId,
   }).sort({ createdAt: 1 });
@@ -73,7 +97,19 @@ const getAIHistory = async (conversationId) => {
   return messages;
 };
 
-const clearAIHistory = async (conversationId) => {
+const clearAIHistory = async (userId, conversationId) => {
+  const conversation = await Conversation.findById(conversationId).select(
+    "participants isAIChat",
+  );
+
+  if (
+    !conversation ||
+    !conversation.isAIChat ||
+    !conversation.participants.some((id) => id.toString() === userId.toString())
+  ) {
+    throw new AppError("AI conversation not found", 404);
+  }
+
   await Message.deleteMany({
     conversationId,
   });

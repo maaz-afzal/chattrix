@@ -26,6 +26,22 @@ const sendMessage = async (
     throw new AppError("Message cannot exceed 2000 characters", 400);
   }
 
+  const conversation = await Conversation.findById(conversationId).select(
+    "participants isAIChat",
+  );
+
+  if (!conversation || conversation.isAIChat) {
+    throw new AppError("Conversation not found", 404);
+  }
+
+  const participantIds = conversation.participants.map((id) => id.toString());
+  if (
+    !participantIds.includes(senderId.toString()) ||
+    !participantIds.includes(receiverId.toString())
+  ) {
+    throw new AppError("You are not a participant of this conversation", 403);
+  }
+
   let imageUrl = null;
 
   if (image) {
@@ -55,6 +71,17 @@ const sendMessage = async (
 const getMessages = async (userId, conversationId) => {
   if (!mongoose.Types.ObjectId.isValid(conversationId)) {
     throw new AppError("Invalid conversation ID", 400);
+  }
+
+  const conversation = await Conversation.findById(conversationId).select(
+    "participants",
+  );
+
+  if (
+    !conversation ||
+    !conversation.participants.some((id) => id.toString() === userId.toString())
+  ) {
+    throw new AppError("Conversation not found", 404);
   }
 
   const messages = await Message.find({

@@ -129,10 +129,8 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
   const handleModalSearch = (value) => {
     setModalSearch(value);
     clearTimeout(searchTimeout.current);
-    if (!value.trim()) {
-      setModalResults(null);
-      return;
-    }
+    setModalResults(null);
+    if (!value.trim()) return;
     searchTimeout.current = setTimeout(async () => {
       try {
         const results = await userService.searchUsers(value.trim());

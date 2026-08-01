@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import AppError from "../utils/AppError.js";
 import mongoose from "mongoose";
+import cloudinary from "../config/cloudinary.js";
 
 const getAllUsers = async (userId, page = 1, limit = 20) => {
   const skip = (page - 1) * limit;
@@ -74,7 +75,19 @@ const updateProfile = async (userId, updateData) => {
 
   if (name !== undefined) user.name = name;
   if (bio !== undefined) user.bio = bio;
-  if (profileImage !== undefined) user.profileImage = profileImage;
+  if (profileImage !== undefined) {
+    if (profileImage === "" || profileImage === null) {
+      user.profileImage = null;
+    } else if (profileImage.startsWith("data:image")) {
+      const result = await cloudinary.uploader.upload(profileImage, {
+        folder: "chattrix/profile",
+        resource_type: "image",
+      });
+      user.profileImage = result.secure_url;
+    } else {
+      user.profileImage = profileImage;
+    }
+  }
 
   const updatedUser = await user.save();
 
