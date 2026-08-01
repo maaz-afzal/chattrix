@@ -4,7 +4,7 @@ const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
   message: {
-    msg: "Too many requests, please try again later.",
+    message: "Too many requests, please try again later.",
   },
 
   standardHeaders: true,
@@ -15,7 +15,7 @@ const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   message: {
-    msg: "Too many authentication attempts, please try again later.",
+    message: "Too many authentication attempts, please try again later.",
   },
 
   standardHeaders: true,
@@ -26,7 +26,7 @@ const aiLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 30,
   message: {
-    msg: "AI request limit reached, try again later.",
+    message: "AI request limit reached, try again later.",
   },
 
   standardHeaders: true,

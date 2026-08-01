@@ -230,6 +230,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
             onSelectAI={onSelectAI}
             isAISelected={isAISelected}
             onDeleteConversation={handleDeleteConversation}
+            hasConversations={chatList.length > 0}
           />
         </div>
 

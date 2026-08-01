@@ -45,8 +45,8 @@ const PersonalInfoSection = ({ user, isOnline, lastSeen, formatLastSeen }) => {
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
-      await userService.updateProfile({ profileImage: dataUrl });
-      dispatch(updateUser({ ...user, profileImage: dataUrl }));
+      const updated = await userService.updateProfile({ profileImage: dataUrl });
+      dispatch(updateUser({ ...user, profileImage: updated?.profileImage || dataUrl }));
       toast.success("Updated!");
     } catch {
       toast.error("Failed");
@@ -129,7 +129,7 @@ const PersonalInfoSection = ({ user, isOnline, lastSeen, formatLastSeen }) => {
               )}
             </div>
 
-            {user?.profileImage?.startsWith("data:image") && (
+            {user?.profileImage && !user.profileImage.startsWith("https://ui-avatars.com") && (
               <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 {uploadingImage ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

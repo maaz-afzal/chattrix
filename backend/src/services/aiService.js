@@ -7,17 +7,11 @@ import AppError from "../utils/AppError.js";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const createAIConversation = async (userId) => {
-  let conversation = await Conversation.findOne({
-    participants: userId,
-    isAIChat: true,
-  });
-
-  if (!conversation) {
-    conversation = await Conversation.create({
-      participants: [userId],
-      isAIChat: true,
-    });
-  }
+  const conversation = await Conversation.findOneAndUpdate(
+    { participants: userId, isAIChat: true },
+    { $setOnInsert: { participants: [userId], isAIChat: true } },
+    { upsert: true, new: true },
+  );
 
   return conversation;
 };

@@ -23,9 +23,12 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      store.dispatch(logout());
-      disconnectSocket();
-      window.location.href = "/login";
+      const path = window.location.pathname;
+      if (path !== "/login" && path !== "/signup") {
+        store.dispatch(logout());
+        disconnectSocket();
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }

@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { logout } from "./authSlice.js";
 
 const initialState = {
   allUsers: [],
@@ -50,6 +51,9 @@ const userSlice = createSlice({
       const { userId, lastSeen } = action.payload;
       state.lastSeenByUser[userId] = lastSeen;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(logout, () => initialState);
   },
 });
 

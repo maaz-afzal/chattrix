@@ -9,6 +9,7 @@ const ChatList = ({
   onSelectAI,
   isAISelected,
   onDeleteConversation,
+  hasConversations = false,
 }) => {
   const [selectedChatId, setSelectedChatId] = useState(null);
   const onlineUsers = useSelector((state) => state.users.onlineUsers);
@@ -44,7 +45,9 @@ const ChatList = ({
       ))}
       {enrichedUsers.length === 0 && (
         <p className="px-4 py-10 text-center text-[12px] text-[#9a9a9c] dark:text-[#555]">
-          No conversations
+          {hasConversations
+            ? "No matching conversations"
+            : "No conversations"}
         </p>
       )}
     </div>

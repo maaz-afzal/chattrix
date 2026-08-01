@@ -54,7 +54,11 @@ const MessageInput = ({
   }, [selected?._id]);
 
   const handleAISend = async () => {
-    if (!message.trim() || !aiConversationId) return;
+    if (!message.trim()) return;
+    if (!aiConversationId) {
+      toast.error("AI chat is still loading, please wait.");
+      return;
+    }
     const userMsg = {
       _id: Date.now().toString(),
       text: message.trim(),
