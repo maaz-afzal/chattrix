@@ -64,7 +64,6 @@ const MessageInput = ({
   };
 
   const handleNormalSend = async () => {
-    console.log(selected);
     if (!selected?._id) return;
     if (!selectedConversationId) {
       toast.error("Conversation not ready.");

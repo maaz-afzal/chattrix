@@ -21,6 +21,13 @@ const findOrCreateConversation = async (userId, receiverId) => {
       participants: [userId, receiverId],
       isAIChat: false,
     });
+  } else if (
+    conversation.deletedFor?.some((id) => id.toString() === userId)
+  ) {
+    conversation.deletedFor = conversation.deletedFor.filter(
+      (id) => id.toString() !== userId,
+    );
+    await conversation.save();
   }
 
   return conversation;
@@ -29,11 +36,12 @@ const findOrCreateConversation = async (userId, receiverId) => {
 const getConversations = async (userId) => {
   const conversations = await Conversation.find({
     participants: userId,
+    deletedFor: { $ne: userId },
   })
     .populate("participants", "name profileImage isOnline lastSeen")
     .populate({
       path: "lastMessage",
-      select: "text image sender createdAt status",
+      select: "text image sender createdAt status deletedFor deletedForEveryone",
     })
     .sort({ updatedAt: -1 });
 
@@ -48,6 +56,7 @@ const getConversationById = async (userId, conversationId) => {
   const conversation = await Conversation.findOne({
     _id: conversationId,
     participants: userId,
+    deletedFor: { $ne: userId },
   })
     .populate("participants", "name profileImage isOnline lastSeen")
     .populate("lastMessage");
@@ -69,11 +78,10 @@ const deleteConversation = async (userId, conversationId) => {
     throw new AppError("Conversation not found", 404);
   }
 
-  conversation.participants = conversation.participants.filter(
-    (id) => id.toString() !== userId,
-  );
-
-  await conversation.save();
+  if (!conversation.deletedFor?.some((id) => id.toString() === userId)) {
+    conversation.deletedFor.push(userId);
+    await conversation.save();
+  }
 
   return true;
 };

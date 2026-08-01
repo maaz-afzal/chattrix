@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Settings, X, Search, SquarePen } from "lucide-react";
 import Avatar from "../common/Avatar.jsx";
 import IconButton from "../common/IconButton";
@@ -26,9 +26,15 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
   const [conversations, setConversations] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [modalSearch, setModalSearch] = useState("");
+  const [modalResults, setModalResults] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [filterTab, setFilterTab] = useState("all");
+  const searchTimeout = useRef(null);
+
+  useEffect(() => {
+    return () => clearTimeout(searchTimeout.current);
+  }, []);
 
   const isOnline =
     onlineUsers.includes(currentUser?._id) || getSocket()?.connected;
@@ -84,14 +90,22 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
       const unreadCount = currentUser?._id
         ? conv.unreadCount?.[currentUser._id] || 0
         : 0;
+      const lastMessage = conv.lastMessage;
+      const isLastMessageHidden =
+        lastMessage?.deletedForEveryone ||
+        lastMessage?.deletedFor?.some(
+          (id) => id.toString() === currentUser?._id,
+        );
       return {
         ...otherUser,
         conversationId: conv._id,
-        lastMessage: conv.lastMessage?.text
-          ? conv.lastMessage.text
-          : conv.lastMessage?.image
-            ? "Image"
-            : null,
+        lastMessage: lastMessage && !isLastMessageHidden
+          ? lastMessage.text
+            ? lastMessage.text
+            : lastMessage.image
+              ? "Image"
+              : null
+          : null,
         lastMessageAt: conv.updatedAt,
         unreadCount,
       };
@@ -111,6 +125,25 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
   const modalFilteredUsers = allUsers.filter((u) =>
     u.name?.toLowerCase().includes(modalSearch.toLowerCase()),
   );
+
+  const handleModalSearch = (value) => {
+    setModalSearch(value);
+    clearTimeout(searchTimeout.current);
+    if (!value.trim()) {
+      setModalResults(null);
+      return;
+    }
+    searchTimeout.current = setTimeout(async () => {
+      try {
+        const results = await userService.searchUsers(value.trim());
+        setModalResults(results);
+      } catch {
+        setModalResults([]);
+      }
+    }, 300);
+  };
+
+  const displayModalUsers = modalResults || modalFilteredUsers;
 
   const handleConversation = async (selectedUser) => {
     setIsModalOpen(false);
@@ -143,7 +176,10 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
               Chattrix
             </h1>
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => {
+                setIsModalOpen(true);
+                setModalResults(null);
+              }}
               className="w-8 h-8 rounded-lg bg-[#A37CFF] hover:bg-[#9370f0] text-white flex items-center justify-center transition-colors"
             >
               <SquarePen className="w-4 h-4" />
@@ -255,7 +291,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
                 <input
                   type="text"
                   value={modalSearch}
-                  onChange={(e) => setModalSearch(e.target.value)}
+                  onChange={(e) => handleModalSearch(e.target.value)}
                   placeholder="Search people"
                   className="w-full bg-transparent outline-none text-[13px] text-[#1a1a1b] dark:text-white placeholder:text-[#9a9a9c] dark:placeholder:text-[#666]"
                   autoFocus
@@ -264,12 +300,12 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
             </div>
 
             <div className="max-h-90 overflow-y-auto p-2">
-              {modalFilteredUsers.length === 0 ? (
+              {displayModalUsers.length === 0 ? (
                 <p className="py-10 text-center text-[13px] text-[#8a8a8c] dark:text-[#666]">
                   No users found.
                 </p>
               ) : (
-                modalFilteredUsers.map((u) => (
+                displayModalUsers.map((u) => (
                   <button
                     key={u._id}
                     onClick={() => handleConversation(u)}
