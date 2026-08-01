@@ -36,7 +36,7 @@ const SecuritySection = () => {
         confirmPassword: "",
       });
     } catch (e) {
-      toast.error(e.response?.data?.msg || "Failed to update password!");
+      toast.error(e.response?.data?.message || "Failed to update password!");
     } finally {
       setLoading(false);
     }

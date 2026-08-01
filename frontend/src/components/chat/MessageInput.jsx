@@ -188,7 +188,7 @@ const MessageInput = ({
             disabled={isDisabled}
             className="p-2 rounded-lg text-[#666] hover:text-white hover:bg-[#1D1E1F] disabled:opacity-30 transition-colors"
           >
-            <Paperclip className="w-[18px] h-[18px]" />
+            <Paperclip className="w-4.5 h-4.5" />
           </button>
         )}
 

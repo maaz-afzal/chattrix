@@ -41,9 +41,8 @@ const SignupPage = () => {
       return;
     }
 
-    const nameRegex = /^[a-zA-Z\s]+$/;
-    if (!nameRegex.test(formData.name)) {
-      toast.error("Please enter a valid name.");
+    if (!formData.name.trim()) {
+      toast.error("Name is required.");
       return;
     }
 
@@ -61,10 +60,12 @@ const SignupPage = () => {
     try {
       setLoading(true);
       const response = await authService.register(formData);
-      console.log(response)
+      console.log(response);
 
       if (response.data.token && response.data.user) {
-        dispatch(login({ token: response.data.token, user: response.data.user }));
+        dispatch(
+          login({ token: response.data.token, user: response.data.user }),
+        );
         setFormData({ name: "", email: "", password: "" });
         toast.success("Signup successful!");
         navigate("/");
@@ -74,7 +75,7 @@ const SignupPage = () => {
     } catch (err) {
       console.error(err);
       toast.error(
-        err.response?.data?.msg || "Something went wrong. Please try again.",
+        err.response?.data?.message || "Something went wrong. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -83,7 +84,6 @@ const SignupPage = () => {
 
   return (
     <div className="min-h-screen bg-[#161616] text-white flex">
-      
       <div className="hidden lg:flex lg:w-120 xl:w-130 shrink-0 flex-col justify-between p-10 bg-[#161616] border-r border-[#2E2E2F]">
         <div>
           <div className="flex items-center gap-3 mb-12">
@@ -160,10 +160,8 @@ const SignupPage = () => {
         </div>
       </div>
 
-      
       <div className="flex-1 flex items-center justify-center px-5 py-8">
         <div className="w-full max-w-100">
-          
           <div className="flex items-center justify-center gap-3 mb-8 lg:hidden">
             <div className="w-10 h-10 rounded-xl bg-[#A37CFF]/12 flex items-center justify-center">
               <MessageSquareText className="w-5 h-5 text-[#A37CFF]" />

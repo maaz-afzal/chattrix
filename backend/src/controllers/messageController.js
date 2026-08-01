@@ -35,6 +35,20 @@ export const getMessages = catchAsync(async (req, res) => {
     req.user.id,
     conversationId,
   );
+
+  if (io) {
+    const uniqueSenders = [
+      ...new Set(
+        messages
+          .filter((msg) => msg.sender?.toString() !== req.user.id)
+          .map((msg) => msg.sender.toString()),
+      ),
+    ];
+    uniqueSenders.forEach((senderId) => {
+      io.to(senderId).emit("messages-read", conversationId);
+    });
+  }
+
   sendResponse(res, 200, messages);
 });
 

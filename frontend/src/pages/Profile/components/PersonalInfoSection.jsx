@@ -33,6 +33,10 @@ const PersonalInfoSection = ({ user, isOnline, lastSeen, formatLastSeen }) => {
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be under 5MB.");
+      return;
+    }
     setUploadingImage(true);
     try {
       const dataUrl = await new Promise((resolve, reject) => {
@@ -85,7 +89,7 @@ const PersonalInfoSection = ({ user, isOnline, lastSeen, formatLastSeen }) => {
       toast.success("Saved!");
       setIsEdit(false);
     } catch (e) {
-      toast.error(e.response?.data?.msg || "Failed");
+      toast.error(e.response?.data?.message || "Failed");
     } finally {
       setLoading(false);
     }

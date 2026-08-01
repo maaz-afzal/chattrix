@@ -63,11 +63,13 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected }) => {
     socket.on("receive-message", handleNewMessage);
     socket.on("message-sent", handleNewMessage);
     socket.on("unread-update", handleNewMessage);
+    socket.on("ai-message", handleNewMessage);
 
     return () => {
       socket.off("receive-message", handleNewMessage);
       socket.off("message-sent", handleNewMessage);
       socket.off("unread-update", handleNewMessage);
+      socket.off("ai-message", handleNewMessage);
     };
   }, [fetchConversations]);
 

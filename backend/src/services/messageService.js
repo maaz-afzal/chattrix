@@ -62,6 +62,15 @@ const getMessages = async (userId, conversationId) => {
     deletedFor: { $ne: userId },
   }).sort({ createdAt: 1 });
 
+  await Message.updateMany(
+    {
+      conversationId,
+      sender: { $ne: userId },
+      status: { $ne: "read" },
+    },
+    { $set: { status: "read" } },
+  );
+
   await Conversation.findByIdAndUpdate(conversationId, {
     $set: { [`unreadCount.${userId}`]: 0 },
   });

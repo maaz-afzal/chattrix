@@ -71,15 +71,29 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
         ),
       );
     };
+    const handleMessagesRead = (convId) => {
+      const cur = selectedRef.current;
+      if (!cur?.conversationId) return;
+      if (convId.toString() !== cur.conversationId.toString()) return;
+      setConversation((prev) =>
+        prev.map((msg) =>
+          msg.sender?.toString() === currentUserId?.toString()
+            ? { ...msg, status: "read" }
+            : msg,
+        ),
+      );
+    };
 
     socket.on("receive-message", handleNewMessage);
     socket.on("message-sent", handleNewMessage);
     socket.on("message-read", handleMessageRead);
+    socket.on("messages-read", handleMessagesRead);
     socket.on("connect", handleReconnect);
     return () => {
       socket.off("receive-message", handleNewMessage);
       socket.off("message-sent", handleNewMessage);
       socket.off("message-read", handleMessageRead);
+      socket.off("messages-read", handleMessagesRead);
       socket.off("connect", handleReconnect);
     };
   }, [selected, currentUserId]);
@@ -118,11 +132,11 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
                   }`}
                 >
                   {msg.sender === "user" ? (
-                    <p className="text-[13px] leading-[1.5] whitespace-pre-wrap break-words">
+                    <p className="text-[13px] leading-normal whitespace-pre-wrap wrap-break-words">
                       {msg.text}
                     </p>
                   ) : (
-                    <div className="text-[13px] leading-[1.5] break-words">
+                    <div className="text-[13px] leading-normal wrap-break-words">
                       <ReactMarkdown
                         components={{
                           h1: ({ children }) => (

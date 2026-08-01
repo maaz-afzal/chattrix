@@ -27,9 +27,13 @@ const initSocket = (server) => {
     }
   });
 
+  const onlineUserIds = new Set();
+
   io.on("connection", async (socket) => {
+    onlineUserIds.add(socket.userId);
     await handleConnection(socket, io);
 
+    socket.emit("online-users", [...onlineUserIds]);
     socket.on("typing", ({ receiverId }) => {
       io.to(receiverId).emit("user-typing", { userId: socket.userId });
     });
@@ -39,6 +43,10 @@ const initSocket = (server) => {
     });
 
     socket.on("disconnect", async () => {
+      const sockets = await io.in(socket.userId).fetchSockets();
+      if (sockets.length === 0) {
+        onlineUserIds.delete(socket.userId);
+      }
       await handleDisconnect(socket, io);
     });
   });
