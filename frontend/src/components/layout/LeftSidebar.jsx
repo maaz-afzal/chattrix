@@ -8,10 +8,7 @@ import { useNavigate } from "react-router-dom";
 import userService from "../../services/userService.js";
 import conversationService from "../../services/conversationService.js";
 import { getSocket } from "../../lib/socket.js";
-import {
-  setAllUsers,
-  setSelectedConversationId,
-} from "../../redux/Slices/userSlice.js";
+import { setSelectedConversationId } from "../../redux/Slices/userSlice.js";
 import toast from "react-hot-toast";
 
 const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversation }) => {
@@ -19,7 +16,6 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
   const dispatch = useDispatch();
 
   const currentUser = useSelector((state) => state.auth.user);
-  const allUsers = useSelector((state) => state.users.allUsers);
   const onlineUsers = useSelector((state) => state.users.onlineUsers);
 
   const [conversations, setConversations] = useState([]);
@@ -29,7 +25,12 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [filterTab, setFilterTab] = useState("all");
+  const [modalUsers, setModalUsers] = useState([]);
+  const [modalPage, setModalPage] = useState(0);
+  const [modalHasMore, setModalHasMore] = useState(true);
+  const [modalLoading, setModalLoading] = useState(false);
   const searchTimeout = useRef(null);
+  const modalScrollRef = useRef(null);
 
   useEffect(() => {
     return () => clearTimeout(searchTimeout.current);
@@ -47,19 +48,37 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
     }
   }, []);
 
-  const fetchAllUsers = useCallback(async () => {
-    try {
-      const res = await userService.getAllUsers();
-      dispatch(setAllUsers(res));
-    } catch {
-      toast.error("Failed to load users.");
-    }
-  }, [dispatch]);
+  const fetchModalUsers = useCallback(
+    async (page, reset = false) => {
+      if (modalLoading || (!reset && !modalHasMore)) return;
+      setModalLoading(true);
+      try {
+        const next = page || 1;
+        const res = await userService.getAllUsers(next, 20);
+        setModalUsers((prev) =>
+          reset
+            ? (res || [])
+            : [
+                ...prev,
+                ...(res || []).filter(
+                  (u) => !prev.some((p) => p._id === u._id),
+                ),
+              ],
+        );
+        setModalHasMore((res || []).length >= 20);
+        setModalPage(next);
+      } catch {
+        toast.error("Failed to load users.");
+      } finally {
+        setModalLoading(false);
+      }
+    },
+    [modalLoading, modalHasMore],
+  );
 
   useEffect(() => {
     fetchConversations();
-    fetchAllUsers();
-  }, [fetchConversations, fetchAllUsers]);
+  }, [fetchConversations]);
 
   useEffect(() => {
     const socket = getSocket();
@@ -68,6 +87,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
     const handleNewMessage = () => fetchConversations();
     socket.on("receive-message", handleNewMessage);
     socket.on("message-sent", handleNewMessage);
+    socket.on("message-updated", handleNewMessage);
     socket.on("unread-update", handleNewMessage);
     socket.on("ai-message", handleNewMessage);
     socket.on("connect", handleNewMessage);
@@ -75,6 +95,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
     return () => {
       socket.off("receive-message", handleNewMessage);
       socket.off("message-sent", handleNewMessage);
+      socket.off("message-updated", handleNewMessage);
       socket.off("unread-update", handleNewMessage);
       socket.off("ai-message", handleNewMessage);
       socket.off("connect", handleNewMessage);
@@ -123,7 +144,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
     return true;
   });
 
-  const modalFilteredUsers = allUsers.filter((u) =>
+  const modalFilteredUsers = modalUsers.filter((u) =>
     u.name?.toLowerCase().includes(modalSearch.toLowerCase()),
   );
 
@@ -131,7 +152,10 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
     setModalSearch(value);
     clearTimeout(searchTimeout.current);
     setModalResults(null);
-    if (!value.trim()) return;
+    if (!value.trim()) {
+      if (modalUsers.length === 0) fetchModalUsers(1, true);
+      return;
+    }
     searchTimeout.current = setTimeout(async () => {
       try {
         const results = await userService.searchUsers(value.trim());
@@ -140,6 +164,16 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
         setModalResults([]);
       }
     }, 300);
+  };
+
+  const handleModalScroll = () => {
+    const el = modalScrollRef.current;
+    if (!el) return;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 100) {
+      if (!modalResults && modalHasMore && !modalLoading) {
+        fetchModalUsers(modalPage + 1);
+      }
+    }
   };
 
   const displayModalUsers = modalResults || modalFilteredUsers;
@@ -183,6 +217,8 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
               onClick={() => {
                 setIsModalOpen(true);
                 setModalResults(null);
+                setModalSearch("");
+                fetchModalUsers(1, true);
               }}
               className="w-8 h-8 rounded-lg bg-[#A37CFF] hover:bg-[#9370f0] text-white flex items-center justify-center transition-colors"
             >
@@ -304,8 +340,12 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
               </div>
             </div>
 
-            <div className="max-h-90 overflow-y-auto p-2">
-              {displayModalUsers.length === 0 ? (
+            <div
+              ref={modalScrollRef}
+              onScroll={handleModalScroll}
+              className="max-h-90 overflow-y-auto p-2"
+            >
+              {displayModalUsers.length === 0 && !modalLoading ? (
                 <p className="py-10 text-center text-[13px] text-[#8a8a8c] dark:text-[#666]">
                   No users found.
                 </p>
@@ -333,6 +373,11 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
                     </div>
                   </button>
                 ))
+              )}
+              {modalLoading && (
+                <div className="flex justify-center py-4">
+                  <div className="w-4 h-4 border-2 border-[#A37CFF]/30 border-t-[#A37CFF] rounded-full animate-spin" />
+                </div>
               )}
             </div>
           </div>

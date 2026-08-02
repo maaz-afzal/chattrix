@@ -1,7 +1,7 @@
 import api from "./api";
 
-const getAllUsers = async () => {
-  const res = await api.get("/users");
+const getAllUsers = async (page = 1, limit = 20) => {
+  const res = await api.get("/users", { params: { page, limit } });
   return res.data.data;
 };
 

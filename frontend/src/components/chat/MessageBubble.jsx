@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { useSelector } from "react-redux";
-import { CheckCheck, Check } from "lucide-react";
+import { CheckCheck, Check, ChevronDown, Pencil } from "lucide-react";
 import { useSelect } from "../layout/ChatArea";
 
 const MessageBubble = ({
@@ -13,7 +14,8 @@ const MessageBubble = ({
   onSelect,
 }) => {
   const currentUserId = useSelector((state) => state.auth.user?._id);
-  const { selectedMessages } = useSelect();
+  const { selectedMessages, startEditing } = useSelect();
+  const [menuOpen, setMenuOpen] = useState(false);
   const isMe = sender?.toString() === currentUserId?.toString();
   const isSelected = selectedMessages.includes(_id);
 
@@ -29,14 +31,16 @@ const MessageBubble = ({
     if (!isMe) return null;
     if (status === "read")
       return <CheckCheck className="w-3 h-3 text-[#A37CFF]" />;
-    if (status === "sent" || status === "delivered")
+    if (status === "delivered")
       return <CheckCheck className="w-3 h-3 text-white/50" />;
+    if (status === "sent")
+      return <Check className="w-3 h-3 text-white/50" />;
     return null;
   };
 
   return (
     <div
-      className={`flex items-end gap-2 ${isMe ? "justify-end" : "justify-start"}`}
+      className={`group flex items-end gap-2 ${isMe ? "justify-end" : "justify-start"}`}
     >
       {isSelectMode && (
         <button
@@ -51,7 +55,39 @@ const MessageBubble = ({
         </button>
       )}
 
-      <div className="max-w-[82%] sm:max-w-[70%]">
+      <div
+        className={`max-w-[82%] sm:max-w-[70%] flex ${isMe ? "flex-row-reverse" : "flex-row"} items-end gap-1.5 relative`}
+      >
+        {isMe && (
+          <div className="relative shrink-0 mb-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              onClick={() => setMenuOpen((prev) => !prev)}
+              className="p-1 rounded-lg text-[#8a8a8c] dark:text-[#666] hover:text-[#1a1a1b] dark:hover:text-white"
+            >
+              <ChevronDown className="w-4 h-4" />
+            </button>
+            {menuOpen && (
+              <div
+                className="absolute top-full mt-0 right-4 w-24 rounded-xl bg-white dark:bg-[#222] border border-[#e2e2e4] dark:border-[#333] shadow-lg z-20 py-0.3 overflow-hidden"
+              >
+                <button
+                  onClick={() => {
+                    startEditing({
+                      _id,
+                      text,
+                    });
+                    setMenuOpen(false);
+                  }}
+                  className="w-full flex items-center gap-1.5 px-2.5 py-1.5 text-left text-[11px] text-[#1a1a1b] dark:text-white hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] transition-colors"
+                >
+                  <Pencil className="w-3 h-3" />
+                  Edit
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         <div
           className={`rounded-2xl px-3 py-1.5 ${
             isMe
@@ -100,7 +136,7 @@ const MessageBubble = ({
             </div>
           )}
         </div>
-      </div>
+        </div>
     </div>
   );
 };

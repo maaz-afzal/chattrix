@@ -21,10 +21,12 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
   const [sendTrigger, setSendTrigger] = useState(0);
   const [aiMessages, setAiMessages] = useState([]);
   const [aiConversationId, setAiConversationId] = useState(null);
+  const [editingMessage, setEditingMessage] = useState(null);
 
   useEffect(() => {
     setSelectMode(false);
     setSelectedMessages([]);
+    setEditingMessage(null);
   }, [selected?._id, isAISelected]);
 
   useEffect(() => {
@@ -104,6 +106,12 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
     }
   };
 
+  const startEditing = (message) => {
+    setEditingMessage(message);
+    disableSelectMode();
+  };
+  const cancelEditing = () => setEditingMessage(null);
+
   const value = {
     selectMode,
     selectedMessages,
@@ -115,6 +123,9 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
     toggleMessage,
     handleClearChat,
     handleDeleteSelected,
+    editingMessage,
+    startEditing,
+    cancelEditing,
   };
 
   return (

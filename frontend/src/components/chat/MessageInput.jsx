@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Send, Paperclip, X, Trash2 } from "lucide-react";
+import { Send, Paperclip, X, Trash2, Pencil } from "lucide-react";
 import { useSelector } from "react-redux";
 import { getSocket } from "../../lib/socket.js";
 import messageService from "../../services/messageService.js";
@@ -22,6 +22,8 @@ const MessageInput = ({
     selectedMessages,
     disableSelectMode,
     handleDeleteSelected,
+    editingMessage,
+    cancelEditing,
   } = useSelect();
   const [message, setMessage] = useState("");
   const [image, setImage] = useState(null);
@@ -52,6 +54,14 @@ const MessageInput = ({
       }
     };
   }, [selected?._id]);
+
+  useEffect(() => {
+    if (editingMessage) {
+      setMessage(editingMessage.text || "");
+      setImage(null);
+      setImagePreview(null);
+    }
+  }, [editingMessage]);
 
   const handleAISend = async () => {
     if (!message.trim()) return;
@@ -105,10 +115,22 @@ const MessageInput = ({
     }
     try {
       setLoading(true);
-      await messageService.sendMessage(selectedConversationId, selected._id, {
-        text: message.trim() || undefined,
-        image: image || undefined,
-      });
+      if (editingMessage) {
+        if (!message.trim()) {
+          toast.error("Message cannot be empty.");
+          return;
+        }
+        await messageService.updateMessage(editingMessage._id, {
+          text: message.trim(),
+        });
+        cancelEditing();
+        setSendTrigger((prev) => prev + 1);
+      } else {
+        await messageService.sendMessage(selectedConversationId, selected._id, {
+          text: message.trim() || undefined,
+          image: image || undefined,
+        });
+      }
       setMessage("");
       setImage(null);
       setImagePreview(null);
@@ -165,12 +187,14 @@ const MessageInput = ({
   const placeholder = isAISelected
     ? "Ask Gemini..."
     : selected
-      ? "Message"
+      ? editingMessage
+        ? "Edit message"
+        : "Message"
       : "Select a chat";
 
   if (selectMode) {
     return (
-      <div className="shrink-0 border-t border-[#e2e2e4] dark:border-[#2E2E2F] bg-[#f7f7f8] dark:bg-[#161616] px-4 py-5.5">
+      <div className="shrink-0 bg-[#f7f7f8] dark:bg-[#161616] px-4 py-5.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
@@ -197,7 +221,24 @@ const MessageInput = ({
 
   return (
     <div className="shrink-0   bg-[#f7f7f8] dark:bg-[#161616] px-4 py-4">
-      {imagePreview && !isAISelected && (
+      {editingMessage && !isAISelected && (
+        <div className="mb-2 flex items-center justify-between gap-2 rounded-lg bg-[#A37CFF]/10 px-3 py-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <Pencil className="w-3.5 h-3.5 text-[#A37CFF] shrink-0" />
+            <span className="truncate text-[12px] text-[#1a1a1b] dark:text-white">
+              Editing: {editingMessage.text || "Original message"}
+            </span>
+          </div>
+          <button
+            onClick={cancelEditing}
+            className="p-1 rounded text-[#8a8a8c] dark:text-[#666] hover:text-[#f87171]"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
+      {imagePreview && !isAISelected && !editingMessage && (
         <div className="mb-2 inline-flex items-center gap-2 rounded-lg bg-[#ececee] dark:bg-[#1D1E1F] px-2.5 py-2">
           <img
             src={imagePreview}
@@ -214,17 +255,17 @@ const MessageInput = ({
       )}
 
       <div className="flex items-center gap-2">
-        {!isAISelected && (
-          <button
-            onClick={handleImageSelect}
-            disabled={isDisabled}
-            className="p-2 rounded-lg text-[#8a8a8c] dark:text-[#666] hover:text-[#1a1a1b] dark:hover:text-white hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] disabled:opacity-30 transition-colors"
-          >
-            <Paperclip className="w-4.5 h-4.5" />
-          </button>
-        )}
+        <div className="flex-1 bg-[#e4e4e6] dark:bg-[#212120] rounded-2xl flex items-center px-2">
+          {!isAISelected && !editingMessage && (
+            <button
+              onClick={handleImageSelect}
+              disabled={isDisabled}
+              className="p-2 rounded-lg text-[#8a8a8c] dark:text-[#666] hover:text-[#1a1a1b] dark:hover:text-white hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] disabled:opacity-30 transition-colors shrink-0"
+            >
+              <Paperclip className="w-4.5 h-4.5" />
+            </button>
+          )}
 
-        <div className="flex-1 bg-[#e4e4e6] dark:bg-[#212120] rounded-lg px-3">
           <input
             type="text"
             value={message}
@@ -244,14 +285,14 @@ const MessageInput = ({
             onKeyDown={handleKeyDown}
             disabled={isDisabled}
             placeholder={placeholder}
-            className="w-full bg-transparent py-3 text-[13px] text-[#1a1a1b] dark:text-white placeholder:text-[#9a9a9c] dark:placeholder:text-[#666] outline-none disabled:opacity-30"
+            className="w-full bg-transparent py-3.5 text-[13px] text-[#1a1a1b] dark:text-white placeholder:text-[#9a9a9c] dark:placeholder:text-[#666] outline-none disabled:opacity-30"
           />
         </div>
 
         <button
           onClick={handleSend}
           disabled={!canSend}
-          className={`w-10 h-10 shrink-0 rounded-lg flex items-center justify-center transition-all ${
+          className={`shrink-0 rounded-2xl flex items-center justify-center transition-all self-stretch px-4 ${
             canSend
               ? "bg-[#A37CFF] text-white hover:bg-[#9370f0]"
               : "bg-[#e4e4e6] dark:bg-[#212120] text-[#9a9a9c] dark:text-[#555]"

@@ -28,7 +28,8 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
     selectedRef.current = selected;
   }, [selected]);
 
-  const { selectMode, toggleMessage, clearTrigger, sendTrigger } = useSelect();
+  const { selectMode, toggleMessage, clearTrigger, sendTrigger } =
+    useSelect();
 
   const getConversation = async (conversationId, initial = false) => {
     if (!conversationId) return;
@@ -101,17 +102,41 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
         ),
       );
     };
+    const handleMessageUpdated = (updatedMessage) => {
+      const cur = selectedRef.current;
+      if (!cur?.conversationId) return;
+      if (
+        updatedMessage.conversationId?.toString() !==
+        cur.conversationId.toString()
+      )
+        return;
+      setConversation((prev) =>
+        prev.map((msg) =>
+          msg._id === updatedMessage._id
+            ? {
+                ...msg,
+                ...updatedMessage,
+                text:
+                  updatedMessage.text ??
+                  msg.text,
+              }
+            : msg,
+        ),
+      );
+    };
 
     socket.on("receive-message", handleNewMessage);
     socket.on("message-sent", handleNewMessage);
     socket.on("message-read", handleMessageRead);
     socket.on("messages-read", handleMessagesRead);
+    socket.on("message-updated", handleMessageUpdated);
     socket.on("connect", handleReconnect);
     return () => {
       socket.off("receive-message", handleNewMessage);
       socket.off("message-sent", handleNewMessage);
       socket.off("message-read", handleMessageRead);
       socket.off("messages-read", handleMessagesRead);
+      socket.off("message-updated", handleMessageUpdated);
       socket.off("connect", handleReconnect);
     };
   }, [selected, currentUserId]);

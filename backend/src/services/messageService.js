@@ -63,6 +63,7 @@ const sendMessage = async (
   await Conversation.findByIdAndUpdate(conversationId, {
     $set: { lastMessage: message._id },
     $inc: { [`unreadCount.${receiverId}`]: 1 },
+    $pull: { deletedFor: { $in: [senderId, receiverId] } },
   });
 
   return message;
@@ -84,12 +85,6 @@ const getMessages = async (userId, conversationId) => {
     throw new AppError("Conversation not found", 404);
   }
 
-  const messages = await Message.find({
-    conversationId,
-    deletedFor: { $ne: userId },
-    deletedForEveryone: { $ne: true },
-  }).sort({ createdAt: 1 });
-
   await Message.updateMany(
     {
       conversationId,
@@ -99,9 +94,19 @@ const getMessages = async (userId, conversationId) => {
     { $set: { status: "read" } },
   );
 
-  await Conversation.findByIdAndUpdate(conversationId, {
-    $set: { [`unreadCount.${userId}`]: 0 },
-  });
+  await Conversation.findByIdAndUpdate(
+    conversationId,
+    {
+      $set: { [`unreadCount.${userId}`]: 0 },
+    },
+    { timestamps: false },
+  );
+
+  const messages = await Message.find({
+    conversationId,
+    deletedFor: { $ne: userId },
+    deletedForEveryone: { $ne: true },
+  }).sort({ createdAt: 1 });
 
   return messages;
 };
@@ -168,9 +173,10 @@ const markAsRead = async (userId, messageId) => {
     await message.save();
   }
 
-  await Conversation.updateOne(
+  await Conversation.findByIdAndUpdate(
     { _id: message.conversationId },
     { $set: { [`unreadCount.${userId}`]: 0 } },
+    { timestamps: false },
   );
 
   return message;
@@ -185,6 +191,11 @@ const clearChat = async (userId, conversationId) => {
     {
       $push: { deletedFor: userId },
     },
+  );
+
+  await Conversation.updateOne(
+    { _id: conversationId },
+    { $set: { [`unreadCount.${userId}`]: 0 } },
   );
 
   return true;

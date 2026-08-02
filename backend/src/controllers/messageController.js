@@ -1,6 +1,7 @@
 import { messageService } from "../services/index.js";
 import { catchAsync } from "../middlewares/errorHandler.js";
 import { sendResponse } from "../utils/responseHandler.js";
+import Conversation from "../models/Conversation.js";
 
 let io;
 
@@ -58,6 +59,21 @@ export const updateMessage = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { text } = req.body;
   const message = await messageService.updateMessage(req.user.id, id, text);
+
+  if (io) {
+    const conversation = await Conversation.findById(message.conversationId).select(
+      "participants",
+    );
+    if (conversation) {
+      const participants = conversation.participants.map((p) =>
+        p.toString(),
+      );
+      participants.forEach((participantId) => {
+        io.to(participantId).emit("message-updated", message);
+      });
+    }
+  }
+
   sendResponse(res, 200, message, "Message updated");
 });
 
