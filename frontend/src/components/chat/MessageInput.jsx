@@ -137,6 +137,10 @@ const MessageInput = ({
     input.onchange = (e) => {
       const file = e.target.files[0];
       if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please select an image file.");
+        return;
+      }
       if (file.size > 5 * 1024 * 1024) {
         toast.error("Image must be under 5MB.");
         return;
@@ -166,7 +170,7 @@ const MessageInput = ({
 
   if (selectMode) {
     return (
-      <div className="shrink-0 border-t border-[#e2e2e4] dark:border-[#2E2E2F] bg-[#f7f7f8] dark:bg-[#161616] px-4 py-2">
+      <div className="shrink-0 border-t border-[#e2e2e4] dark:border-[#2E2E2F] bg-[#f7f7f8] dark:bg-[#161616] px-4 py-5.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
@@ -192,7 +196,7 @@ const MessageInput = ({
   }
 
   return (
-    <div className="shrink-0 border-t border-[#e2e2e4] dark:border-[#2E2E2F] bg-[#f7f7f8] dark:bg-[#161616] px-4 py-4">
+    <div className="shrink-0   bg-[#f7f7f8] dark:bg-[#161616] px-4 py-4">
       {imagePreview && !isAISelected && (
         <div className="mb-2 inline-flex items-center gap-2 rounded-lg bg-[#ececee] dark:bg-[#1D1E1F] px-2.5 py-2">
           <img
@@ -228,7 +232,7 @@ const MessageInput = ({
               setMessage(e.target.value);
               if (!isAISelected && selected?.conversationId) {
                 const socket = getSocket();
-                if (socket) {
+                if (socket && e.target.value.trim()) {
                   socket.emit("typing", { receiverId: selected._id });
                   clearTimeout(typingTimeout.current);
                   typingTimeout.current = setTimeout(() => {

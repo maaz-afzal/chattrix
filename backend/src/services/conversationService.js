@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Conversation from "../models/Conversation.js";
+import Message from "../models/Message.js";
 import AppError from "../utils/AppError.js";
 
 const findOrCreateConversation = async (userId, receiverId) => {
@@ -82,6 +83,11 @@ const deleteConversation = async (userId, conversationId) => {
     conversation.deletedFor.push(userId);
     await conversation.save();
   }
+
+  await Message.updateMany(
+    { conversationId, deletedFor: { $ne: userId } },
+    { $push: { deletedFor: userId } },
+  );
 
   return true;
 };

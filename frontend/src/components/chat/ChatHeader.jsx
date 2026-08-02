@@ -83,7 +83,6 @@ const ChatHeader = ({ selected, isAISelected, onBack }) => {
   const [showUserInfo, setShowUserInfo] = useState(false);
 
   const {
-    selectMode,
     enableSelectMode,
     handleClearChat,
   } = useSelect();
@@ -172,8 +171,6 @@ const ChatHeader = ({ selected, isAISelected, onBack }) => {
       </div>
     );
   }
-
-  if (selectMode) return null;
 
   return (
     <>

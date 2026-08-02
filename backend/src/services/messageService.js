@@ -87,6 +87,7 @@ const getMessages = async (userId, conversationId) => {
   const messages = await Message.find({
     conversationId,
     deletedFor: { $ne: userId },
+    deletedForEveryone: { $ne: true },
   }).sort({ createdAt: 1 });
 
   await Message.updateMany(
