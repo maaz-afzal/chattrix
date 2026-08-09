@@ -2,7 +2,7 @@ import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import { handleConnection, handleDisconnect } from "./events.js";
-import { messageService } from "../services/index.js";
+import messageService from "../services/messageService.js";
 
 const initSocket = (server) => {
   const io = new Server(server, {

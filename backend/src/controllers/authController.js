@@ -1,4 +1,4 @@
-import { authService } from "../services/index.js";
+import authService from "../services/authService.js";
 import { catchAsync } from "../middlewares/errorHandler.js";
 import { sendResponse } from "../utils/responseHandler.js";
 

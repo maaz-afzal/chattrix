@@ -1,4 +1,4 @@
-import { userService } from "../services/index.js";
+import userService from "../services/userService.js";
 import { catchAsync } from "../middlewares/errorHandler.js";
 import { sendResponse } from "../utils/responseHandler.js";
 

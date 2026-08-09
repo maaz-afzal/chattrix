@@ -1,4 +1,4 @@
-import { messageService } from "../services/index.js";
+import messageService from "../services/messageService.js";
 import { catchAsync } from "../middlewares/errorHandler.js";
 import { sendResponse } from "../utils/responseHandler.js";
 import Conversation from "../models/Conversation.js";

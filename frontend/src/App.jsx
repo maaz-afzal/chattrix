@@ -8,7 +8,7 @@ import ProtectedRoute from "./components/common/ProtectedRoute.jsx";
 import { Toaster } from "react-hot-toast";
 import { useSelector, useDispatch } from "react-redux";
 import { connectSocket, disconnectSocket } from "./lib/socket.js";
-import { addOnlineUser, removeOnlineUser, updateUserStatus, setTyping, clearTyping, setLastSeen, setOnlineUsers, bumpListRefresh } from "./redux/Slices/userSlice.js";
+import { addOnlineUser, removeOnlineUser, setTyping, clearTyping, setLastSeen, setOnlineUsers, bumpListRefresh } from "./redux/Slices/userSlice.js";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -27,12 +27,10 @@ const App = () => {
 
     const handleOnline = (userId) => {
       dispatch(addOnlineUser(userId));
-      dispatch(updateUserStatus({ userId, isOnline: true }));
     };
 
     const handleOffline = ({ userId, lastSeen }) => {
       dispatch(removeOnlineUser(userId));
-      dispatch(updateUserStatus({ userId, isOnline: false }));
       if (lastSeen) dispatch(setLastSeen({ userId, lastSeen }));
     };
 

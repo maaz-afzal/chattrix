@@ -2,9 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { logout } from "./authSlice.js";
 
 const initialState = {
-  allUsers: [],
   onlineUsers: [],
-  selectedUser: null,
   selectedConversationId: null,
   typingUsers: {},
   lastSeenByUser: {},
@@ -15,9 +13,6 @@ const userSlice = createSlice({
   name: "users",
   initialState,
   reducers: {
-    setAllUsers(state, action) {
-      state.allUsers = action.payload;
-    },
     setOnlineUsers(state, action) {
       state.onlineUsers = action.payload;
     },
@@ -31,16 +26,8 @@ const userSlice = createSlice({
         (id) => id !== action.payload,
       );
     },
-    setSelectedUser(state, action) {
-      state.selectedUser = action.payload;
-    },
     setSelectedConversationId(state, action) {
       state.selectedConversationId = action.payload;
-    },
-    updateUserStatus(state, action) {
-      const { userId, isOnline } = action.payload;
-      const user = state.allUsers.find((u) => u._id === userId);
-      if (user) user.isOnline = isOnline;
     },
     setTyping(state, action) {
       state.typingUsers[action.payload] = true;
@@ -62,13 +49,10 @@ const userSlice = createSlice({
 });
 
 export const {
-  setAllUsers,
   setOnlineUsers,
   addOnlineUser,
   removeOnlineUser,
-  setSelectedUser,
   setSelectedConversationId,
-  updateUserStatus,
   setTyping,
   clearTyping,
   setLastSeen,

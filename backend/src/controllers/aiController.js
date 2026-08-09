@@ -1,4 +1,4 @@
-import { aiService } from "../services/index.js";
+import aiService from "../services/aiService.js";
 import { catchAsync } from "../middlewares/errorHandler.js";
 import { sendResponse } from "../utils/responseHandler.js";
 

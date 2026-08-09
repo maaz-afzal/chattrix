@@ -22,9 +22,7 @@ const findOrCreateConversation = async (userId, receiverId) => {
       participants: [userId, receiverId],
       isAIChat: false,
     });
-  } else if (
-    conversation.deletedFor?.some((id) => id.toString() === userId)
-  ) {
+  } else if (conversation.deletedFor?.some((id) => id.toString() === userId)) {
     conversation.deletedFor = conversation.deletedFor.filter(
       (id) => id.toString() !== userId,
     );
@@ -42,7 +40,8 @@ const getConversations = async (userId) => {
     .populate("participants", "name profileImage isOnline lastSeen email bio")
     .populate({
       path: "lastMessage",
-      select: "text image sender createdAt status deletedFor deletedForEveryone",
+      select:
+        "text image sender createdAt status deletedFor deletedForEveryone",
     })
     .sort({ updatedAt: -1 });
 
@@ -92,16 +91,9 @@ const deleteConversation = async (userId, conversationId) => {
   return true;
 };
 
-const updateLastMessage = async (conversationId, messageId) => {
-  await Conversation.findByIdAndUpdate(conversationId, {
-    lastMessage: messageId,
-  });
-};
-
 export default {
   findOrCreateConversation,
   getConversations,
   getConversationById,
   deleteConversation,
-  updateLastMessage,
 };
