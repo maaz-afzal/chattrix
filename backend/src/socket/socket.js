@@ -4,8 +4,12 @@ import User from "../models/User.js";
 import { handleConnection, handleDisconnect } from "./events.js";
 import messageService from "../services/messageService.js";
 
+let io;
+
+export const getIo = () => io;
+
 const initSocket = (server) => {
-  const io = new Server(server, {
+  io = new Server(server, {
     cors: {
       origin: process.env.FRONTEND_URL,
       credentials: true,

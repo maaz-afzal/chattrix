@@ -4,9 +4,6 @@ import { database } from "./config/index.js";
 import app from "./app.js";
 import http from "http";
 import initSocket from "./socket/index.js";
-import { setIo } from "./controllers/messageController.js";
-import { setIo as setAiIo } from "./controllers/aiController.js";
-import { setIo as setUserIo } from "./controllers/userController.js";
 
 const requiredEnv = [
   "MONGODB_URI",
@@ -28,10 +25,7 @@ if (missingEnv.length > 0) {
 }
 
 const server = http.createServer(app);
-const io = initSocket(server);
-setIo(io);
-setAiIo(io);
-setUserIo(io);
+initSocket(server);
 
 const PORT = process.env.PORT || 3000;
 
