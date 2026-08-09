@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import { handleConnection, handleDisconnect } from "./events.js";
+import { messageService } from "../services/index.js";
 
 const initSocket = (server) => {
   const io = new Server(server, {
@@ -44,6 +45,15 @@ const initSocket = (server) => {
 
     socket.on("stop-typing", ({ receiverId }) => {
       io.to(receiverId).emit("user-stop-typing", { userId: socket.userId });
+    });
+
+    socket.on("mark-delivered", async ({ messageId, senderId }) => {
+      try {
+        const message = await messageService.markDelivered(messageId);
+        io.to(senderId).emit("message-delivered", message);
+      } catch (err) {
+        console.error("mark-delivered error:", err);
+      }
     });
 
     socket.on("disconnect", async () => {

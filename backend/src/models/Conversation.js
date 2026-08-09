@@ -14,10 +14,6 @@ const conversationSchema = new mongoose.Schema(
       ref: "Message",
       default: null,
     },
-    lastMessageAt: {
-      type: Date,
-      default: Date.now,
-    },
     unreadCount: {
       type: Map,
       of: Number,
@@ -28,12 +24,6 @@ const conversationSchema = new mongoose.Schema(
       default: false,
     },
     deletedFor: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-    archivedFor: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

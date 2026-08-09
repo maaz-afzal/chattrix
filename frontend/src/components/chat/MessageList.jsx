@@ -72,8 +72,13 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
         newMessage.conversationId?.toString() !== cur.conversationId.toString()
       )
         return;
-      if (newMessage.sender?.toString() !== currentUserId?.toString())
+      if (newMessage.sender?.toString() !== currentUserId?.toString()) {
         messageService.markAsRead(newMessage._id).catch(() => {});
+        socket.emit("mark-delivered", {
+          messageId: newMessage._id,
+          senderId: newMessage.sender?.toString(),
+        });
+      }
       setConversation((prev) => {
         if (prev.some((msg) => msg._id === newMessage._id)) return prev;
         return [...prev, newMessage];
@@ -87,6 +92,15 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
       setConversation((prev) =>
         prev.map((msg) =>
           msg._id === messageId ? { ...msg, status: "read" } : msg,
+        ),
+      );
+    };
+    const handleMessageDelivered = (deliveredMessage) => {
+      setConversation((prev) =>
+        prev.map((msg) =>
+          msg._id === deliveredMessage._id
+            ? { ...msg, status: "delivered" }
+            : msg,
         ),
       );
     };
@@ -129,6 +143,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
     socket.on("message-sent", handleNewMessage);
     socket.on("message-read", handleMessageRead);
     socket.on("messages-read", handleMessagesRead);
+    socket.on("message-delivered", handleMessageDelivered);
     socket.on("message-updated", handleMessageUpdated);
     socket.on("connect", handleReconnect);
     return () => {
@@ -136,6 +151,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
       socket.off("message-sent", handleNewMessage);
       socket.off("message-read", handleMessageRead);
       socket.off("messages-read", handleMessagesRead);
+      socket.off("message-delivered", handleMessageDelivered);
       socket.off("message-updated", handleMessageUpdated);
       socket.off("connect", handleReconnect);
     };

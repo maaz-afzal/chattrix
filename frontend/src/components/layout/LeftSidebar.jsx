@@ -29,6 +29,9 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
   const [modalPage, setModalPage] = useState(0);
   const [modalHasMore, setModalHasMore] = useState(true);
   const [modalLoading, setModalLoading] = useState(false);
+  const defaultListRefresh = useSelector(
+    (state) => state.users.defaultListRefresh,
+  );
   const searchTimeout = useRef(null);
   const modalScrollRef = useRef(null);
 
@@ -78,7 +81,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
 
   useEffect(() => {
     fetchConversations();
-  }, [fetchConversations]);
+  }, [fetchConversations, defaultListRefresh]);
 
   useEffect(() => {
     const socket = getSocket();

@@ -161,6 +161,21 @@ const deleteMessage = async (userId, messageId, everyone = false) => {
   return true;
 };
 
+const markDelivered = async (messageId) => {
+  const message = await Message.findById(messageId);
+
+  if (!message) {
+    throw new AppError("Message not found", 404);
+  }
+
+  if (message.status === "sent") {
+    message.status = "delivered";
+    await message.save();
+  }
+
+  return message;
+};
+
 const markAsRead = async (userId, messageId) => {
   const message = await Message.findById(messageId);
 
@@ -206,6 +221,7 @@ export default {
   getMessages,
   updateMessage,
   deleteMessage,
+  markDelivered,
   markAsRead,
   clearChat,
 };

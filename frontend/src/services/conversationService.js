@@ -10,14 +10,9 @@ const getConversations = async () => {
   return res.data.data;
 };
 
-const getConversationById = async (id) => {
-  const res = await api.get(`/conversations/${id}`);
-  return res.data.data;
-};
-
 const deleteConversation = async (id) => {
   const res = await api.delete(`/conversations/${id}`);
   return res.data.data;
 };
 
-export default { findOrCreateConversation, getConversations, getConversationById, deleteConversation };
+export default { findOrCreateConversation, getConversations, deleteConversation };

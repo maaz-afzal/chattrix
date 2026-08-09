@@ -8,6 +8,7 @@ const initialState = {
   selectedConversationId: null,
   typingUsers: {},
   lastSeenByUser: {},
+  defaultListRefresh: 0,
 };
 
 const userSlice = createSlice({
@@ -51,6 +52,9 @@ const userSlice = createSlice({
       const { userId, lastSeen } = action.payload;
       state.lastSeenByUser[userId] = lastSeen;
     },
+    bumpListRefresh(state) {
+      state.defaultListRefresh += 1;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(logout, () => initialState);
@@ -68,6 +72,7 @@ export const {
   setTyping,
   clearTyping,
   setLastSeen,
+  bumpListRefresh,
 } = userSlice.actions;
 
 export default userSlice.reducer;

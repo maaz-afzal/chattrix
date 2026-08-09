@@ -17,6 +17,8 @@ export const handleConnection = async (socket, io) => {
 export const handleDisconnect = async (socket, io) => {
   const { userId } = socket;
 
+  io.emit("user-stop-typing", { userId });
+
   const sockets = await io.in(userId).fetchSockets();
 
   if (sockets.length === 0) {

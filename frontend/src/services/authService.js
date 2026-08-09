@@ -10,11 +10,6 @@ const login = async (formData) => {
   return res.data;
 };
 
-const checkAuth = async () => {
-  const res = await api.get("/auth/check");
-  return res.data;
-};
-
 const logout = async () => {
   const res = await api.post("/auth/logout");
   return res.data;
@@ -30,4 +25,4 @@ const changePassword = async (data) => {
   return res.data;
 };
 
-export default { register, login, logout, checkAuth, deleteAccount, changePassword };
+export default { register, login, logout, deleteAccount, changePassword };
