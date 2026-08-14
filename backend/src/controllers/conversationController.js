@@ -1,33 +1,48 @@
 import conversationService from "../services/conversationService.js";
-import { catchAsync } from "../middlewares/errorHandler.js";
 import { sendResponse } from "../utils/responseHandler.js";
 
-export const findOrCreateConversation = catchAsync(async (req, res) => {
-  const userId = req.user.id;
-  const { receiverId } = req.body;
-  const conversation = await conversationService.findOrCreateConversation(
-    userId,
-    receiverId,
-  );
-  sendResponse(res, 200, { conversation });
-});
+export const findOrCreateConversation = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { receiverId } = req.body;
+    const conversation = await conversationService.findOrCreateConversation(
+      userId,
+      receiverId,
+    );
+    sendResponse(res, 200, { conversation });
+  } catch (err) {
+    next(err);
+  }
+};
 
-export const getConversations = catchAsync(async (req, res) => {
-  const conversations = await conversationService.getConversations(req.user.id);
-  sendResponse(res, 200, conversations);
-});
+export const getConversations = async (req, res, next) => {
+  try {
+    const conversations = await conversationService.getConversations(req.user.id);
+    sendResponse(res, 200, conversations);
+  } catch (err) {
+    next(err);
+  }
+};
 
-export const getConversationById = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const conversation = await conversationService.getConversationById(
-    req.user.id,
-    id,
-  );
-  sendResponse(res, 200, conversation);
-});
+export const getConversationById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const conversation = await conversationService.getConversationById(
+      req.user.id,
+      id,
+    );
+    sendResponse(res, 200, conversation);
+  } catch (err) {
+    next(err);
+  }
+};
 
-export const deleteConversation = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  await conversationService.deleteConversation(req.user.id, id);
-  sendResponse(res, 200, null, "Conversation deleted");
-});
+export const deleteConversation = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    await conversationService.deleteConversation(req.user.id, id);
+    sendResponse(res, 200, null, "Conversation deleted");
+  } catch (err) {
+    next(err);
+  }
+};

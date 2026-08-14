@@ -5,9 +5,7 @@ export const handleConnection = async (socket, io) => {
   socket.join(userId);
 
   try {
-    await User.findByIdAndUpdate(userId, {
-      isOnline: true,
-    });
+    await User.findByIdAndUpdate(userId, { isOnline: true });
     socket.broadcast.emit("user-online", userId);
   } catch (err) {
     console.error("Socket connect DB error:", err);
@@ -19,21 +17,14 @@ export const handleDisconnect = async (socket, io) => {
 
   io.emit("user-stop-typing", { userId });
 
-  const sockets = await io.in(userId).fetchSockets();
-
-  if (sockets.length === 0) {
-    try {
-      const lastSeen = new Date();
-      await User.findByIdAndUpdate(userId, {
-        isOnline: false,
-        lastSeen,
-      });
-      socket.broadcast.emit("user-offline", {
-        userId,
-        lastSeen,
-      });
-    } catch (err) {
-      console.error("Socket disconnect DB error:", err);
-    }
+  try {
+    const lastSeen = new Date();
+    await User.findByIdAndUpdate(userId, {
+      isOnline: false,
+      lastSeen,
+    });
+    socket.broadcast.emit("user-offline", { userId, lastSeen });
+  } catch (err) {
+    console.error("Socket disconnect DB error:", err);
   }
 };

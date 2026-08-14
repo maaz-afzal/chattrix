@@ -51,7 +51,6 @@ MessageSchema.pre("validate", function () {
   if (this.deletedForEveryone) return;
   if (!this.text && !this.image) {
     this.invalidate("text", "Message must have text or image");
-    this.invalidate("image", "Message must have text or image");
   }
 });
 

@@ -1,34 +1,49 @@
 import aiService from "../services/aiService.js";
-import { catchAsync } from "../middlewares/errorHandler.js";
 import { sendResponse } from "../utils/responseHandler.js";
 import { getIo } from "../socket/socket.js";
 
-export const createAIConversation = catchAsync(async (req, res) => {
-  const conversation = await aiService.createAIConversation(req.user.id);
-  sendResponse(res, 200, { conversation });
-});
+export const createAIConversation = async (req, res, next) => {
+  try {
+    const conversation = await aiService.createAIConversation(req.user.id);
+    sendResponse(res, 200, { conversation });
+  } catch (err) {
+    next(err);
+  }
+};
 
-export const sendAIMessage = catchAsync(async (req, res) => {
-  const { conversationId, text } = req.body;
-  const aiMessage = await aiService.sendAIMessage(
-    req.user.id,
-    conversationId,
-    text,
-  );
+export const sendAIMessage = async (req, res, next) => {
+  try {
+    const { conversationId, text } = req.body;
+    const aiMessage = await aiService.sendAIMessage(
+      req.user.id,
+      conversationId,
+      text,
+    );
 
-  getIo().to(req.user.id).emit("ai-message", { conversationId });
+    getIo().to(req.user.id).emit("ai-message", { conversationId });
 
-  sendResponse(res, 200, { msg: "AI response generated", reply: aiMessage });
-});
+    sendResponse(res, 200, { msg: "AI response generated", reply: aiMessage });
+  } catch (err) {
+    next(err);
+  }
+};
 
-export const getAIHistory = catchAsync(async (req, res) => {
-  const { conversationId } = req.params;
-  const messages = await aiService.getAIHistory(req.user.id, conversationId);
-  sendResponse(res, 200, messages);
-});
+export const getAIHistory = async (req, res, next) => {
+  try {
+    const { conversationId } = req.params;
+    const messages = await aiService.getAIHistory(req.user.id, conversationId);
+    sendResponse(res, 200, messages);
+  } catch (err) {
+    next(err);
+  }
+};
 
-export const clearAIHistory = catchAsync(async (req, res) => {
-  const { conversationId } = req.params;
-  await aiService.clearAIHistory(req.user.id, conversationId);
-  sendResponse(res, 200, null, "AI history cleared");
-});
+export const clearAIHistory = async (req, res, next) => {
+  try {
+    const { conversationId } = req.params;
+    await aiService.clearAIHistory(req.user.id, conversationId);
+    sendResponse(res, 200, null, "AI history cleared");
+  } catch (err) {
+    next(err);
+  }
+};

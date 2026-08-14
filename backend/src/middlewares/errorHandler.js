@@ -1,11 +1,5 @@
 import AppError from "../utils/AppError.js";
 
-export const catchAsync = (fn) => {
-  return (req, res, next) => {
-    fn(req, res, next).catch(next);
-  };
-};
-
 export const errorHandler = (err, req, res, next) => {
   let statusCode = err.statusCode || 500;
   let status = err.status || (statusCode >= 500 ? "error" : "fail");

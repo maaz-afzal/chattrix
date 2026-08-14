@@ -8,7 +8,7 @@ import ProtectedRoute from "./components/common/ProtectedRoute.jsx";
 import { Toaster } from "react-hot-toast";
 import { useSelector, useDispatch } from "react-redux";
 import { connectSocket, disconnectSocket } from "./lib/socket.js";
-import { addOnlineUser, removeOnlineUser, setTyping, clearTyping, setLastSeen, setOnlineUsers, bumpListRefresh } from "./redux/Slices/userSlice.js";
+import { setTyping, clearTyping, bumpListRefresh } from "./redux/Slices/userSlice.js";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -23,21 +23,6 @@ const App = () => {
     const socket = connectSocket(token);
     if (!socket) return;
 
-    const handleOnlineUsers = (userIds) => dispatch(setOnlineUsers(userIds));
-
-    const handleOnline = (userId) => {
-      dispatch(addOnlineUser(userId));
-    };
-
-    const handleOffline = ({ userId, lastSeen }) => {
-      dispatch(removeOnlineUser(userId));
-      if (lastSeen) dispatch(setLastSeen({ userId, lastSeen }));
-    };
-
-    socket.on("online-users", handleOnlineUsers);
-    socket.on("user-online", handleOnline);
-    socket.on("user-offline", handleOffline);
-
     const handleTyping = (data) => dispatch(setTyping(data.userId));
     const handleStopTyping = (data) => dispatch(clearTyping(data.userId));
 
@@ -48,12 +33,9 @@ const App = () => {
     socket.on("user-updated", handleUserUpdated);
 
     return () => {
-      socket.off("user-online", handleOnline);
-      socket.off("user-offline", handleOffline);
       socket.off("user-typing", handleTyping);
       socket.off("user-stop-typing", handleStopTyping);
       socket.off("user-updated", handleUserUpdated);
-      socket.off("online-users", handleOnlineUsers);
       disconnectSocket();
     };
   }, [isLoggedIn, token, dispatch]);

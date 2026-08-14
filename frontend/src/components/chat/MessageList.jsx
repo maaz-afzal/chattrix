@@ -84,26 +84,30 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
         return [...prev, newMessage];
       });
     };
+
     const handleReconnect = () => {
       if (selectedRef.current?.conversationId)
         getConversation(selectedRef.current.conversationId);
     };
+
     const handleMessageRead = (messageId) => {
       setConversation((prev) =>
         prev.map((msg) =>
-          msg._id === messageId ? { ...msg, status: "read" } : msg,
-        ),
+          msg._id === messageId ? { ...msg, status: "read" } : msg
+        )
       );
     };
+
     const handleMessageDelivered = (deliveredMessage) => {
       setConversation((prev) =>
         prev.map((msg) =>
           msg._id === deliveredMessage._id
             ? { ...msg, status: "delivered" }
-            : msg,
-        ),
+            : msg
+        )
       );
     };
+
     const handleMessagesRead = (convId) => {
       const cur = selectedRef.current;
       if (!cur?.conversationId) return;
@@ -112,10 +116,11 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
         prev.map((msg) =>
           msg.sender?.toString() === currentUserId?.toString()
             ? { ...msg, status: "read" }
-            : msg,
-        ),
+            : msg
+        )
       );
     };
+
     const handleMessageUpdated = (updatedMessage) => {
       const cur = selectedRef.current;
       if (!cur?.conversationId) return;
@@ -130,12 +135,10 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
             ? {
                 ...msg,
                 ...updatedMessage,
-                text:
-                  updatedMessage.text ??
-                  msg.text,
+                text: updatedMessage.text ?? msg.text,
               }
-            : msg,
-        ),
+            : msg
+        )
       );
     };
 

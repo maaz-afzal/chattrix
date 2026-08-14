@@ -22,11 +22,16 @@ const findOrCreateConversation = async (userId, receiverId) => {
       participants: [userId, receiverId],
       isAIChat: false,
     });
-  } else if (conversation.deletedFor?.some((id) => id.toString() === userId)) {
-    conversation.deletedFor = conversation.deletedFor.filter(
-      (id) => id.toString() !== userId,
+  } else {
+    const userDeleted = conversation.deletedFor?.some(
+      (id) => id.toString() === userId
     );
-    await conversation.save();
+    if (userDeleted) {
+      conversation.deletedFor = conversation.deletedFor.filter(
+        (id) => id.toString() !== userId
+      );
+      await conversation.save();
+    }
   }
 
   return conversation;
