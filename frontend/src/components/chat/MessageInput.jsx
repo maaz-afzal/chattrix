@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Send, Paperclip, X, Trash2, Pencil } from "lucide-react";
+import { Send, Paperclip, X, Trash2, Pencil, Reply, X as XIcon } from "lucide-react";
 import { useSelector } from "react-redux";
 import { getSocket } from "../../lib/socket.js";
 import messageService from "../../services/messageService.js";
@@ -12,6 +12,8 @@ const MessageInput = ({
   isAISelected,
   setAiMessages,
   aiConversationId,
+  replyingTo,
+  onCancelReply,
 }) => {
   const selectedConversationId = useSelector(
     (state) => state.users.selectedConversationId,
@@ -129,8 +131,10 @@ const MessageInput = ({
         await messageService.sendMessage(selectedConversationId, selected._id, {
           text: message.trim() || undefined,
           image: image || undefined,
+          replyTo: replyingTo?._id,
         });
       }
+      if (replyingTo) onCancelReply();
       setMessage("");
       setImage(null);
       setImagePreview(null);
@@ -181,16 +185,18 @@ const MessageInput = ({
     setImage(null);
     setImagePreview(null);
   };
-  const isDisabled = loading || (!selected && !isAISelected);
+const isDisabled = loading || (!selected && !isAISelected);
   const canSend =
     (message.trim() || image) && !loading && (selected || isAISelected);
   const placeholder = isAISelected
     ? "Ask Gemini..."
     : selected
-      ? editingMessage
-        ? "Edit message"
-        : "Message"
-      : "Select a chat";
+    ? replyingTo
+      ? "Reply..."
+      : editingMessage
+      ? "Edit message"
+      : "Message"
+    : "Select a chat";
 
   if (selectMode) {
     return (
@@ -234,6 +240,28 @@ const MessageInput = ({
             className="p-1 rounded text-[#8a8a8c] dark:text-[#666] hover:text-[#f87171]"
           >
             <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
+      {replyingTo && !isAISelected && (
+        <div className="mb-2 flex items-center justify-between gap-2 rounded-lg bg-[#A37CFF]/10 px-3 py-2 border-l-4 border-[#A37CFF]">
+          <div className="flex items-center gap-2 min-w-0">
+            <Reply className="w-3.5 h-3.5 text-[#A37CFF] shrink-0" />
+            <div className="min-w-0">
+              <p className="text-[11px] text-[#8a8a8c] dark:text-[#666] truncate">
+                Replying to {replyingTo.isMe ? "you" : replyingTo.senderName}
+              </p>
+              <p className="text-[12px] text-[#1a1a1b] dark:text-white truncate max-w-xs">
+                {replyingTo.text || (replyingTo.image ? "📷 Image" : "Message")}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onCancelReply}
+            className="p-1 rounded text-[#8a8a8c] dark:text-[#666] hover:text-[#f87171]"
+          >
+            <XIcon className="w-3.5 h-3.5" />
           </button>
         </div>
       )}

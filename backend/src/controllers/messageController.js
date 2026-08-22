@@ -7,21 +7,30 @@ export const sendMessage = async (req, res, next) => {
   try {
     const { conversationId, receiverId } = req.params;
     const senderId = req.user.id;
-    const { text, image } = req.body;
+    const { text, image, replyTo } = req.body;
 
     const message = await messageService.sendMessage(
       senderId,
       conversationId,
       receiverId,
-      { text, image },
+      { text, image, replyTo },
     );
 
-    const io = getIo();
-    io.to(receiverId).emit("receive-message", message);
-    io.to(receiverId).emit("unread-update", { conversationId });
-    io.to(senderId).emit("message-sent", message);
+    // Populate replyTo for real-time events
+    let populatedMessage = message;
+    if (message.replyTo) {
+      populatedMessage = await message.constructor.findById(message._id).populate({
+        path: "replyTo",
+        select: "text image sender senderType createdAt",
+      });
+    }
 
-    sendResponse(res, 201, message, "Message sent successfully");
+    const io = getIo();
+    io.to(receiverId).emit("receive-message", populatedMessage);
+    io.to(receiverId).emit("unread-update", { conversationId });
+    io.to(senderId).emit("message-sent", populatedMessage);
+
+    sendResponse(res, 201, populatedMessage, "Message sent successfully");
   } catch (err) {
     next(err);
   }
@@ -61,6 +70,15 @@ export const updateMessage = async (req, res, next) => {
     const { text } = req.body;
     const message = await messageService.updateMessage(req.user.id, id, text);
 
+    // Populate replyTo for real-time events
+    let populatedMessage = message;
+    if (message.replyTo) {
+      populatedMessage = await message.constructor.findById(message._id).populate({
+        path: "replyTo",
+        select: "text image sender senderType createdAt",
+      });
+    }
+
     const conversation = await Conversation.findById(message.conversationId).select(
       "participants",
     );
@@ -68,11 +86,11 @@ export const updateMessage = async (req, res, next) => {
       const io = getIo();
       const participants = conversation.participants.map((p) => p.toString());
       participants.forEach((participantId) => {
-        io.to(participantId).emit("message-updated", message);
+        io.to(participantId).emit("message-updated", populatedMessage);
       });
     }
 
-    sendResponse(res, 200, message, "Message updated");
+    sendResponse(res, 200, populatedMessage, "Message updated");
   } catch (err) {
     next(err);
   }

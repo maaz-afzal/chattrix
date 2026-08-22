@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { CheckCheck, Check, ChevronDown, Pencil } from "lucide-react";
+import { CheckCheck, Check, ChevronDown, Pencil, Reply, ArrowRight } from "lucide-react";
 import { useSelect } from "../layout/ChatArea";
 
 const MessageBubble = ({
@@ -10,8 +10,10 @@ const MessageBubble = ({
   sender,
   createdAt,
   status,
+  replyTo,
   isSelectMode,
   onSelect,
+  onReply,
 }) => {
   const currentUserId = useSelector((state) => state.auth.user?._id);
   const { selectedMessages, startEditing } = useSelect();
@@ -37,6 +39,22 @@ const MessageBubble = ({
       return <Check className="w-3 h-3 text-white/50" />;
     return null;
   };
+
+  const replyPreview = replyTo && (
+    <div
+      className="mb-1.5 px-2.5 py-1.5 rounded-lg bg-white/10 dark:bg-black/10 border-l-3 border-[#A37CFF] min-w-0"
+    >
+      <div className="flex items-center gap-1.5 mb-0.5">
+        <Reply className="w-3 h-3 text-[#A37CFF] shrink-0" />
+        <span className="text-[10px] font-medium text-[#A37CFF]">
+          Replying to {replyTo.sender?.toString() === currentUserId?.toString() ? "you" : "them"}
+        </span>
+      </div>
+      <p className="text-[11px] text-white/80 dark:text-[#ddd] truncate">
+        {replyTo.text || (replyTo.image ? "📷 Image" : "Message")}
+      </p>
+    </div>
+  );
 
   return (
     <div
@@ -72,6 +90,22 @@ const MessageBubble = ({
               >
                 <button
                   onClick={() => {
+                    onReply?.({
+                      _id,
+                      text,
+                      image,
+                      isMe,
+                      senderName: isMe ? "You" : "Them",
+                    });
+                    setMenuOpen(false);
+                  }}
+                  className="w-full flex items-center gap-1.5 px-2.5 py-1.5 text-left text-[11px] text-[#1a1a1b] dark:text-white hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] transition-colors"
+                >
+                  <Reply className="w-3 h-3" />
+                  Reply
+                </button>
+                <button
+                  onClick={() => {
                     startEditing({
                       _id,
                       text,
@@ -95,6 +129,8 @@ const MessageBubble = ({
               : "bg-[#ececee] dark:bg-[#1D1E1F] text-[#1a1a1b] dark:text-[#eee] rounded-bl-sm"
           }`}
         >
+          {replyPreview}
+
           {image && (
             <div className={text ? "mb-1.5" : ""}>
               <img

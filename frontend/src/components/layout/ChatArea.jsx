@@ -22,11 +22,13 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
   const [aiMessages, setAiMessages] = useState([]);
   const [aiConversationId, setAiConversationId] = useState(null);
   const [editingMessage, setEditingMessage] = useState(null);
+  const [replyingTo, setReplyingTo] = useState(null);
 
   useEffect(() => {
     setSelectMode(false);
     setSelectedMessages([]);
     setEditingMessage(null);
+    setReplyingTo(null);
   }, [selected?._id, isAISelected]);
 
   useEffect(() => {
@@ -112,6 +114,14 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
   };
   const cancelEditing = () => setEditingMessage(null);
 
+  const handleReply = (message) => {
+    setReplyingTo(message);
+  };
+
+  const handleCancelReply = () => {
+    setReplyingTo(null);
+  };
+
   const value = {
     selectMode,
     selectedMessages,
@@ -126,6 +136,8 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
     editingMessage,
     startEditing,
     cancelEditing,
+    handleReply,
+    handleCancelReply,
   };
 
   return (
@@ -149,6 +161,8 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
           setAiMessages={setAiMessages}
           aiMessages={aiMessages}
           aiConversationId={aiConversationId}
+          replyingTo={replyingTo}
+          onCancelReply={handleCancelReply}
         />
       </SelectContext.Provider>
     </main>

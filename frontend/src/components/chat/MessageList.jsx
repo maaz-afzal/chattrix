@@ -28,7 +28,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
     selectedRef.current = selected;
   }, [selected]);
 
-  const { selectMode, toggleMessage, clearTrigger, sendTrigger } =
+  const { selectMode, toggleMessage, clearTrigger, sendTrigger, handleReply, handleCancelReply } =
     useSelect();
 
   const getConversation = async (conversationId, initial = false) => {
@@ -338,14 +338,15 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
           </p>
         ) : (
           <div className="space-y-2.5">
-            {conversation.map((msg) => (
-              <MessageBubble
-                key={msg._id}
-                {...msg}
-                isSelectMode={selectMode}
-                onSelect={() => toggleMessage(msg._id)}
-              />
-            ))}
+{conversation.map((msg) => (
+                <MessageBubble
+                  key={msg._id}
+                  {...msg}
+                  isSelectMode={selectMode}
+                  onSelect={() => toggleMessage(msg._id)}
+                  onReply={handleReply}
+                />
+              ))}
             <div ref={messagesEndRef} />
           </div>
         )}

@@ -8,7 +8,7 @@ const sendMessage = async (
   senderId,
   conversationId,
   receiverId,
-  { text, image },
+  { text, image, replyTo },
 ) => {
   if (!mongoose.Types.ObjectId.isValid(conversationId)) {
     throw new AppError("Invalid conversation ID", 400);
@@ -16,6 +16,10 @@ const sendMessage = async (
 
   if (!mongoose.Types.ObjectId.isValid(receiverId)) {
     throw new AppError("Invalid receiver ID", 400);
+  }
+
+  if (replyTo && !mongoose.Types.ObjectId.isValid(replyTo)) {
+    throw new AppError("Invalid replyTo message ID", 400);
   }
 
   if (!text && !image) {
@@ -42,6 +46,16 @@ const sendMessage = async (
     throw new AppError("You are not a participant of this conversation", 403);
   }
 
+  if (replyTo) {
+    const repliedMessage = await Message.findById(replyTo);
+    if (!repliedMessage || repliedMessage.conversationId.toString() !== conversationId) {
+      throw new AppError("Replied message not found in this conversation", 404);
+    }
+    if (repliedMessage.deletedForEveryone) {
+      throw new AppError("Cannot reply to a deleted message", 400);
+    }
+  }
+
   let imageUrl = null;
 
   if (image) {
@@ -58,6 +72,7 @@ const sendMessage = async (
     sender: senderId,
     text: text?.trim(),
     image: imageUrl,
+    replyTo: replyTo || null,
   });
 
   await Conversation.findByIdAndUpdate(conversationId, {
@@ -106,7 +121,12 @@ const getMessages = async (userId, conversationId) => {
     conversationId,
     deletedFor: { $ne: userId },
     deletedForEveryone: { $ne: true },
-  }).sort({ createdAt: 1 });
+  })
+    .populate({
+      path: "replyTo",
+      select: "text image sender senderType createdAt",
+    })
+    .sort({ createdAt: 1 });
 
   return messages;
 };

@@ -41,6 +41,11 @@ const MessageSchema = new mongoose.Schema(
       enum: ["user", "ai"],
       default: "user",
     },
+    replyTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Message",
+      default: null,
+    },
   },
   {
     timestamps: true,
