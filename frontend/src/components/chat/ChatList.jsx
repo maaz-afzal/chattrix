@@ -12,10 +12,13 @@ const ChatList = ({
   hasConversations = false,
 }) => {
   const [selectedChatId, setSelectedChatId] = useState(null);
+  const onlineUsers = useSelector((state) => state.users.onlineUsers);
   const lastSeenByUser = useSelector((state) => state.users.lastSeenByUser);
 
   const enrichedUsers = users.map((user) => ({
     ...user,
+    status: onlineUsers.includes(user._id) ? "online" : "offline",
+    isOnline: onlineUsers.includes(user._id),
     lastSeen: lastSeenByUser[user._id] || user.lastSeen,
   }));
 

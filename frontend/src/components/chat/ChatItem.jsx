@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 
 const ChatItem = ({ chat, isSelected, onClick, onDelete }) => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { name, isOnline, lastSeen, lastMessage, unreadCount } = chat;
+  const { name, status, isOnline, lastSeen, lastMessage, unreadCount } = chat;
   const subtitle = lastMessage
     ? lastMessage
     : isOnline
