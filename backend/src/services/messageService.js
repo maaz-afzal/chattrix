@@ -164,17 +164,49 @@ const deleteMessage = async (userId, messageId, everyone = false) => {
     throw new AppError("Message not found", 404);
   }
 
+  // Verify user is a participant in the conversation
+  const conversation = await Conversation.findById(message.conversationId).select("participants");
+  if (!conversation) {
+    throw new AppError("Conversation not found", 404);
+  }
+  const isParticipant = conversation.participants.some(
+    (id) => id.toString() === userId.toString()
+  );
+  if (!isParticipant) {
+    throw new AppError("You are not a participant in this conversation", 403);
+  }
+
   if (everyone) {
+    // Only sender can delete for everyone
     if (message.sender.toString() !== userId) {
       throw new AppError("Only sender can delete message for everyone", 403);
     }
-
+    // Idempotent: if already deleted for everyone, return early
+    if (message.deletedForEveryone) {
+      return message;
+    }
     message.deletedForEveryone = true;
     message.text = "";
     message.image = null;
   } else {
-    if (!message.deletedFor.includes(userId)) {
-      message.deletedFor.push(userId);
+    // Delete for me: add user to deletedFor array if not already present
+    if (message.deletedForEveryone) {
+      // If already deleted for everyone, cannot delete for me (already gone)
+      throw new AppError("Cannot delete for me: message already deleted for everyone", 400);
+    }
+    if (message.deletedFor.includes(userId)) {
+      // Already deleted for me, idempotent
+      return message;
+    }
+    message.deletedFor.push(userId);
+
+    // Update unread count for the user if the message was unread
+    if (message.status !== "read" && message.sender.toString() !== userId) {
+      await Conversation.updateOne(
+        { _id: message.conversationId, [`unreadCount.${userId}`]: { $gt: 0 } },
+        { $inc: { [`unreadCount.${userId}`]: -1 } }
+      );
+      // Emit unread-update will be handled in controller
     }
   }
 
@@ -210,9 +242,10 @@ const markAsRead = async (userId, messageId) => {
     await message.save();
   }
 
-  await Conversation.findByIdAndUpdate(
-    { _id: message.conversationId },
-    { $set: { [`unreadCount.${userId}`]: 0 } },
+  // Decrement the unread count for the user in the conversation by 1, but not below 0
+  await Conversation.updateOne(
+    { _id: message.conversationId, [`unreadCount.${userId}`]: { $gt: 0 } },
+    { $inc: { [`unreadCount.${userId}`]: -1 } },
     { timestamps: false },
   );
 

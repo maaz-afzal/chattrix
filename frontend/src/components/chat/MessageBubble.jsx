@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { CheckCheck, Check, ChevronDown, Pencil, Reply, ArrowRight, Trash2 } from "lucide-react";
+import {
+  CheckCheck,
+  Check,
+  ChevronDown,
+  Pencil,
+  Reply,
+  ArrowRight,
+  Trash2,
+} from "lucide-react";
 import { useSelect } from "../layout/ChatArea";
 
 const MessageBubble = ({
@@ -37,19 +45,19 @@ const MessageBubble = ({
       return <CheckCheck className="w-3 h-3 text-[#A37CFF]" />;
     if (status === "delivered")
       return <CheckCheck className="w-3 h-3 text-white/50" />;
-    if (status === "sent")
-      return <Check className="w-3 h-3 text-white/50" />;
+    if (status === "sent") return <Check className="w-3 h-3 text-white/50" />;
     return null;
   };
 
   const replyPreview = replyTo && (
-    <div
-      className="mb-1.5 px-2.5 py-1.5 rounded-lg bg-white/10 dark:bg-black/10 border-l-3 border-[#A37CFF] min-w-0"
-    >
+    <div className="mb-1.5 px-2.5 py-1.5 rounded-lg bg-white/10 dark:bg-black/10 border-l-3 border-[#A37CFF] min-w-0">
       <div className="flex items-center gap-1.5 mb-0.5">
         <Reply className="w-3 h-3 text-[#A37CFF] shrink-0" />
         <span className="text-[10px] font-medium text-[#A37CFF]">
-          Replying to {replyTo.sender?.toString() === currentUserId?.toString() ? "you" : "them"}
+          Replying to{" "}
+          {replyTo.sender?.toString() === currentUserId?.toString()
+            ? "you"
+            : "them"}
         </span>
       </div>
       <p className="text-[11px] text-white/80 dark:text-[#ddd] truncate">
@@ -100,9 +108,7 @@ const MessageBubble = ({
                 <ChevronDown className="w-4 h-4" />
               </button>
               {menuOpen && (
-                <div
-                  className="absolute top-full mt-0 right-4 w-24 rounded-xl bg-white dark:bg-[#222] border border-[#e2e2e4] dark:border-[#333] shadow-lg z-20 py-0.3 overflow-hidden"
-                >
+                <div className="absolute top-full mt-0 right-4 w-24 rounded-xl bg-white dark:bg-[#222] border border-[#e2e2e4] dark:border-[#333] shadow-lg z-20 py-0.3 overflow-hidden">
                   <button
                     onClick={() => {
                       onReply?.({
@@ -199,35 +205,35 @@ const MessageBubble = ({
               </div>
             )}
           </div>
-          </div>
+        </div>
       </div>
       {deleteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white dark:bg-[#1D1E1F] rounded-2xl p-6 w-80 mx-4 shadow-xl">
-            <h3 className="text-lg font-semibold text-[#1a1a1b] dark:text-white mb-2">Delete message</h3>
-            <p className="text-[13px] text-[#8a8a8c] dark:text-[#666] mb-4">
-              Choose how you want to delete this message:
-            </p>
-            <div className="space-y-2">
-              <button
-                onClick={handleDeleteForMe}
-                className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-[13px] text-[#1a1a1b] dark:text-white hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] rounded-xl transition-colors"
-              >
-                <Trash2 className="w-4 h-4 text-[#f87171]" />
-                <span>Delete for me</span>
-              </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-[#1D1E1F] rounded-2xl p-6 w-[340px] mx-4 shadow-2xl border border-white/5">
+            <h3 className="text-xl font-semibold text-white mb-8">
+              Delete message?
+            </h3>
+
+            <div className="flex flex-col items-end gap-3">
               <button
                 onClick={handleDeleteForEveryone}
-                className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-[13px] text-[#1a1a1b] dark:text-white hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] rounded-xl transition-colors"
+                className="px-6 py-2.5 text-[15px] font-medium text-[#25D366] border border-[#25D366]/30 rounded-full hover:bg-[#25D366]/10 transition-all duration-200 min-w-[180px]"
               >
-                <Trash2 className="w-4 h-4 text-[#f87171]" />
-                <span>Delete for everyone</span>
+                Delete for everyone
               </button>
+
+              <button
+                onClick={handleDeleteForMe}
+                className="px-6 py-2.5 text-[15px] font-medium text-[#25D366] border border-[#25D366]/30 rounded-full hover:bg-[#25D366]/10 transition-all duration-200 min-w-[180px]"
+              >
+                Delete for me
+              </button>
+
               <button
                 onClick={() => setDeleteModalOpen(false)}
-                className="w-full flex items-center justify-center gap-3 px-3 py-2.5 text-[13px] text-[#8a8a8c] dark:text-[#666] hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] rounded-xl transition-colors"
+                className="px-6 py-2.5 text-[15px] font-medium text-[#25D366] border border-[#25D366]/30 rounded-full hover:bg-[#25D366]/10 transition-all duration-200 min-w-[180px]"
               >
-                <span>Cancel</span>
+                Cancel
               </button>
             </div>
           </div>
