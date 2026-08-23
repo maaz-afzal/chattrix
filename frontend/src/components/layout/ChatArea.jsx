@@ -108,6 +108,17 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
     }
   };
 
+  const handleDelete = async (messageId, everyone = false) => {
+    try {
+      await messageService.deleteMessage(messageId, everyone);
+      toast.success(everyone ? "Deleted for everyone" : "Deleted for you");
+      setClearTrigger((prev) => prev + 1);
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      toast.error("Failed to delete message.");
+    }
+  };
+
   const startEditing = (message) => {
     setEditingMessage(message);
     disableSelectMode();
@@ -133,6 +144,7 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
     toggleMessage,
     handleClearChat,
     handleDeleteSelected,
+    handleDelete,
     editingMessage,
     startEditing,
     cancelEditing,

@@ -21,13 +21,12 @@ export const handleConnection = async (socket, io) => {
 export const handleDisconnect = async (socket, io) => {
   const { userId } = socket;
 
-  io.emit("user-stop-typing", { userId });
-
   try {
     const sockets = await io.in(userId).fetchSockets();
     const stillConnected = sockets.length > 0;
 
     if (!stillConnected) {
+      io.emit("user-stop-typing", { userId });
       const lastSeen = new Date();
       await User.findByIdAndUpdate(userId, {
         isOnline: false,

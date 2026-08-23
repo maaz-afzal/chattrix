@@ -100,9 +100,26 @@ export const deleteMessage = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { everyone } = req.body || {};
-    await messageService.deleteMessage(req.user.id, id, everyone);
+    const message = await messageService.deleteMessage(req.user.id, id, everyone);
 
-    getIo().to(req.user.id).emit("unread-update", { id });
+    const io = getIo();
+    if (everyone) {
+      const conv = await Conversation.findById(message.conversationId).select("participants");
+      if (conv) {
+        conv.participants.forEach((participantId) => {
+          io.to(participantId.toString()).emit("message-deleted", {
+            messageId: id,
+            everyone: true,
+          });
+        });
+      }
+    } else {
+      io.to(req.user.id).emit("message-deleted", {
+        messageId: id,
+        everyone: false,
+      });
+      io.to(req.user.id).emit("unread-update", { id });
+    }
 
     sendResponse(res, 200, null, "Message deleted successfully");
   } catch (err) {

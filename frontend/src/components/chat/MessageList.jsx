@@ -28,7 +28,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
     selectedRef.current = selected;
   }, [selected]);
 
-  const { selectMode, toggleMessage, clearTrigger, sendTrigger, handleReply, handleCancelReply } =
+  const { selectMode, toggleMessage, clearTrigger, sendTrigger, handleReply, handleCancelReply, handleDelete } =
     useSelect();
 
   const getConversation = async (conversationId, initial = false) => {
@@ -142,12 +142,26 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
       );
     };
 
+    const handleMessageDeleted = (data) => {
+      const { messageId, everyone } = data;
+      if (everyone) {
+        setConversation((prev) =>
+          prev.filter((msg) => msg._id !== messageId)
+        );
+      } else {
+        setConversation((prev) =>
+          prev.filter((msg) => msg._id !== messageId)
+        );
+      }
+    };
+
     socket.on("receive-message", handleNewMessage);
     socket.on("message-sent", handleNewMessage);
     socket.on("message-read", handleMessageRead);
     socket.on("messages-read", handleMessagesRead);
     socket.on("message-delivered", handleMessageDelivered);
     socket.on("message-updated", handleMessageUpdated);
+    socket.on("message-deleted", handleMessageDeleted);
     socket.on("connect", handleReconnect);
     return () => {
       socket.off("receive-message", handleNewMessage);
@@ -156,6 +170,7 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
       socket.off("messages-read", handleMessagesRead);
       socket.off("message-delivered", handleMessageDelivered);
       socket.off("message-updated", handleMessageUpdated);
+      socket.off("message-deleted", handleMessageDeleted);
       socket.off("connect", handleReconnect);
     };
   }, [selected, currentUserId]);
@@ -337,16 +352,17 @@ const MessageList = ({ selected, isAISelected, aiMessages }) => {
             No messages yet. Say hello!
           </p>
         ) : (
-          <div className="space-y-2.5">
-{conversation.map((msg) => (
-                <MessageBubble
-                  key={msg._id}
-                  {...msg}
-                  isSelectMode={selectMode}
-                  onSelect={() => toggleMessage(msg._id)}
-                  onReply={handleReply}
-                />
-              ))}
+<div className="space-y-2.5">
+            {conversation.map((msg) => (
+              <MessageBubble
+                key={msg._id}
+                {...msg}
+                isSelectMode={selectMode}
+                onSelect={() => toggleMessage(msg._id)}
+                onReply={handleReply}
+                onDelete={handleDelete}
+              />
+            ))}
             <div ref={messagesEndRef} />
           </div>
         )}

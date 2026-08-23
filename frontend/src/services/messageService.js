@@ -10,8 +10,10 @@ const getMessages = async (conversationId) => {
   return res.data.data;
 };
 
-const deleteMessage = async (id) => {
-  const res = await api.delete(`/messages/${id}`);
+const deleteMessage = async (id, everyone = false) => {
+  const res = await api.delete(`/messages/${id}`, {
+    data: { everyone },
+  });
   return res.data.data;
 };
 

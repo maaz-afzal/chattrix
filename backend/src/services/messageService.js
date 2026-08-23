@@ -119,7 +119,7 @@ const getMessages = async (userId, conversationId) => {
 
   const messages = await Message.find({
     conversationId,
-    deletedFor: { $ne: userId },
+    deletedFor: { $nin: [userId] },
     deletedForEveryone: { $ne: true },
   })
     .populate({
@@ -173,12 +173,14 @@ const deleteMessage = async (userId, messageId, everyone = false) => {
     message.text = "";
     message.image = null;
   } else {
-    message.deletedFor.push(userId);
+    if (!message.deletedFor.includes(userId)) {
+      message.deletedFor.push(userId);
+    }
   }
 
   await message.save();
 
-  return true;
+  return message;
 };
 
 const markDelivered = async (messageId) => {
@@ -224,7 +226,7 @@ const clearChat = async (userId, conversationId) => {
       deletedFor: { $ne: userId },
     },
     {
-      $push: { deletedFor: userId },
+      $addToSet: { deletedFor: userId },
     },
   );
 

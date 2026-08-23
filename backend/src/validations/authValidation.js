@@ -5,8 +5,8 @@ export const validateRegister = [
     .trim()
     .notEmpty()
     .withMessage("Name is required.")
-    .isLength({ max: 50 })
-    .withMessage("Name cannot exceed 50 characters."),
+    .isLength({ min: 2, max: 50 })
+    .withMessage("Name must be between 2 and 50 characters."),
   body("email")
     .trim()
     .normalizeEmail()

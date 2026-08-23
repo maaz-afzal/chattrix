@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import { authLimiter, apiLimiter, aiLimiter } from "./middlewares/rateLimiter.js";
 
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -22,11 +23,11 @@ app.use(
 
 app.use(express.json({ limit: "8mb" }));
 
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/conversations", conversationRoutes);
-app.use("/api/messages", messageRoutes);
-app.use("/api/ai", aiRoutes);
+app.use("/api/auth", authLimiter, authRoutes);
+app.use("/api/ai", aiLimiter, aiRoutes);
+app.use("/api/users", apiLimiter, userRoutes);
+app.use("/api/conversations", apiLimiter, conversationRoutes);
+app.use("/api/messages", apiLimiter, messageRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ msg: "Route not found" });
