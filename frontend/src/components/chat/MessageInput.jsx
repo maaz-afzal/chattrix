@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Send, Paperclip, X, Trash2, Pencil, Reply, X as XIcon } from "lucide-react";
+import { Send, ImageIcon, X, Trash2, X as XIcon } from "lucide-react";
 import { useSelector } from "react-redux";
 import { getSocket } from "../../lib/socket.js";
 import messageService from "../../services/messageService.js";
@@ -31,6 +31,7 @@ const MessageInput = ({
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [focused, setFocused] = useState(false);
   const typingTimeout = useRef(null);
   const prevReceiverRef = useRef(null);
 
@@ -149,6 +150,7 @@ const MessageInput = ({
   const handleSend = async () => {
     isAISelected ? await handleAISend() : await handleNormalSend();
   };
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey && !loading) {
       e.preventDefault();
@@ -185,153 +187,192 @@ const MessageInput = ({
     setImage(null);
     setImagePreview(null);
   };
-const isDisabled = loading || (!selected && !isAISelected);
+
+  const isDisabled = loading || (!selected && !isAISelected);
   const canSend =
     (message.trim() || image) && !loading && (selected || isAISelected);
   const placeholder = isAISelected
     ? "Ask Gemini..."
     : selected
-    ? replyingTo
-      ? "Reply..."
-      : editingMessage
-      ? "Edit message"
-      : "Message"
-    : "Select a chat";
+      ? replyingTo
+        ? "Reply..."
+        : editingMessage
+          ? "Edit message"
+          : "Message"
+      : "Select a chat";
 
   if (selectMode) {
     return (
-      <div className="shrink-0 bg-[#f7f7f8] dark:bg-[#161616] px-4 py-5.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <div className="w-full pt-2 pb-4">
+        <div className="mx-auto max-w-3xl px-4">
+          <div className="flex items-center justify-between rounded-[22px] bg-[#f2f2f2] dark:bg-[#2a2a2a] ring-1 ring-black/4 dark:ring-white/6 pl-1.5 pr-1.5 py-1.5">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <button
+                onClick={disableSelectMode}
+                aria-label="Cancel selection"
+                className="w-9 h-9 rounded-full flex items-center justify-center text-[#8a8a8a] dark:text-[#888] hover:text-[#111] dark:hover:text-[#f0f0f0] hover:bg-black/5 dark:hover:bg-white/6 active:scale-95 transition shrink-0"
+              >
+                <X className="w-4.5 h-4.5" strokeWidth={1.75} />
+              </button>
+              <div className="flex items-baseline gap-1.5 min-w-0 ml-0.5">
+                <span className="text-[14px] font-semibold text-[#111] dark:text-[#f0f0f0] tabular-nums leading-none">
+                  {selectedMessages.length}
+                </span>
+                <span className="text-[12.5px] text-[#8a8a8a] dark:text-[#9a9a9a] leading-none truncate">
+                  {selectedMessages.length === 1
+                    ? "message selected"
+                    : "messages selected"}
+                </span>
+              </div>
+            </div>
+
             <button
-              onClick={disableSelectMode}
-              className="p-1.5 rounded-lg hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] transition-colors"
+              onClick={handleDeleteSelected}
+              disabled={selectedMessages.length === 0}
+              aria-label="Delete selected"
+              className="w-9 h-9 rounded-full flex items-center justify-center text-red-500 dark:text-red-400 hover:bg-red-500/10 dark:hover:bg-red-500/[0.14] disabled:opacity-30 disabled:hover:bg-transparent active:scale-95 transition shrink-0"
             >
-              <X className="w-4 h-4 text-[#1a1a1b] dark:text-white" />
+              <Trash2 className="w-4.5 h-4.5" strokeWidth={1.75} />
             </button>
-            <span className="text-[13px] text-[#1a1a1b] dark:text-white">
-              {selectedMessages.length} selected
-            </span>
           </div>
-          <button
-            onClick={handleDeleteSelected}
-            disabled={selectedMessages.length === 0}
-            className="p-2 rounded-lg text-[#f87171] hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] disabled:opacity-30 transition-colors"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="shrink-0   bg-[#f7f7f8] dark:bg-[#161616] px-4 py-4">
-      {editingMessage && !isAISelected && (
-        <div className="mb-2 flex items-center justify-between gap-2 rounded-lg bg-[#A37CFF]/10 px-3 py-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <Pencil className="w-3.5 h-3.5 text-[#A37CFF] shrink-0" />
-            <span className="truncate text-[12px] text-[#1a1a1b] dark:text-white">
-              Editing: {editingMessage.text || "Original message"}
-            </span>
-          </div>
-          <button
-            onClick={cancelEditing}
-            className="p-1 rounded text-[#8a8a8c] dark:text-[#666] hover:text-[#f87171]"
-          >
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
-
-      {replyingTo && !isAISelected && (
-        <div className="mb-2 flex items-center justify-between gap-2 rounded-lg bg-[#A37CFF]/10 px-3 py-2 border-l-4 border-[#A37CFF]">
-          <div className="flex items-center gap-2 min-w-0">
-            <Reply className="w-3.5 h-3.5 text-[#A37CFF] shrink-0" />
-            <div className="min-w-0">
-              <p className="text-[11px] text-[#8a8a8c] dark:text-[#666] truncate">
-                Replying to {replyingTo.isMe ? "you" : replyingTo.senderName}
-              </p>
-              <p className="text-[12px] text-[#1a1a1b] dark:text-white truncate max-w-xs">
-                {replyingTo.text || (replyingTo.image ? "📷 Image" : "Message")}
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={onCancelReply}
-            className="p-1 rounded text-[#8a8a8c] dark:text-[#666] hover:text-[#f87171]"
-          >
-            <XIcon className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
-
-      {imagePreview && !isAISelected && !editingMessage && (
-        <div className="mb-2 inline-flex items-center gap-2 rounded-lg bg-[#ececee] dark:bg-[#1D1E1F] px-2.5 py-2">
-          <img
-            src={imagePreview}
-            alt="Preview"
-            className="w-10 h-10 rounded-md object-cover"
-          />
-          <button
-            onClick={removeImage}
-            className="p-1 rounded text-[#8a8a8c] dark:text-[#666] hover:text-[#f87171]"
-          >
-            <X className="w-3 h-3" />
-          </button>
-        </div>
-      )}
-
-      <div className="flex items-center gap-2">
-        <div className="flex-1 bg-[#e4e4e6] dark:bg-[#212120] rounded-2xl flex items-center px-2">
-          {!isAISelected && !editingMessage && (
-            <button
-              onClick={handleImageSelect}
-              disabled={isDisabled}
-              className="p-2 rounded-lg text-[#8a8a8c] dark:text-[#666] hover:text-[#1a1a1b] dark:hover:text-white hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] disabled:opacity-30 transition-colors shrink-0"
-            >
-              <Paperclip className="w-4.5 h-4.5" />
-            </button>
-          )}
-
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => {
-              setMessage(e.target.value);
-              if (!isAISelected && selected?.conversationId) {
-                const socket = getSocket();
-                if (socket && e.target.value.trim()) {
-                  socket.emit("typing", { receiverId: selected._id });
-                  clearTimeout(typingTimeout.current);
-                  typingTimeout.current = setTimeout(() => {
-                    socket.emit("stop-typing", { receiverId: selected._id });
-                  }, 2000);
-                }
-              }
-            }}
-            onKeyDown={handleKeyDown}
-            disabled={isDisabled}
-            placeholder={placeholder}
-            className="w-full bg-transparent py-3.5 text-[13px] text-[#1a1a1b] dark:text-white placeholder:text-[#9a9a9c] dark:placeholder:text-[#666] outline-none disabled:opacity-30"
-          />
-        </div>
-
-        <button
-          onClick={handleSend}
-          disabled={!canSend}
-          className={`shrink-0 rounded-2xl flex items-center justify-center transition-all self-stretch px-4 ${
-            canSend
-              ? "bg-[#A37CFF] text-white hover:bg-[#9370f0]"
-              : "bg-[#e4e4e6] dark:bg-[#212120] text-[#9a9a9c] dark:text-[#555]"
+    <div className="w-full pt-2 pb-4">
+      <div className="mx-auto max-w-3xl px-4">
+        <div
+          className={`flex flex-col rounded-[22px] bg-[#f2f2f2] dark:bg-[#2a2a2a] transition-all duration-200 ${
+            focused
+              ? "ring-1 ring-[#2563eb]/30 shadow-[0_2px_12px_rgba(37,99,235,0.08)]"
+              : "ring-1 ring-transparent"
           }`}
         >
-          {loading ? (
-            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-          ) : (
-            <Send className="w-4 h-4" />
+          {replyingTo && !isAISelected && (
+            <div className="flex items-center gap-2.5 px-3.5 pt-3 pb-1.5">
+              <div className="w-[2.5px] h-8 rounded-full bg-[#2563eb] shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] font-medium text-[#2563eb] truncate leading-tight">
+                  {replyingTo.isMe
+                    ? "Replying to yourself"
+                    : `Replying to ${replyingTo.senderName}`}
+                </p>
+                <p className="text-[12px] text-[#8a8a8a] truncate leading-tight mt-0.5">
+                  {replyingTo.text || (replyingTo.image ? "Photo" : "Message")}
+                </p>
+              </div>
+              <button
+                onClick={onCancelReply}
+                aria-label="Cancel reply"
+                className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[#8a8a8a] hover:text-[#111] dark:hover:text-[#f0f0f0] hover:bg-black/5 dark:hover:bg-white/6 active:scale-95 transition"
+              >
+                <XIcon className="w-3.5 h-3.5" />
+              </button>
+            </div>
           )}
-        </button>
+
+          {editingMessage && !isAISelected && (
+            <div className="flex items-center gap-2.5 px-3.5 pt-3 pb-1.5">
+              <div className="w-[2.5px] h-8 rounded-full bg-[#2563eb] shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] font-medium text-[#2563eb] truncate leading-tight">
+                  Editing message
+                </p>
+                <p className="text-[12px] text-[#8a8a8a] truncate leading-tight mt-0.5">
+                  {editingMessage.text || "Original message"}
+                </p>
+              </div>
+              <button
+                onClick={cancelEditing}
+                aria-label="Cancel editing"
+                className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[#8a8a8a] hover:text-[#111] dark:hover:text-[#f0f0f0] hover:bg-black/5 dark:hover:bg-white/6 active:scale-95 transition"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+
+          {imagePreview && !isAISelected && !editingMessage && (
+            <div className="flex items-center gap-2.5 px-3.5 pt-3 pb-1.5">
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="w-9 h-9 rounded-lg object-cover shrink-0"
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] text-[#111] dark:text-[#f0f0f0] truncate leading-tight">
+                  Image attached
+                </p>
+                <p className="text-[11px] text-[#8a8a8a] truncate leading-tight mt-0.5">
+                  Ready to send
+                </p>
+              </div>
+              <button
+                onClick={removeImage}
+                aria-label="Remove image"
+                className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[#8a8a8a] hover:text-red-500 hover:bg-red-500/8 active:scale-95 transition"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+
+          <div className="flex items-center gap-1 px-1.5 py-1.5">
+            {!isAISelected && !editingMessage && (
+              <button
+                onClick={handleImageSelect}
+                disabled={isDisabled}
+                aria-label="Attach image"
+                className="w-9 h-9 rounded-full flex items-center justify-center text-[#8a8a8a] hover:text-[#111] dark:hover:text-[#f0f0f0] hover:bg-black/5dark:hover:bg-white/[0.06] disabled:opacity-30 disabled:hover:bg-transparent active:scale-95 transition shrink-0"
+              >
+                <ImageIcon className="w-4.25 h-4.25" strokeWidth={1.75} />
+              </button>
+            )}
+
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => {
+                setMessage(e.target.value);
+                if (!isAISelected && selected?.conversationId) {
+                  const socket = getSocket();
+                  if (socket && e.target.value.trim()) {
+                    socket.emit("typing", { receiverId: selected._id });
+                    clearTimeout(typingTimeout.current);
+                    typingTimeout.current = setTimeout(() => {
+                      socket.emit("stop-typing", { receiverId: selected._id });
+                    }, 2000);
+                  }
+                }
+              }}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              onKeyDown={handleKeyDown}
+              disabled={isDisabled}
+              placeholder={placeholder}
+              className="flex-1 bg-transparent py-2 px-1 text-sm text-[#111] dark:text-[#f0f0f0] placeholder:text-[#8a8a8a] outline-none disabled:opacity-40 min-w-0"
+            />
+
+            <button
+              onClick={handleSend}
+              disabled={!canSend}
+              aria-label="Send"
+              className={`shrink-0 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 ${
+                canSend
+                  ? "bg-[#2563eb] text-white hover:bg-[#1d4ed8] active:scale-95"
+                  : "bg-transparent text-[#8a8a8a] cursor-not-allowed"
+              }`}
+            >
+              {loading ? (
+                <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+              ) : (
+                <Send className="w-4.25 h-4.25" strokeWidth={1.75} />
+              )}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -11,7 +11,12 @@ import { getSocket } from "../../lib/socket.js";
 import { setSelectedConversationId } from "../../redux/Slices/userSlice.js";
 import toast from "react-hot-toast";
 
-const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversation }) => {
+const LeftSidebar = ({
+  onSelected,
+  onSelectAI,
+  isAISelected,
+  onDeleteConversation,
+}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -60,7 +65,7 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
         const res = await userService.getAllUsers(next, 20);
         setModalUsers((prev) =>
           reset
-            ? (res || [])
+            ? res || []
             : [
                 ...prev,
                 ...(res || []).filter(
@@ -124,13 +129,14 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
       return {
         ...otherUser,
         conversationId: conv._id,
-        lastMessage: lastMessage && !isLastMessageHidden
-          ? lastMessage.text
+        lastMessage:
+          lastMessage && !isLastMessageHidden
             ? lastMessage.text
-            : lastMessage.image
-              ? "Image"
-              : null
-          : null,
+              ? lastMessage.text
+              : lastMessage.image
+                ? "Image"
+                : null
+            : null,
         lastMessageAt: conv.updatedAt,
         unreadCount,
       };
@@ -223,9 +229,9 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
                 setModalSearch("");
                 fetchModalUsers(1, true);
               }}
-              className="w-8 h-8 rounded-lg bg-[#A37CFF] hover:bg-[#9370f0] text-white flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-full bg-[#7342e6] hover:bg-[#6635d5] text-white flex items-center justify-center border border-[#6a38dc] hover:border-[#5f31ca] transition-colors duration-200"
             >
-              <SquarePen className="w-4 h-4" />
+              <SquarePen className="w-3.75 h-3.75" strokeWidth={2.2} />
             </button>
           </div>
 
@@ -274,10 +280,10 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
           />
         </div>
 
-        <div className="px-3 py-3 border-t border-[#e2e2e4] dark:border-[#2E2E2F]">
+        <div className="px-3 py-3 border-t border-[#e5e5e7] dark:border-[#29292b]">
           <div
             onClick={() => navigate("/profile")}
-            className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-[#ececee] dark:hover:bg-[#1D1E1F] transition-colors cursor-pointer"
+            className="group flex items-center gap-3 p-2.5 rounded-2xl bg-[#f1f1f3] dark:bg-[#1c1c1e] border border-[#e4e4e6] dark:border-[#29292b] hover:bg-[#ececee] dark:hover:bg-[#202022] hover:border-[#d9d9dc] dark:hover:border-[#363638] cursor-pointer transition-all duration-200"
           >
             <div className="relative shrink-0">
               <Avatar
@@ -285,23 +291,43 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
                 profileImage={currentUser?.profileImage}
                 size="sm"
               />
+
               <span
-                className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#f7f7f8] dark:border-[#161616] ${
-                  isOnline ? "bg-emerald-500" : "bg-[#9a9a9c] dark:bg-[#555]"
+                className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#f1f1f3] dark:border-[#1c1c1e] ${
+                  isOnline ? "bg-emerald-500" : "bg-[#99999c] dark:bg-[#555557]"
                 }`}
               />
             </div>
+
             <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-medium text-[#1a1a1b] dark:text-white truncate">
+              <p className="text-[13px] font-semibold leading-4 text-[#181819] dark:text-[#f5f5f5] truncate">
                 {currentUser?.name || "User"}
               </p>
-              <p
-                className={`text-[11px] ${isOnline ? "text-emerald-500" : "text-[#8a8a8c] dark:text-[#666]"}`}
-              >
-                {isOnline ? "Online" : "Offline"}
-              </p>
+
+              <div className="flex items-center gap-1.5 mt-1">
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    isOnline
+                      ? "bg-emerald-500"
+                      : "bg-[#99999c] dark:bg-[#555557]"
+                  }`}
+                />
+
+                <span
+                  className={`text-[10px] font-medium leading-none ${
+                    isOnline
+                      ? "text-emerald-500"
+                      : "text-[#88888b] dark:text-[#6b6b6d]"
+                  }`}
+                >
+                  {isOnline ? "Online" : "Offline"}
+                </span>
+              </div>
             </div>
-            <Settings className="w-4 h-4 text-[#8a8a8c] dark:text-[#666]" />
+
+            <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-white/60 dark:bg-white/4 border border-[#dedee0] dark:border-[#303032] group-hover:bg-white dark:group-hover:bg-white/[0.07] transition-colors">
+              <Settings className="w-3.75 h-3.75 text-[#7f7f83] dark:text-[#858589]" />
+            </div>
           </div>
         </div>
       </aside>
@@ -317,7 +343,9 @@ const LeftSidebar = ({ onSelected, onSelectAI, isAISelected, onDeleteConversatio
           />
           <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-[#e2e2e4] dark:border-[#2E2E2F] bg-[#f7f7f8] dark:bg-[#161616]">
             <div className="px-5 py-4 border-b border-[#e2e2e4] dark:border-[#2E2E2F] flex items-center justify-between">
-              <h3 className="text-[15px] font-semibold text-[#1a1a1b] dark:text-white">New Chat</h3>
+              <h3 className="text-[15px] font-semibold text-[#1a1a1b] dark:text-white">
+                New Chat
+              </h3>
               <button
                 onClick={() => {
                   setIsModalOpen(false);

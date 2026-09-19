@@ -36,25 +36,31 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
       setAiConversationId(null);
       return;
     }
-    aiService.createAIConversation().then((data) => {
-      const convId = data.conversation?._id || data._id;
-      setAiConversationId(convId);
-    }).catch(() => toast.error("Failed to start AI chat"));
+    aiService
+      .createAIConversation()
+      .then((data) => {
+        const convId = data.conversation?._id || data._id;
+        setAiConversationId(convId);
+      })
+      .catch(() => toast.error("Failed to start AI chat"));
   }, [isAISelected]);
 
   useEffect(() => {
     if (!aiConversationId) return;
-    aiService.getAIHistory(aiConversationId).then((messages) => {
-      setAiMessages(
-        (messages || []).map((msg) => ({
-          _id: msg._id,
-          text: msg.text,
-          sender: msg.senderType === "ai" ? "ai" : "user",
-          createdAt: msg.createdAt,
-          status: "sent",
-        })),
-      );
-    }).catch(() => {});
+    aiService
+      .getAIHistory(aiConversationId)
+      .then((messages) => {
+        setAiMessages(
+          (messages || []).map((msg) => ({
+            _id: msg._id,
+            text: msg.text,
+            sender: msg.senderType === "ai" ? "ai" : "user",
+            createdAt: msg.createdAt,
+            status: "sent",
+          })),
+        );
+      })
+      .catch(() => {});
   }, [aiConversationId]);
 
   const enableSelectMode = () => {
@@ -160,6 +166,7 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
           isAISelected={isAISelected}
           onBack={onBack}
         />
+
         <div className="flex-1 min-h-0 flex flex-col">
           <MessageList
             selected={selected}
@@ -167,15 +174,18 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
             aiMessages={aiMessages}
           />
         </div>
-        <MessageInput
-          selected={selected}
-          isAISelected={isAISelected}
-          setAiMessages={setAiMessages}
-          aiMessages={aiMessages}
-          aiConversationId={aiConversationId}
-          replyingTo={replyingTo}
-          onCancelReply={handleCancelReply}
-        />
+
+        {selected && (
+          <MessageInput
+            selected={selected}
+            isAISelected={isAISelected}
+            setAiMessages={setAiMessages}
+            aiMessages={aiMessages}
+            aiConversationId={aiConversationId}
+            replyingTo={replyingTo}
+            onCancelReply={handleCancelReply}
+          />
+        )}
       </SelectContext.Provider>
     </main>
   );
