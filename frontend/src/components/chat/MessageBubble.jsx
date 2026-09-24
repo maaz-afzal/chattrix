@@ -125,68 +125,81 @@ const MessageBubble = ({
             isMe ? "flex-row-reverse" : "flex-row"
           } items-end gap-1.5 relative`}
         >
-          {isMe && (
-            <div className="relative shrink-0 mb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-              <button
-                onClick={() => setMenuOpen((prev) => !prev)}
-                aria-label="Message options"
-                className="w-6 h-6 flex items-center justify-center rounded-full text-[#8a8a8a] dark:text-[#888] hover:text-[#111] dark:hover:text-[#f0f0f0] hover:bg-black/5 dark:hover:bg-white/8 active:scale-95 transition"
-              >
-                <ChevronDown className="w-4 h-4" strokeWidth={1.75} />
-              </button>
+          <div className="relative shrink-0 mb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+            <button
+              onClick={() => setMenuOpen((prev) => !prev)}
+              aria-label="Message options"
+              className="w-6 h-6 flex items-center justify-center rounded-full text-[#8a8a8a] dark:text-[#888] hover:text-[#111] dark:hover:text-[#f0f0f0] hover:bg-black/5 dark:hover:bg-white/8 active:scale-95 transition"
+            >
+              <ChevronDown className="w-4 h-4" strokeWidth={1.75} />
+            </button>
 
-              {menuOpen && (
-                <>
-                  <div
-                    className="fixed inset-0 z-10"
-                    onClick={() => setMenuOpen(false)}
-                  />
-                  <div className="absolute top-full right-0 mt-1.5 w-28 rounded-lg bg-white dark:bg-[#1c1c1e] ring-1 ring-black/8 dark:ring-white/10 shadow-md dark:shadow-black/40 z-20 py-0.5 overflow-hidden">
-                    <button
-                      onClick={() => {
-                        onReply?.({
-                          _id,
-                          text,
-                          image,
-                          isMe,
-                          senderName: isMe ? "You" : "Them",
-                        });
-                        setMenuOpen(false);
-                      }}
-                      className="w-full flex items-center gap-2 px-2.5 py-1.5 text-left text-[11.5px] text-[#111] dark:text-[#f0f0f0] hover:bg-black/4 dark:hover:bg-white/6 transition"
-                    >
-                      <Reply className="w-3 h-3 shrink-0" strokeWidth={1.75} />
-                      Reply
-                    </button>
+            {menuOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setMenuOpen(false)}
+                />
 
-                    <button
-                      onClick={() => {
-                        startEditing({ _id, text });
-                        setMenuOpen(false);
-                      }}
-                      className="w-full flex items-center gap-2 px-2.5 py-1.5 text-left text-[11.5px] text-[#111] dark:text-[#f0f0f0] hover:bg-black/4 dark:hover:bg-white/6 transition"
-                    >
-                      <Pencil className="w-3 h-3 shrink-0" strokeWidth={1.75} />
-                      Edit
-                    </button>
+                <div
+                  className={`absolute top-full mt-1.5 w-28 rounded-lg bg-white dark:bg-[#1c1c1e] ring-1 ring-black/8 dark:ring-white/10 shadow-md dark:shadow-black/40 z-20 py-0.5 overflow-hidden ${
+                    isMe ? "right-0" : "left-0"
+                  }`}
+                >
+                  <button
+                    onClick={() => {
+                      onReply?.({
+                        _id,
+                        text,
+                        image,
+                        isMe,
+                        senderName: isMe ? "You" : "Them",
+                      });
+                      setMenuOpen(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-2.5 py-1.5 text-left text-[11.5px] text-[#111] dark:text-[#f0f0f0] hover:bg-black/4 dark:hover:bg-white/6 transition"
+                  >
+                    <Reply className="w-3 h-3 shrink-0" strokeWidth={1.75} />
+                    Reply
+                  </button>
 
-                    <div className="my-0.5 mx-2 h-px bg-black/6 dark:bg-white/8" />
+                  {isMe && (
+                    <>
+                      <button
+                        onClick={() => {
+                          startEditing({ _id, text });
+                          setMenuOpen(false);
+                        }}
+                        className="w-full flex items-center gap-2 px-2.5 py-1.5 text-left text-[11.5px] text-[#111] dark:text-[#f0f0f0] hover:bg-black/4 dark:hover:bg-white/6 transition"
+                      >
+                        <Pencil
+                          className="w-3 h-3 shrink-0"
+                          strokeWidth={1.75}
+                        />
+                        Edit
+                      </button>
 
-                    <button
-                      onClick={() => {
-                        setMenuOpen(false);
-                        setDeleteModalOpen(true);
-                      }}
-                      className="w-full flex items-center gap-2 px-2.5 py-1.5 text-left text-[11.5px] text-red-500 dark:text-red-400 hover:bg-red-500/8 transition"
-                    >
-                      <Trash2 className="w-3 h-3 shrink-0" strokeWidth={1.75} />
-                      Delete
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
+                      <div className="my-0.5 mx-2 h-px bg-black/6 dark:bg-white/8" />
+
+                      <button
+                        onClick={() => {
+                          setMenuOpen(false);
+                          setDeleteModalOpen(true);
+                        }}
+                        className="w-full flex items-center gap-2 px-2.5 py-1.5 text-left text-[11.5px] text-red-500 dark:text-red-400 hover:bg-red-500/8 transition"
+                      >
+                        <Trash2
+                          className="w-3 h-3 shrink-0"
+                          strokeWidth={1.75}
+                        />
+                        Delete
+                      </button>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
 
           <div
             className={`rounded-2xl px-3 py-1.5 ${
