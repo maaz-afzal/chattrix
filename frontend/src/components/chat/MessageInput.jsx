@@ -68,10 +68,12 @@ const MessageInput = ({
 
   const handleAISend = async () => {
     if (!message.trim()) return;
+
     if (!aiConversationId) {
       toast.error("AI chat is still loading, please wait.");
       return;
     }
+
     const userMsg = {
       _id: Date.now().toString(),
       text: message.trim(),
@@ -79,14 +81,18 @@ const MessageInput = ({
       createdAt: new Date().toISOString(),
       status: "sent",
     };
+
     setAiMessages((prev) => [...prev, userMsg]);
     setMessage("");
+
     try {
       setLoading(true);
+
       const response = await aiService.sendAIMessage({
         text: userMsg.text,
         conversationId: aiConversationId,
       });
+
       setAiMessages((prev) => [
         ...prev,
         {
@@ -97,7 +103,11 @@ const MessageInput = ({
           status: "sent",
         },
       ]);
-    } catch {
+    } catch (error) {
+      console.error("Error sending AI message:", error);
+
+      setAiMessages((prev) => prev.filter((msg) => msg._id !== userMsg._id));
+
       toast.error("Failed to get AI response.");
     } finally {
       setLoading(false);
