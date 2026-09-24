@@ -82,14 +82,22 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
 
   const handleClearChat = async () => {
     if (isAISelected) {
-      if (aiConversationId) {
-        await aiService.clearAIHistory(aiConversationId).catch(() => {});
+      if (!aiConversationId) return;
+
+      try {
+        await aiService.clearAIHistory(aiConversationId);
+        setAiMessages([]);
+        toast.success("AI chat cleared!");
+      } catch (error) {
+        console.error("Error clearing AI chat:", error);
+        toast.error("Failed to clear AI chat.");
       }
-      setAiMessages([]);
-      toast.success("AI chat cleared!");
+
       return;
     }
+
     if (!selected?.conversationId) return;
+
     try {
       await messageService.clearChat(selected.conversationId);
       toast.success("Chat cleared!");
