@@ -42,7 +42,6 @@ const initSocket = (server) => {
 
     socket.on("typing", async ({ receiverId }) => {
       try {
-        // Check if a conversation exists between the sender and receiver
         const conversation = await Conversation.findOne({
           participants: { $all: [socket.userId, receiverId] }
         });
@@ -56,7 +55,6 @@ const initSocket = (server) => {
 
     socket.on("stop-typing", async ({ receiverId }) => {
       try {
-        // Check if a conversation exists between the sender and receiver
         const conversation = await Conversation.findOne({
           participants: { $all: [socket.userId, receiverId] }
         });

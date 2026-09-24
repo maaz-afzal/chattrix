@@ -13,6 +13,16 @@ export const handleConnection = async (socket, io) => {
     if (!wasOnline) {
       socket.broadcast.emit("user-online", userId);
     }
+
+    const onlineUsers = await User.find({
+      isOnline: true,
+      isDeleted: false,
+    }).select("_id");
+
+    socket.emit(
+      "online-users",
+      onlineUsers.map((user) => user._id.toString()),
+    );
   } catch (err) {
     console.error("Socket connect DB error:", err);
   }

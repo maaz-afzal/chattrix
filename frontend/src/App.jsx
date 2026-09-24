@@ -9,6 +9,7 @@ import { Toaster } from "react-hot-toast";
 import { useSelector, useDispatch } from "react-redux";
 import { connectSocket, disconnectSocket } from "./lib/socket.js";
 import {
+  setOnlineUsers,
   setTyping,
   clearTyping,
   bumpListRefresh,
@@ -30,6 +31,10 @@ const App = () => {
     const socket = connectSocket(token);
     if (!socket) return;
 
+    const handleOnlineUsers = (userIds) => {
+      dispatch(setOnlineUsers(userIds));
+    };
+
     const handleOnline = (userId) => {
       dispatch(addOnlineUser(userId));
     };
@@ -43,7 +48,7 @@ const App = () => {
     const handleStopTyping = (data) => dispatch(clearTyping(data.userId));
 
     const handleUserUpdated = () => dispatch(bumpListRefresh());
-
+    socket.on("online-users", handleOnlineUsers);
     socket.on("user-online", handleOnline);
     socket.on("user-offline", handleOffline);
     socket.on("user-typing", handleTyping);
@@ -51,6 +56,7 @@ const App = () => {
     socket.on("user-updated", handleUserUpdated);
 
     return () => {
+      socket.off("online-users", handleOnlineUsers);
       socket.off("user-online", handleOnline);
       socket.off("user-offline", handleOffline);
       socket.off("user-typing", handleTyping);
