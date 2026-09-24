@@ -175,7 +175,7 @@ const ChatArea = ({ selected, isAISelected, onBack }) => {
           />
         </div>
 
-        {selected && (
+        {(selected || isAISelected) && (
           <MessageInput
             selected={selected}
             isAISelected={isAISelected}

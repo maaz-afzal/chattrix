@@ -48,7 +48,10 @@ const sendMessage = async (
 
   if (replyTo) {
     const repliedMessage = await Message.findById(replyTo);
-    if (!repliedMessage || repliedMessage.conversationId.toString() !== conversationId) {
+    if (
+      !repliedMessage ||
+      repliedMessage.conversationId.toString() !== conversationId
+    ) {
       throw new AppError("Replied message not found in this conversation", 404);
     }
     if (repliedMessage.deletedForEveryone) {
@@ -89,9 +92,8 @@ const getMessages = async (userId, conversationId) => {
     throw new AppError("Invalid conversation ID", 400);
   }
 
-  const conversation = await Conversation.findById(conversationId).select(
-    "participants",
-  );
+  const conversation =
+    await Conversation.findById(conversationId).select("participants");
 
   if (
     !conversation ||
@@ -165,12 +167,14 @@ const deleteMessage = async (userId, messageId, everyone = false) => {
   }
 
   // Verify user is a participant in the conversation
-  const conversation = await Conversation.findById(message.conversationId).select("participants");
+  const conversation = await Conversation.findById(
+    message.conversationId,
+  ).select("participants");
   if (!conversation) {
     throw new AppError("Conversation not found", 404);
   }
   const isParticipant = conversation.participants.some(
-    (id) => id.toString() === userId.toString()
+    (id) => id.toString() === userId.toString(),
   );
   if (!isParticipant) {
     throw new AppError("You are not a participant in this conversation", 403);
@@ -192,7 +196,10 @@ const deleteMessage = async (userId, messageId, everyone = false) => {
     // Delete for me: add user to deletedFor array if not already present
     if (message.deletedForEveryone) {
       // If already deleted for everyone, cannot delete for me (already gone)
-      throw new AppError("Cannot delete for me: message already deleted for everyone", 400);
+      throw new AppError(
+        "Cannot delete for me: message already deleted for everyone",
+        400,
+      );
     }
     if (message.deletedFor.includes(userId)) {
       // Already deleted for me, idempotent
@@ -204,7 +211,7 @@ const deleteMessage = async (userId, messageId, everyone = false) => {
     if (message.status !== "read" && message.sender.toString() !== userId) {
       await Conversation.updateOne(
         { _id: message.conversationId, [`unreadCount.${userId}`]: { $gt: 0 } },
-        { $inc: { [`unreadCount.${userId}`]: -1 } }
+        { $inc: { [`unreadCount.${userId}`]: -1 } },
       );
       // Emit unread-update will be handled in controller
     }
@@ -231,28 +238,79 @@ const markDelivered = async (messageId) => {
 };
 
 const markAsRead = async (userId, messageId) => {
+  if (!mongoose.Types.ObjectId.isValid(messageId)) {
+    throw new AppError("Invalid message ID", 400);
+  }
+
   const message = await Message.findById(messageId);
 
   if (!message) {
     throw new AppError("Message not found", 404);
   }
 
-  if (message.status !== "read") {
-    message.status = "read";
-    await message.save();
+  const conversation = await Conversation.findById(
+    message.conversationId,
+  ).select("participants");
+
+  if (!conversation) {
+    throw new AppError("Conversation not found", 404);
   }
 
-  // Decrement the unread count for the user in the conversation by 1, but not below 0
+  const isParticipant = conversation.participants.some(
+    (id) => id.toString() === userId.toString(),
+  );
+
+  if (!isParticipant) {
+    throw new AppError("You are not a participant in this conversation", 403);
+  }
+
+  if (message.sender.toString() === userId.toString()) {
+    return message;
+  }
+
+  if (message.status === "read") {
+    return message;
+  }
+
+  message.status = "read";
+  await message.save();
+
   await Conversation.updateOne(
-    { _id: message.conversationId, [`unreadCount.${userId}`]: { $gt: 0 } },
-    { $inc: { [`unreadCount.${userId}`]: -1 } },
-    { timestamps: false },
+    {
+      _id: message.conversationId,
+      [`unreadCount.${userId}`]: { $gt: 0 },
+    },
+    {
+      $inc: { [`unreadCount.${userId}`]: -1 },
+    },
+    {
+      timestamps: false,
+    },
   );
 
   return message;
 };
 
 const clearChat = async (userId, conversationId) => {
+  if (!mongoose.Types.ObjectId.isValid(conversationId)) {
+    throw new AppError("Invalid conversation ID", 400);
+  }
+
+  const conversation =
+    await Conversation.findById(conversationId).select("participants");
+
+  if (!conversation) {
+    throw new AppError("Conversation not found", 404);
+  }
+
+  const isParticipant = conversation.participants.some(
+    (id) => id.toString() === userId.toString(),
+  );
+
+  if (!isParticipant) {
+    throw new AppError("You are not a participant in this conversation", 403);
+  }
+
   await Message.updateMany(
     {
       conversationId,
@@ -266,6 +324,7 @@ const clearChat = async (userId, conversationId) => {
   await Conversation.updateOne(
     { _id: conversationId },
     { $set: { [`unreadCount.${userId}`]: 0 } },
+    { timestamps: false },
   );
 
   return true;
