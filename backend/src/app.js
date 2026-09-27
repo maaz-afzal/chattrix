@@ -23,6 +23,13 @@ app.use(
 
 app.use(express.json({ limit: "8mb" }));
 
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    message: "Chattrix backend is running",
+  });
+});
+
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/ai", aiLimiter, aiRoutes);
 app.use("/api/users", apiLimiter, userRoutes);
