@@ -44,7 +44,11 @@ export const updateProfile = async (req, res, next) => {
   try {
     const user = await userService.updateProfile(req.user.id, req.body);
 
-    getIo().emit("user-updated", user);
+    const io = getIo();
+
+    if (io) {
+      io.emit("user-updated", user);
+    }
 
     sendResponse(res, 200, user, "Profile updated successfully.");
   } catch (err) {
