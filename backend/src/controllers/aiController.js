@@ -2,6 +2,14 @@ import aiService from "../services/aiService.js";
 import { sendResponse } from "../utils/responseHandler.js";
 import { getIo } from "../socket/socket.js";
 
+const emitIfSocketAvailable = (callback) => {
+  const io = getIo();
+
+  if (io) {
+    callback(io);
+  }
+};
+
 export const createAIConversation = async (req, res, next) => {
   try {
     const conversation = await aiService.createAIConversation(req.user.id);
@@ -20,7 +28,9 @@ export const sendAIMessage = async (req, res, next) => {
       text,
     );
 
-    getIo().to(req.user.id).emit("ai-message", { conversationId });
+    emitIfSocketAvailable((io) => {
+      io.to(req.user.id).emit("ai-message", { conversationId });
+    });
 
     sendResponse(res, 200, { msg: "AI response generated", reply: aiMessage });
   } catch (err) {
