@@ -1,7 +1,11 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import { authLimiter, apiLimiter, aiLimiter } from "./middlewares/rateLimiter.js";
+import {
+  authLimiter,
+  apiLimiter,
+  aiLimiter,
+} from "./middlewares/rateLimiter.js";
 
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -35,6 +39,13 @@ app.use("/api/ai", aiLimiter, aiRoutes);
 app.use("/api/users", apiLimiter, userRoutes);
 app.use("/api/conversations", apiLimiter, conversationRoutes);
 app.use("/api/messages", apiLimiter, messageRoutes);
+
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    message: "Chattrix backend is running",
+  });
+});
 
 app.use((req, res) => {
   res.status(404).json({ msg: "Route not found" });
