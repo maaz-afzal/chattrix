@@ -81,10 +81,23 @@ const updateProfile = async (userId, updateData) => {
     if (profileImage === "" || profileImage === null) {
       user.profileImage = null;
     } else if (profileImage.startsWith("data:image")) {
-      const result = await cloudinary.uploader.upload(profileImage, {
-        folder: "chattrix/profile",
-        resource_type: "image",
-      });
+      let result;
+
+      try {
+        result = await cloudinary.uploader.upload(profileImage, {
+          folder: "chattrix/profile",
+          resource_type: "image",
+        });
+      } catch (error) {
+        console.error("Cloudinary upload error:", {
+          message: error.message,
+          http_code: error.http_code,
+          name: error.name,
+          error: error.error,
+        });
+
+        throw error;
+      }
       user.profileImage = result.secure_url;
     } else {
       user.profileImage = profileImage;
