@@ -4,6 +4,8 @@ Chattrix is a full-stack chat application built with the MERN stack. It provides
 
 The project is organized as a separate React frontend and Express backend, with MongoDB used for persistent data storage.
 
+[Live Demo](https://chattrix-frontend-ecru.vercel.app/)
+
 ## Features
 
 * User registration and login
