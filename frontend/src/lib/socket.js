@@ -6,7 +6,7 @@ const isProduction = import.meta.env.PROD;
 let socket = null;
 
 export const connectSocket = (token) => {
-  if (isProduction || !token) return null;
+  if (!token) return null;
 
   if (socket?.connected) {
     return socket;
