@@ -289,11 +289,13 @@ The Socket.IO server is initialized by the Node.js server and uses JWT authentic
 
 ### Production Deployment Note
 
-The production deployment uses Vercel's serverless environment for the Express backend. Persistent Socket.IO connections are not maintained by this deployment model.
+The production frontend is deployed separately from the backend.
 
-For this reason, the production frontend does not establish a Socket.IO connection with the Vercel backend.
+The frontend is hosted on Vercel, while the Express backend and Socket.IO server are hosted on Bonto.
 
-REST-based messaging and other API functionality continue to operate normally. A persistent Socket.IO-compatible hosting environment would be required to provide real-time communication in production.
+The production frontend connects to the Bonto backend for REST API requests and persistent Socket.IO communication.
+
+This allows real-time features such as online status, typing indicators, message delivery, and read status to work in production.
 
 ## API
 
