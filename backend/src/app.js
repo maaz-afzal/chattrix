@@ -2,8 +2,6 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import { authLimiter, apiLimiter, aiLimiter } from "./middlewares/rateLimiter.js";
-import database from "./config/database.js";
-
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
@@ -12,8 +10,6 @@ import aiRoutes from "./routes/aiRoutes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 const app = express();
-
-await database();
 
 app.use(helmet());
 
