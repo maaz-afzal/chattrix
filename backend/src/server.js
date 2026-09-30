@@ -1,8 +1,8 @@
 import "dotenv/config";
-
 import { database } from "./config/index.js";
 import app from "./app.js";
 import http from "http";
+import mongoose from "mongoose";
 import initSocket from "./socket/index.js";
 
 const requiredEnv = [
@@ -35,5 +35,23 @@ const start = async () => {
     console.log(`Server running on port ${PORT}`);
   });
 };
+
+const shutdown = async (signal) => {
+  console.log(`${signal} received. Shutting down gracefully...`);
+
+  server.close(async () => {
+    try {
+      await mongoose.connection.close();
+      console.log("MongoDB connection closed");
+      process.exit(0);
+    } catch (err) {
+      console.error("Error during shutdown:", err);
+      process.exit(1);
+    }
+  });
+};
+
+process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("SIGTERM", () => shutdown("SIGTERM"));
 
 start();
