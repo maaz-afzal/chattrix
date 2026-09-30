@@ -42,7 +42,7 @@ const MessageBubble = ({
     if (!isMe) return null;
     const base = "w-3.5 h-3.5 shrink-0";
     if (status === "read")
-      return <CheckCheck className={`${base} text-white`} strokeWidth={2} />;
+      return <CheckCheck className={`${base} text-blue-400`} strokeWidth={2} />;
     if (status === "delivered")
       return <CheckCheck className={`${base} text-white/55`} strokeWidth={2} />;
     if (status === "sent")
