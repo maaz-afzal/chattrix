@@ -6,6 +6,20 @@ The project is organized as a separate React frontend and Express backend, with 
 
 [Live Demo](https://chattrix-frontend-ecru.vercel.app/)
 
+## Screenshots
+
+### Login
+<img width="1920" height="922" alt="login" src="https://github.com/user-attachments/assets/7335b90b-03a6-4d9c-babe-d9a957f4dc98" />
+
+
+### Chat
+<img width="1920" height="922" alt="chat" src="https://github.com/user-attachments/assets/142e3cca-3bb6-4175-9be4-20019fb8fae1" />
+
+
+### Real-Time Messaging
+<img width="1920" height="922" alt="real-time-chat" src="https://github.com/user-attachments/assets/f4298f07-1b5f-498b-9bdf-8ef56cfc9e49" />
+
+
 ## Features
 
 * User registration and login
